@@ -6,6 +6,7 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils import timezone
+import uuid
 
 
 class Date(models.Model):
@@ -29,7 +30,7 @@ class Place(models.Model):
     name: Place name
     """
     name = models.TextField(null=False, blank=False,
-                            primary_key=True, unique=False)
+                            primary_key=True, unique=True)
 
 
 class Gender(models.Model):

@@ -3,7 +3,7 @@ services:
   webapp:
     build: webapp
     depends_on:
-      - db_controller
+      - db-controller
     ports:
       - "8080:8080"
     volumes:
@@ -17,7 +17,7 @@ services:
     volumes:
        - "pgdata:/var/lib/postgresql/data"
   
-  db_controller:
+  db-controller:
     build: db_controller
     depends_on:
       - db
@@ -29,7 +29,7 @@ services:
   service_face_encoding:
     build: services/face_encoding
     depends_on:
-      - db_controller
+      - db-controller
     volumes:
       - "./services/face_encoding:/code"
 

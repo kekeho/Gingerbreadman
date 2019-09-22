@@ -25,7 +25,7 @@ SECRET_KEY = 'de(m+nry#g@$$q)47%qepdqp#q+gpmm(@(p(e0+pbi-i0t!^yb'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['db-controller']
 
 
 # Application definition
