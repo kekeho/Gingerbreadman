@@ -21,7 +21,7 @@ docker-compose build
 ## Start
 
 ```sh
-docker-compose start  # Launch containers
+docker-compose up  # Launch containers
 ```
 
 and, open browser [http://localhost:8080](http://localhost:8080)
