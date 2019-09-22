@@ -1,0 +1,38 @@
+version: '3'
+services:
+  webapp:
+    build: webapp
+    depends_on:
+      - db_controller
+    ports:
+      - "8080:8080"
+    volumes:
+      - "./webapp:/code"
+  
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: "gingerbreadman"
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+       - "pgdata:/var/lib/postgresql/data"
+  
+  db_controller:
+    build: db_controller
+    depends_on:
+      - db
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - "./db_controller:/code"
+  
+  service_face_encoding:
+    build: services/face_encoding
+    depends_on:
+      - db_controller
+    volumes:
+      - "./services/face_encoding:/code"
+
+volumes:
+  pgdata:
+    driver: "local"
