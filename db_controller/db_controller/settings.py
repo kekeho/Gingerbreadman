@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'controller',
 ]
 
 MIDDLEWARE = [
@@ -78,7 +79,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'gingerbreadman',
         'USER': 'gingerbreadman',
-        'PASSWORD': os.environ.get("DB_PASSWORD"),
+        'PASSWORD': os.environ.get("POSTGRES_PASSWORD"),
         'HOST': 'db'
     }
 }
