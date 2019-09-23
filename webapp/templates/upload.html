@@ -1,0 +1,48 @@
+<!--
+ Copyright (c) 2019 Hiroki Takemura (kekeho)
+ 
+ This software is released under the MIT License.
+ https://opensource.org/licenses/MIT
+-->
+
+{% extends "base.html" %}
+
+{% block contents %}
+<div class="container">
+    <div class="row">
+        <div class="col upload-form">
+            <form action="/upload/" method="POST" enctype="multipart/form-data">
+                {% if error %}
+                    <h1>{{ error }}</h1>                
+                {% endif %}
+                {% csrf_token %}
+                <div class="form-row">
+                    <div class="col">
+                        <h1 class="title">Upload Images</h1>
+                        <input type="file" multiple="multiple" accept="image/*" name="images">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="col-lg-12">
+                        <h2>Select place tag</h2>
+                    </div>
+                    <div class="col">
+                        <select class="form-control" name="place_selected">
+                            <optgroup label="Existing places">
+                                {% for place in places %}
+                                    <option value="{{ place.name }}">{{ place.name }}</option>
+                                {% endfor %}
+                            </optgroup>
+                        </select></div>
+                    <div class="col">
+                    <input class="form-control" name="place_new" type="text" placeholder="or create new place tag">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="col"><input class="form-control" type="submit" value="Upload"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock contents %}
