@@ -10,7 +10,7 @@ from django.http import HttpResponseNotAllowed
 from django.utils import timezone
 from datetime import datetime
 from django.http.response import JsonResponse
-from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.csrf import csrf_exempt
 import json
 from PIL import Image, ExifTags
 
@@ -47,10 +47,10 @@ def get_places_all(request):
     return JsonResponse(resp_data)
 
 
-@ensure_csrf_cookie
+@csrf_exempt
 def regist_images(request):
     places = models.Place.objects.all()
-    context = {'places': places}
+    context = {'places': [p.name for p in places]}
 
     if request.method == 'POST':
         images = request.FILES.getlist('images')
@@ -61,10 +61,10 @@ def regist_images(request):
         # save to db
         for image in images:
             pil_img = Image.open(image)
-            photo = models.Photo()
+            i = models.Image()
             
             # filename
-            photo.filename = str(image)
+            i.filename = str(image)
 
             # date
             exif_date = get_datetime(pil_img)
@@ -73,23 +73,23 @@ def regist_images(request):
                 return render(request, 'upload.html', context)
 
             d = models.Date.objects.get_or_create(year=exif_date.year, month=exif_date.month, day=exif_date.day)
-            photo.date = d[0]
+            i.date = d[0]
 
             # datetime
-            photo.datetime = exif_date
+            i.datetime = exif_date
 
             # place
             place = models.Place.objects.get_or_create(name=place_form)
-            photo.place = place[0]
+            i.place = place[0]
 
             # photo
-            photo.photo = image
+            i.photo = image
 
             # Set analyzed False (waiting analyze)
-            photo.analyzed = False
+            i.analyzed = False
 
-            photo.save()
-            print(photo)
+            i.save()
+            print(i)
         
 
         return JsonResponse(context)

@@ -9,6 +9,10 @@ from django.utils import timezone
 import uuid
 
 
+def uuid4_str():
+    return str(uuid.uuid4())
+
+
 class Date(models.Model):
     """Date column
     date: Date info
@@ -61,7 +65,7 @@ class Image(models.Model):
     image: image file
     face_analyzed: is analyzed by service/face_analyzer
     """
-    id = models.IntegerField(primary_key=True)
+    id = models.CharField(primary_key=True, default=uuid4_str, max_length=36)
     filename = models.CharField(max_length=150, blank=False,
                                 null=False)
     date = models.ForeignKey(Date, on_delete=models.PROTECT,
