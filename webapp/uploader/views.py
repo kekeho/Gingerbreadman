@@ -10,6 +10,7 @@ from datetime import datetime
 import requests
 from io import BytesIO
 from types import FunctionType
+import mimetypes
 
 from . import models
 
@@ -26,9 +27,11 @@ def upload_images(request):
             'images_mtimes': request.POST.get('images_mtimes')
         }
 
-        result = requests.post(url='http://db-controller:8888/regist_images/', data=data, files=request.FILES)
+        files = [('images', (f.name, f.file, mimetypes.guess_type(f.name)[0])) for f in request.FILES.getlist('images')]
+
+        result = requests.post(url='http://db-controller:8888/regist_images/', data=data, files=files)
         return render(request, 'upload.html', context=result.json())
-    
+
     else:
         return HttpResponseNotAllowed(['GET', 'POST'])
 

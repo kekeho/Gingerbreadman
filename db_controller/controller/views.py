@@ -32,6 +32,7 @@ def regist_images(request):
 
     if request.method == 'POST':
         images = request.FILES.getlist('images')
+        print(len(images), images)
         images_mtimes = list(map(int, request.POST.get('images_mtimes').split(',')))
         place_selected = request.POST.get('place_selected')
         place_new = request.POST.get('place_new')
