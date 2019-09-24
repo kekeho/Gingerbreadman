@@ -64,10 +64,10 @@ def regist_images(request):
             i.place = place[0]
 
             # photo
-            i.photo = image
+            i.image = image
 
             # Set analyzed False (waiting analyze)
-            i.face_encodings_analyzed = False
+            i.service_face_encoding_analyzed = False
 
             i.save()
 
