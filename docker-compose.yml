@@ -21,6 +21,7 @@ services:
     build: db_controller
     depends_on:
       - db
+      - redis
     environment:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
@@ -30,9 +31,18 @@ services:
     build: services/face_encoding
     depends_on:
       - db-controller
+      - redis
     volumes:
       - "./services/face_encoding:/code"
+  
+  redis:
+    image: redis
+    volumes:
+      - "redisdata:/data"
 
 volumes:
   pgdata:
     driver: "local"
+
+  redisdata:
+    driver: local
