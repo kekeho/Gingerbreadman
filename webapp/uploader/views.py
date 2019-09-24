@@ -16,9 +16,7 @@ from . import models
 
 def upload_images(request):
     if request.method == 'GET':
-        places = requests.get("http://db-controller:8888/get_places_all").json()['places']
-        print("PLACES", places)
-        context = {'places': places}
+        context = requests.get("http://db-controller:8888/get_places_all").json()
         return render(request, 'upload.html', context)
 
     elif request.method == 'POST':
