@@ -13,32 +13,10 @@ from django.http.response import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 from PIL import Image, ExifTags
+from django.core.files.uploadedfile import InMemoryUploadedFile
+import os
 
 from . import models
-
-
-def get_datetime(image) -> datetime:
-    """Get datetime object from exif"""
-    time_string = None
-    exif = image._getexif()
-    if exif is None:
-        # No exif data
-        return None
-
-    for id, val in exif.items():
-        tag = ExifTags.TAGS.get(id)
-        if tag == "DateTimeOriginal":
-            time_string = val.split('+')[0]
-
-
-    
-    if time_string is None:
-        # No DateTimeOriginal column
-        return None
-
-    # example: 2019:06:14 11:58:27
-    time_format = '%Y:%m:%d %H:%M:%S'
-    return datetime.strptime(time_string, time_format)
 
 
 def get_places_all(request):
@@ -54,30 +32,25 @@ def regist_images(request):
 
     if request.method == 'POST':
         images = request.FILES.getlist('images')
+        images_mtimes = list(map(int, request.POST.get('images_mtimes').split(',')))
         place_selected = request.POST.get('place_selected')
         place_new = request.POST.get('place_new')
         place_form = place_new if place_new else place_selected
 
         # save to db
-        for image in images:
-            pil_img = Image.open(image)
+        for image, mtime in zip(images, images_mtimes):
             i = models.Image()
             
             # filename
             i.filename = str(image)
 
             # date
-            exif_date = get_datetime(pil_img)
-            if exif_date is None:
-                context['error'] = f'Broken exif: {image}'
-                # return render(request, 'upload.html', context)
-                return JsonResponse(context)
-
-            d = models.Date.objects.get_or_create(year=exif_date.year, month=exif_date.month, day=exif_date.day)
+            date = datetime.fromtimestamp(mtime/1000)
+            d = models.Date.objects.get_or_create(year=date.year, month=date.month, day=date.day)
             i.date = d[0]
 
             # datetime
-            i.datetime = exif_date
+            i.datetime = date
 
             # place
             place = models.Place.objects.get_or_create(name=place_form)

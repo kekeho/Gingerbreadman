@@ -22,15 +22,12 @@ def upload_images(request):
     elif request.method == 'POST':
         data = {
             'place_selected': request.POST.get('place_selected'),
-            'place_new': request.POST.get('place_new')
+            'place_new': request.POST.get('place_new'),
+            'images_mtimes': request.POST.get('images_mtimes')
         }
 
-        for file in request.FILES.getlist('images'):
-            files = {file.name: file.read()}
-            result = requests.post(url='http://db-controller:8888/regist_images/', data=data, files=files)
-            print(result)
-
-        return render(request, 'upload.html')
+        result = requests.post(url='http://db-controller:8888/regist_images/', data=data, files=request.FILES)
+        return render(request, 'upload.html', context=result.json())
     
     else:
         return HttpResponseNotAllowed(['GET', 'POST'])
