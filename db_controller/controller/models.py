@@ -76,7 +76,7 @@ class Image(models.Model):
         Place, on_delete=models.PROTECT, blank=False, null=False)
     image = models.ImageField(
         upload_to='images', default='default', blank=False, null=False)
-    face_analyzed = models.BooleanField(default=False)
+    service_face_encoding_analyzed = models.BooleanField(default=False)
 
 
 class Face(models.Model):
