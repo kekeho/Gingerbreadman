@@ -70,7 +70,8 @@ def regist_images(request):
             exif_date = get_datetime(pil_img)
             if exif_date is None:
                 context['error'] = f'Broken exif: {image}'
-                return render(request, 'upload.html', context)
+                # return render(request, 'upload.html', context)
+                return JsonResponse(context)
 
             d = models.Date.objects.get_or_create(year=exif_date.year, month=exif_date.month, day=exif_date.day)
             i.date = d[0]
