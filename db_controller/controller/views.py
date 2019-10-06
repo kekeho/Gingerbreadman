@@ -14,11 +14,8 @@ import json
 from PIL import Image, ExifTags
 from django.core.files.uploadedfile import InMemoryUploadedFile
 import os
-import redis
 
 from . import models
-
-redis_client = redis.client.Redis(host='redis')
 
 
 def get_places_all(request):
@@ -70,9 +67,6 @@ def regist_images(request):
             i.service_face_encoding_analyzed = False
 
             i.save()
-
-            # Regist analyze queue
-            redis_client.lpush('service_face_encoding_queue', i.id)
             print(i)
 
         return JsonResponse(context)

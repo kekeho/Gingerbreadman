@@ -10,7 +10,7 @@ from lib import utils
 def main():
     while True:
         analyzer = utils.LocationAnalzyer(
-            'redis', 'db-controller', 8888,'/get_unanalyzed_face_location_images/', '/regist_faces/')
+            'db-controller', 8888,'/get_unanalyzed_face_location_images/', '/regist_faces/')
         analyzer.analyze_face_locations()
         count = analyzer.regist()
 

@@ -1,12 +1,8 @@
-import redis
 from PIL import Image
 import requests
-import time
-from concurrent.futures import ThreadPoolExecutor
 from typing import List
 import face_recognition
 import numpy as np
-import os
 from io import BytesIO
 import json
 from urllib.parse import urljoin
@@ -29,9 +25,7 @@ class RegistError(Exception):
 
 
 class LocationAnalzyer(object):
-    def __init__(self, redis_host: str, db_controller_host: str, db_controller_port: int, get_unanalyzed_images_endpoint: str, regist_entrypoint: str):
-        self.redis_client = redis.client.Redis(host='redis')
-        
+    def __init__(self, db_controller_host: str, db_controller_port: int, get_unanalyzed_images_endpoint: str, regist_entrypoint: str):
         self.db_controller_url = f'http://{db_controller_host}:{db_controller_port}'
         self.get_unanalyzed_images_endpoint = urljoin(self.db_controller_url, get_unanalyzed_images_endpoint)
         self.regist_entrypoint = urljoin(self.db_controller_url, regist_entrypoint)
