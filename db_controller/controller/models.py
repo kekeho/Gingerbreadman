@@ -76,6 +76,8 @@ class Image(models.Model):
         Place, on_delete=models.PROTECT, blank=False, null=False)
     image = models.ImageField(
         upload_to='images', default='default', blank=False, null=False)
+    
+    service_face_location_analyzed = models.BooleanField(default=False)
     service_face_encoding_analyzed = models.BooleanField(default=False)
 
 
@@ -91,6 +93,13 @@ class Face(models.Model):
     id = models.CharField(max_length=150, primary_key=True, unique=True)
     image = models.ForeignKey(Image, on_delete=models.PROTECT,
                               blank=False, null=False)
+    
+    # Location on self.image
+    face_location_x = models.IntegerField(blank=False, null=False, default=0)
+    face_location_y = models.IntegerField(blank=False, null=False, default=0)
+    face_location_w = models.IntegerField(blank=False, null=False, default=0)
+    face_location_h = models.IntegerField(blank=False, null=False, default=0)
+
     face_encoding = models.TextField(blank=True, null=True)
     gender = models.ForeignKey(Gender, on_delete=models.PROTECT,
                                blank=True, null=True)
