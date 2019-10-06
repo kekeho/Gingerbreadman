@@ -27,13 +27,13 @@ services:
     volumes:
       - "./db_controller:/code"
   
-  service_face_encoding:
-    build: services/face_encoding
+  service_face_location:
+    build: services/face_location
     depends_on:
       - db-controller
       - redis
     volumes:
-      - "./services/face_encoding:/code"
+      - "./services/face_location:/code"
   
   redis:
     image: redis

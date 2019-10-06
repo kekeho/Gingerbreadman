@@ -9,4 +9,4 @@ COPY ./requirements.txt /
 RUN pip install -r requirements.txt
 
 WORKDIR /code
-CMD [ "python", "face_encoding.py" ]
+CMD [ "python", "face_location.py" ]

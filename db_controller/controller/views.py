@@ -5,7 +5,7 @@
 
 
 from django.shortcuts import render
-from django.http import HttpResponseNotAllowed
+from django.http import HttpResponseNotAllowed, Http404, HttpResponseNotFound
 from django.utils import timezone
 from datetime import datetime
 from django.http.response import JsonResponse
@@ -71,7 +71,7 @@ def regist_images(request):
 
             i.save()
 
-            # Regist "unanalyzed_face_encodings"
+            # Regist analyze queue
             redis_client.lpush('service_face_encoding_queue', i.id)
             print(i)
 
@@ -79,3 +79,47 @@ def regist_images(request):
 
     else:
         return HttpResponseNotAllowed(['POST'])
+
+
+@csrf_exempt
+def get_unanalyzed_face_location_images(request):
+    if request.method != 'GET':
+        HttpResponseNotAllowed(["GET"])
+
+    images = models.Image.objects.filter(service_face_location_analyzed=False)
+    if list(images) == []:
+        return HttpResponseNotFound()
+
+    return JsonResponse([[str(i.id), str(i.image.url)] for i in images], safe=False)
+
+
+@csrf_exempt
+def regist_faces(request):
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
+    
+    # [
+    #   {"image_id": models.Image.id,
+    #    "location": [x, y, w, h]
+    #   }
+    #   ...
+    # ]
+
+    face_list = json.loads(request.body)
+
+    for face_info in face_list:
+        face = models.Face()
+        parent_image = models.Image.objects.get(id=face_info['image_id'])
+        face.image = parent_image
+        parent_image.service_face_location_analyzed = True
+
+        (x, y, w, h) = face_info['location']
+        face.face_location_x = x
+        face.face_location_y = y
+        face.face_location_w = w
+        face.face_location_h = h
+
+        parent_image.save()
+        face.save()
+
+    return JsonResponse({'message': 'Done'})
