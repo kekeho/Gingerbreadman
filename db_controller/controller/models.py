@@ -89,7 +89,7 @@ class Face(models.Model):
     smile: smile score (from Microsoft Face API)
     anger ~ surprise: Emotion score (from Microsoft Face API)
     """
-    id = models.CharField(max_length=150, primary_key=True, unique=True)
+    id = models.CharField(max_length=36, primary_key=True, default=uuid4_str, unique=True)
     image = models.ForeignKey(Image, on_delete=models.PROTECT,
                               blank=False, null=False)
     

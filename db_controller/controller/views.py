@@ -117,3 +117,42 @@ def regist_faces(request):
         face.save()
 
     return JsonResponse({'message': 'Done'})
+
+
+def get_unanalyzed_face_encoding_faces(request):
+    """Return face parent image and rect of face"""
+    if request.method != 'GET':
+        HttpResponseNotAllowed(['GET'])
+    
+    faces = models.Face.objects.filter(service_face_encoding_analyzed=False)
+    if list(faces) == []:
+        return HttpResponseNotFound()
+    
+    get_face_location = lambda f: [(int(f.face_location_x), int(f.face_location_y), int(f.face_location_w), int(f.face_location_h))]
+
+    return JsonResponse([[str(f.id), str(f.image.image.url), get_face_location(f)] for f in faces], safe=False)
+
+
+@csrf_exempt
+def regist_encodings(request):
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
+
+    # [
+    #   {"face_id": models.Image.id,
+    #    "encoding": [x, y, w, h]
+    #   }
+    #   ...
+    # ]
+
+    face_list = json.loads(request.body)
+    for face_info in face_list:
+        id = face_info['face_id']
+        encoding = face_info['encoding']
+
+        face = models.Face.objects.get(id=id)
+        face.face_encoding = encoding
+        face.service_face_encoding_analyzed = True
+        face.save()
+
+    return JsonResponse({'message': 'Done'})

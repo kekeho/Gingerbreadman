@@ -32,6 +32,13 @@ services:
       - db-controller
     volumes:
       - "./services/face_location:/code"
+  
+  service_face_encoding:
+    build: services/face_encoding
+    depends_on:
+      - db-controller
+    volumes:
+      - "./services/face_encoding:/code"
 
 volumes:
   pgdata:
