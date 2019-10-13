@@ -12,8 +12,9 @@ def main():
 
         if count > 0:
             print(f'Analyzed {count} images')
-        
+
         time.sleep(5)
+
 
 if __name__ == "__main__":
     main()

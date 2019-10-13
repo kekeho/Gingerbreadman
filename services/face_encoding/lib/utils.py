@@ -27,8 +27,10 @@ class RegistError(Exception):
 class EncodingAnalzyer(object):
     def __init__(self, db_controller_host: str, db_controller_port: int, get_unanalyzed_faces_endpoint: str, regist_entrypoint: str):
         self.db_controller_url = f'http://{db_controller_host}:{db_controller_port}'
-        self.get_unanalyzed_faces_endpoint = urljoin(self.db_controller_url, get_unanalyzed_faces_endpoint)
-        self.regist_entrypoint = urljoin(self.db_controller_url, regist_entrypoint)
+        self.get_unanalyzed_faces_endpoint = urljoin(self.db_controller_url,
+                                                     get_unanalyzed_faces_endpoint)
+        self.regist_entrypoint = urljoin(self.db_controller_url,
+                                         regist_entrypoint)
 
         self.unanalyzed_ids = []
         self.unanalyzed_urls = []
@@ -59,11 +61,11 @@ class EncodingAnalzyer(object):
     def regist(self):
         if len(self.encodings) <= 0:
             return 0
-        
+
         data = []
         for id, encoding in zip(self.unanalyzed_ids, self.encodings):
             data += [{'face_id': id, 'encoding': encoding}]
-        
+
         resp = requests.post(self.regist_entrypoint, json=data)
 
         if resp.status_code != 200:

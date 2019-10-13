@@ -91,7 +91,7 @@ def get_unanalyzed_face_location_images(request):
 def regist_faces(request):
     if request.method != "POST":
         return HttpResponseNotAllowed(["POST"])
-    
+
     # [
     #   {"image_id": models.Image.id,
     #    "location": [x, y, w, h]
@@ -123,12 +123,15 @@ def get_unanalyzed_face_encoding_faces(request):
     """Return face parent image and rect of face"""
     if request.method != 'GET':
         HttpResponseNotAllowed(['GET'])
-    
+
     faces = models.Face.objects.filter(service_face_encoding_analyzed=False)
     if list(faces) == []:
         return HttpResponseNotFound()
-    
-    get_face_location = lambda f: [(int(f.face_location_x), int(f.face_location_y), int(f.face_location_w), int(f.face_location_h))]
+
+    def get_face_location(f): return [(
+            int(f.face_location_x), int(f.face_location_y),
+            int(f.face_location_w), int(f.face_location_h)
+        )]
 
     return JsonResponse([[str(f.id), str(f.image.image.url), get_face_location(f)] for f in faces], safe=False)
 
