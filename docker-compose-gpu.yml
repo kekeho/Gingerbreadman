@@ -1,0 +1,51 @@
+version: '2.3'
+services:
+  webapp:
+    build: webapp
+    depends_on:
+      - db-controller
+    ports:
+      - "8080:8080"
+    volumes:
+      - "./webapp:/code"
+  
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: "gingerbreadman"
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+       - "pgdata:/var/lib/postgresql/data"
+  
+  db-controller:
+    build: db_controller
+    depends_on:
+      - db
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - "./db_controller:/code"
+  
+  service_face_location:
+    build:
+      context: "services/face_location"
+      dockerfile: "Dockerfile_GPU"
+    runtime: nvidia
+    depends_on:
+      - db-controller
+    volumes:
+      - "./services/face_location:/code"
+  
+  service_face_encoding:
+    build:
+      context: "services/face_encoding"
+      dockerfile: "Dockerfile_GPU"
+    runtime: nvidia
+    depends_on:
+      - db-controller
+    volumes:
+      - "./services/face_encoding:/code"
+
+volumes:
+  pgdata:
+    driver: "local"
