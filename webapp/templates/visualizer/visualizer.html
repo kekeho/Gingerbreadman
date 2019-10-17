@@ -1,0 +1,60 @@
+{% extends "../base.html" %}
+
+{% block contents %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-7">
+                <div class="container">
+                    {% comment %} Map {% endcomment %}
+                    <div class="row">
+                        <h1>Map</h1>
+                    </div>
+                    <div class="row">
+                        {% comment %} embedded map {% endcomment %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                {% comment %} Faces & Attributes {% endcomment %}
+                <div class="container">
+                    {% comment %} Faces {% endcomment %}
+                    <div class="row">
+                        <h1>Faces</h1>
+                    </div>
+                </div>
+                <div class="container">
+                    {% comment %} Attributes {% endcomment %}
+                    <div class="row">
+                        <h1>Attributes</h1>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="container">
+                                {% comment %} Gender {% endcomment %}
+                                <div class="row">
+                                    <h3>Gender</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="container">
+                                {% comment %} Age {% endcomment %}
+                                <div class="row">
+                                    <h3>Age</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="container">
+                                {% comment %} Emotion {% endcomment %}
+                                <div class="row">
+                                    <h3>Emotion</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock contents %}
