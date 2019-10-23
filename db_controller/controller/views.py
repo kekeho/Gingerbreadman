@@ -159,3 +159,48 @@ def regist_encodings(request):
         face.save()
 
     return JsonResponse({'message': 'Done'})
+
+
+def get_face_encodings(request):
+    if request.method != 'GET':
+        return HttpResponseNotAllowed(['GET'])
+
+    places = request.GET.getlist('selected_places')
+    from_date = str(request.GET.get('from_date'))
+    to_date = str(request.GET.get('to_date'))
+
+
+    faces = models.Face.objects.filter(
+        image__place__in=places,
+        image__datetime__range=[from_date, to_date]
+    )
+
+
+    return_faces_info = [{
+        'id': str(face.id),
+        'image_id': str(face.image.id),
+        'location': [
+            int(face.face_location_x),
+            int(face.face_location_y),
+            int(face.face_location_w),
+            int(face.face_location_h),
+        ],
+
+        'face_encoding': json.loads(str(face.face_encoding)),
+        'place': str(face.image.place.name),
+        'gender': str(face.gender.id) if face.gender else '',
+        'age': int(face.age.id) if face.age else -1,
+        'emotion': {
+            'smile': float(face.smile),
+            'anger': float(face.anger),
+            'contempt': float(face.contempt),
+            'disgust': float(face.disgust),
+            'fear': float(face.fear),
+            'happiness': float(face.happiness),
+            'neutral': float(face.neutral),
+            'sadness': float(face.sadness),
+            'surprise': float(face.surprise),
+        }
+    } for face in faces]
+
+    return JsonResponse(return_faces_info, safe=False)

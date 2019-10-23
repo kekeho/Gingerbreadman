@@ -13,4 +13,5 @@ urlpatterns = [
     path('get_unanalyzed_face_location_images/', views.get_unanalyzed_face_location_images, name='url_un_face_location_images'),
     path('get_unanalyzed_face_encodings/', views.get_unanalyzed_face_encoding_faces),
     path('regist_face_encodings/', views.regist_encodings, name='regist_encodings'),
+    path('get_face_encodings/', views.get_face_encodings, name='get_face_encodings'),
 ]

@@ -4,6 +4,7 @@ services:
     build: webapp
     depends_on:
       - db-controller
+      - service_face_grouping
     ports:
       - "8080:8080"
     volumes:
@@ -39,6 +40,12 @@ services:
       - db-controller
     volumes:
       - "./services/face_encoding:/code"
+
+  service_face_grouping:
+    build: services/face_grouping
+    volumes:
+      - "./services/face_grouping:/code"
+
 
 volumes:
   pgdata:

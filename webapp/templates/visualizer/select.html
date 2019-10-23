@@ -20,12 +20,10 @@
             </div>
             <div class="col col-md-6 center pad-3rem">
                 <h2>Places</h2>
-                <select class="form-control" name="places" multiple required>
-                    <optgroup label="Existing places">
-                        {% for place in places %}
-                        <option value="{{ place.name }}">{{ place }}</option>
-                        {% endfor %}
-                    </optgroup>
+                <select class="form-control" name="places" multiple required size="10">
+                    {% for place in places %}
+                    <option value="{{ place }}" label="{{ place }}">{{ place }}</option>
+                    {% endfor %}
                 </select>
             </div>
         </div>

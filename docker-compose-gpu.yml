@@ -45,6 +45,12 @@ services:
       - db-controller
     volumes:
       - "./services/face_encoding:/code"
+  
+  service_face_grouping:
+    build: services/face_grouping
+    volumes:
+      - "./services/face_grouping:/code"
+
 
 volumes:
   pgdata:
