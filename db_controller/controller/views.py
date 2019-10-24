@@ -179,6 +179,7 @@ def get_face_encodings(request):
     return_faces_info = [{
         'id': str(face.id),
         'image_id': str(face.image.id),
+        'image_url': str(face.image.image.url),
         'location': [
             int(face.face_location_x),
             int(face.face_location_y),
@@ -188,7 +189,7 @@ def get_face_encodings(request):
 
         'face_encoding': json.loads(str(face.face_encoding)),
         'place': str(face.image.place.name),
-        'gender': str(face.gender.id) if face.gender else '',
+        'gender': str(face.gender.id) if face.gender else -1,
         'age': int(face.age.id) if face.age else -1,
         'emotion': {
             'smile': float(face.smile),

@@ -26,10 +26,16 @@ def clustering():
     model = DBSCAN(eps=0.5, min_samples=1)
     cluster = model.fit(compressed)
 
+    grouped = dict()
     for i, group_index in enumerate(cluster.labels_):
         faces_json[i]['group_index'] = int(group_index)
+
+        try:
+            grouped[int(group_index)].append(faces_json[i])
+        except KeyError:
+            grouped[int(group_index)] = [faces_json[i]]
     
-    return flask.jsonify(faces_json)
+    return flask.jsonify(grouped)
 
 
 if __name__ == "__main__":
