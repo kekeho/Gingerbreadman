@@ -178,7 +178,8 @@ def get_face_encodings(request):
 
     faces = models.Face.objects.filter(
         image__place__in=places,
-        image__datetime__range=[from_date, to_date]
+        image__datetime__range=[from_date, to_date],
+        service_face_encoding_analyzed=True
     )
 
 
