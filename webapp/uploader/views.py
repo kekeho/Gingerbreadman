@@ -26,6 +26,8 @@ def upload_images(request):
         data = {
             'place_selected': request.POST.get('place_selected'),
             'place_new': request.POST.get('place_new'),
+            'new_latitude': request.POST.get('latitude'),
+            'new_longitude': request.POST.get('longitude'),
             'images_mtimes': request.POST.get('images_mtimes')
         }
 

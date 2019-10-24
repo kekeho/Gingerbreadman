@@ -38,6 +38,8 @@ def regist_images(request):
         place_selected = request.POST.get('place_selected')
         place_new = request.POST.get('place_new')
         place_form = place_new if place_new else place_selected
+        new_latitude = request.POST.get('new_latitude')
+        new_longitude = request.POST.get('new_longitude')
 
         # save to db
         for image, mtime in zip(images, images_mtimes):
@@ -57,8 +59,12 @@ def regist_images(request):
             i.datetime = date
 
             # place
-            place = models.Place.objects.get_or_create(name=place_form)
-            i.place = place[0]
+            place = models.Place.objects.get_or_create(name=place_form)[0]
+            if place_new:
+                place.latitude = new_latitude
+                place.longitude = new_longitude
+
+            i.place = place
 
             # photo
             i.image = image
@@ -180,7 +186,7 @@ def get_face_encodings(request):
         'id': str(face.id),
         'image_id': str(face.image.id),
         'image_url': str(face.image.image.url),
-        'location': [
+        'face_location': [
             int(face.face_location_x),
             int(face.face_location_y),
             int(face.face_location_w),
@@ -188,7 +194,11 @@ def get_face_encodings(request):
         ],
 
         'face_encoding': json.loads(str(face.face_encoding)),
-        'place': str(face.image.place.name),
+        'place': {
+            'name': face.image.place.name,
+            'latitude': face.image.place.latitude,
+            'longitude': face.image.place.longitude,
+        },
         'gender': str(face.gender.id) if face.gender else -1,
         'age': int(face.age.id) if face.age else -1,
         'emotion': {

@@ -35,6 +35,8 @@ class Place(models.Model):
     """
     name = models.TextField(null=False, blank=False,
                             primary_key=True, unique=True)
+    latitude = models.FloatField(null=False, default=-1.0)
+    longitude = models.FloatField(null=False, default=-1.0)
 
 
 class Gender(models.Model):
