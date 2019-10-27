@@ -19,8 +19,18 @@
                 <div class="container">
                     {% comment %} Faces {% endcomment %}
                     <div class="row">
-                        <h1>Faces</h1>
-                        {{ grouped_faces }}
+                        <h1>People</h1>
+                        {% comment %} Group {% endcomment %}
+                        {% for key, faces in grouped_faces.items %}
+                            <div class="col-md-4">
+                                {% for face in faces %}
+                                    <div class="col-xs-12">
+                                        <img src="data:image/jpeg;base64,{{ face.face_image }}" class="img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}" alt="">
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+
                     </div>
                 </div>
                 <div class="container">
