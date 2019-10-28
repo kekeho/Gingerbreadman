@@ -2,6 +2,10 @@ from django.shortcuts import render
 from django.http import HttpResponseNotAllowed
 import requests
 import json
+from PIL import Image
+import urllib
+import base64
+from io import BytesIO
 
 
 def grouping(request):
