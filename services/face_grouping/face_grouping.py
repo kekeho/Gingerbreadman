@@ -19,12 +19,12 @@ def clustering():
     face_encodings = np.array([x['face_encoding'] for x in faces_json], dtype='float32')
 
      # 128d -> 2d
-    compressor = TSNE(n_components=2)
-    compressed = compressor.fit_transform(face_encodings)
+    # compressor = TSNE(n_components=2)
+    # compressed = compressor.fit_transform(face_encodings)
 
     # Clustering
     model = DBSCAN(eps=0.5, min_samples=1)
-    cluster = model.fit(compressed)
+    cluster = model.fit(face_encodings)
 
     grouped = dict()
     for i, group_index in enumerate(cluster.labels_):
