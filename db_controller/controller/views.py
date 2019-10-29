@@ -16,6 +16,7 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 import os
 
 from . import models
+from . import view_utils
 
 
 def get_places_all(request):
@@ -35,11 +36,6 @@ def regist_images(request):
         images_mtimes = list(map(
             int, request.POST.get('images_mtimes').split(',')
         ))
-        place_selected = request.POST.get('place_selected')
-        place_new = request.POST.get('place_new')
-        place_form = place_new if place_new else place_selected
-        new_latitude = request.POST.get('new_latitude')
-        new_longitude = request.POST.get('new_longitude')
 
         # save to db
         for image, mtime in zip(images, images_mtimes):
@@ -59,11 +55,8 @@ def regist_images(request):
             i.datetime = date
 
             # place
-            place = models.Place.objects.get_or_create(name=place_form)[0]
-            if place_new:
-                place.latitude = new_latitude
-                place.longitude = new_longitude
-
+            place = view_utils.get_place(request)
+            place.save()
             i.place = place
 
             # photo
