@@ -8,8 +8,7 @@
             <h1>Select dates & places</h1>
         </div>
     </div>
-    <form action="/visualizer/" method="post">
-        {% csrf_token %}
+    <form action="{% url 'visualizer:dashboard' %}" method="get">
         <div class="row">
             <div class="col col-md-6 center pad-3rem">
                 <h2>Date</h2>
