@@ -6,24 +6,24 @@
         <div class="row">
             <div class="col-md-7">
                 <div class="container">
-                    {% comment %} Map {% endcomment %}
+                    <!-- Map -->
                     <div class="row">
                         <h1>Map</h1>
                     </div>
                     <div class="row">
-                        {% comment %} embedded map {% endcomment %}
+                        <!-- embedded map -->
                     </div>
                 </div>
             </div>
             <div class="col-md-3">
-                {% comment %} Faces & Attributes {% endcomment %}
+                <!-- Faces & Attributes -->
                 <div class="container">
-                    {% comment %} Faces {% endcomment %}
+                    Faces
                     <div class="row">
                         <h1>People</h1>                        
                     </div>
                     <div class="row">
-                        {% comment %} Group {% endcomment %}
+                        <!-- Group -->
                         {% for key, person in grouped_faces.items %}
                             <div class="col-4 people-group-col">
                                 <div class="row people-group-row" style="background: rgb{{ person.person_color }};">
@@ -38,14 +38,14 @@
                     </div>
                 </div>
                 <div class="container">
-                    {% comment %} Attributes {% endcomment %}
+                    <!-- Attributes -->
                     <div class="row">
                         <h1>Attributes</h1>
                     </div>
                     <div class="row">
                         <div class="col-md-4">
                             <div class="container">
-                                {% comment %} Gender {% endcomment %}
+                                <!-- Gender -->
                                 <div class="row">
                                     <h3>Gender</h3>
                                 </div>
@@ -53,7 +53,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="container">
-                                {% comment %} Age {% endcomment %}
+                                <!-- Age -->
                                 <div class="row">
                                     <h3>Age</h3>
                                 </div>
@@ -61,7 +61,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="container">
-                                {% comment %} Emotion {% endcomment %}
+                                <!-- Emotion -->
                                 <div class="row">
                                     <h3>Emotion</h3>
                                 </div>
