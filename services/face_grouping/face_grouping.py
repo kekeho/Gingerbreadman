@@ -31,9 +31,9 @@ def clustering():
         faces_json[i]['group_index'] = int(group_index)
 
         try:
-            grouped[int(group_index)].append(faces_json[i])
+            grouped[int(group_index)]['faces'].append(faces_json[i])
         except KeyError:
-            grouped[int(group_index)] = [faces_json[i]]
+            grouped[int(group_index)] = {'faces': [faces_json[i]]}
     
     return flask.jsonify(grouped)
 

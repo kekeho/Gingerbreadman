@@ -6,6 +6,7 @@ from PIL import Image
 import urllib
 import base64
 from io import BytesIO
+import random
 
 
 def grouping(request):
@@ -36,8 +37,8 @@ def grouping(request):
 
         # Get images as base64
         base_url = 'http://db-controller:8888'
-        for group_id, faces in grouped_faces.items():
-            for i, face in enumerate(faces):
+        for group_id, person in grouped_faces.items():
+            for i, face in enumerate(person['faces']):
                 image_url = urllib.parse.urljoin(base_url, face['image_url'])
                 
                 with BytesIO() as img_fp:
@@ -50,7 +51,11 @@ def grouping(request):
                         croped = image.crop((left, top, right, bottom))
                         croped.save(onmemory_file, 'jpeg')
                         b64 = base64.b64encode(onmemory_file.getvalue())
-                        grouped_faces[group_id][i]['face_image'] = str(b64)[2:-1]
+                        grouped_faces[group_id]['faces'][i]['face_image'] = str(b64)[2:-1]
+        
+        # Set person color (random)
+        for group_id in grouped_faces.keys():
+            grouped_faces[group_id]['person_color'] = tuple(map(lambda ab:random.randint(*ab), [(128, 255)] * 3))
 
         context = {'grouped_faces': grouped_faces}
         return render(request, 'visualizer/visualizer.html', context=context)

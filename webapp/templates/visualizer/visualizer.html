@@ -1,6 +1,7 @@
 {% extends "../base.html" %}
 
 {% block contents %}
+    <link rel="stylesheet" href="/static/css/visualizer/visualizer.css">
     <div class="container">
         <div class="row">
             <div class="col-md-7">
@@ -19,18 +20,21 @@
                 <div class="container">
                     {% comment %} Faces {% endcomment %}
                     <div class="row">
-                        <h1>People</h1>
+                        <h1>People</h1>                        
+                    </div>
+                    <div class="row">
                         {% comment %} Group {% endcomment %}
-                        {% for key, faces in grouped_faces.items %}
-                            <div class="col-md-4">
-                                {% for face in faces %}
-                                    <div class="col-xs-12">
-                                        <img src="data:image/jpeg;base64,{{ face.face_image }}" class="img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}" alt="">
+                        {% for key, person in grouped_faces.items %}
+                            <div class="col-4 people-group-col">
+                                <div class="row people-group-row" style="background: rgb{{ person.person_color }};">
+                                    {% for face in person.faces %}
+                                    <div class="col-5 people-face-col">
+                                        <img src="data:image/jpeg;base64,{{ face.face_image }}" class="face-croped-image" alt="{{ face.id }}">
                                     </div>
-                                {% endfor %}
+                                    {% endfor %}                                               
+                                </div>
                             </div>
                         {% endfor %}
-
                     </div>
                 </div>
                 <div class="container">
