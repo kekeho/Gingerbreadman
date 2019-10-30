@@ -75,12 +75,12 @@
                 </div>
             </div>
         </div>
-        <modal v-if="show_loading_modal" @close="show_loading_modal = false">
+        <simple_modal v-if="show_loading_modal" @close="show_loading_modal = false">
             <div slot="header">[[ loading_modal_title ]]</div>
             <div slot="modal-body">[[ loading_modal_message ]]</div>
         </modal>
     </div>
-    <script type="text/x-template" id="modal-loading">
+    <script type="text/x-template" id="simple_modal">
         <transition name="modal">
             <div class="modal-mask">
                 <div class="modal-wrapper">

@@ -1,5 +1,5 @@
-Vue.component('modal', {
-    template: '#modal-loading',
+Vue.component('simple_modal', {
+    template: '#simple_modal',
 });
 
 
