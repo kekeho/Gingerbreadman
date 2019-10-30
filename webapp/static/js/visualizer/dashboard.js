@@ -19,7 +19,8 @@ var app = new Vue({
 
     methods: {
         get_faces() {
-            axios.get('/visualizer/grouping').then(resp => {
+            let get_param = location.search;
+            axios.get('/visualizer/grouping' + get_param).then(resp => {
                 this.grouped_faces = resp.data;
                 this.show_loading_modal = false;
             })

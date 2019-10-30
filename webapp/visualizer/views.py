@@ -39,9 +39,9 @@ def grouping(request):
     if request.method not in allowed_methods:
         return HttpResponseNotAllowed(allowed_methods)
 
-    selected_places = request.POST.getlist('places')
-    from_date = request.POST.get('datetime-from')
-    to_date = request.POST.get('datetime-to')
+    selected_places = request.GET.getlist('places')
+    from_date = request.GET.get('datetime-from')
+    to_date = request.GET.get('datetime-to')
 
     # Get faces
     get_params = {
