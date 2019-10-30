@@ -1,15 +1,32 @@
 Vue.component('modal', {
-    template: '#modal-loading'
+    template: '#modal-loading',
 });
 
 
 var app = new Vue({
     el: '#app',
+    delimiters: ['[[', ']]'],
     data: {
-        showModal: false
+        show_loading_modal: true,
+        loading_modal_title: 'Loading',
+        loading_modal_message: 'Analyzing and clustering faces',
+        grouped_faces: null,
     },
 
     mounted() {
-        this.showModal = true;
+        this.get_faces();
+    },
+
+    methods: {
+        get_faces() {
+            axios.get('/visualizer/grouping').then(resp => {
+                this.grouped_faces = resp.data;
+                this.show_loading_modal = false;
+            })
+            .catch(err => {
+                this.loading_modal_message = 'Cannot loading grouped faces';
+                this.loading_modal_title = 'ERROR';
+            });
+        }
     }
 });

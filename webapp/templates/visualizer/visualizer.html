@@ -75,7 +75,10 @@
                 </div>
             </div>
         </div>
-        <modal v-if="showModal" @close="showModal = false"></modal>
+        <modal v-if="show_loading_modal" @close="show_loading_modal = false">
+            <div slot="header">[[ loading_modal_title ]]</div>
+            <div slot="modal-body">[[ loading_modal_message ]]</div>
+        </modal>
     </div>
     <script type="text/x-template" id="modal-loading">
         <transition name="modal">
@@ -83,15 +86,11 @@
                 <div class="modal-wrapper">
                     <div class="modal-container">
                         <div class="modal-header">
-                            <slot name="header">
-                                Loading
-                            </slot>
+                            <slot name="header"></slot>
                         </div>
 
                         <div class="modal-body">
-                            <slot name="modal-body">
-                                Analyzing & clustering faces...
-                            </slot>
+                            <slot name="modal-body"></slot>
                         </div>
                     </div>
                 </div>
@@ -99,5 +98,6 @@
         </transition>
     </script>
     <script src="{% static 'js/vue.js' %}"></script>
+    <script src="{% static 'js/axios.min.js' %}"></script>
     <script src="{% static 'js/visualizer/dashboard.js' %}"></script>
 {% endblock contents %}
