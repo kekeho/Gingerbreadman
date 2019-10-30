@@ -1,69 +1,73 @@
 {% extends "../base.html" %}
+{% load static %}
 
 {% block contents %}
-    <link rel="stylesheet" href="/static/css/visualizer/visualizer.css">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-7">
-                <div class="container">
-                    <!-- Map -->
-                    <div class="row">
-                        <h1>Map</h1>
-                    </div>
-                    <div class="row">
-                        <!-- embedded map -->
+    <link rel="stylesheet" href="{% static 'css/visualizer/visualizer.css' %}">
+    <link rel="stylesheet" href="{% static 'css/visualizer/modal.css' %}">
+    <div id="app">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-7">
+                    <div class="container">
+                        <!-- Map -->
+                        <div class="row">
+                            <h1>Map</h1>
+                        </div>
+                        <div class="row">
+                            <!-- embedded map -->
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-3">
-                <!-- Faces & Attributes -->
-                <div class="container">
-                    Faces
-                    <div class="row">
-                        <h1>People</h1>                        
-                    </div>
-                    <div class="row">
-                        <!-- Group -->
-                        {% for key, person in grouped_faces.items %}
-                            <div class="col-4 people-group-col">
-                                <div class="row people-group-row" style="background: rgb{{ person.person_color }};">
-                                    {% for face in person.faces %}
-                                    <div class="col-5 people-face-col">
-                                        <img src="data:image/jpeg;base64,{{ face.face_image }}" class="face-croped-image" alt="{{ face.id }}">
+                <div class="col-md-3">
+                    <!-- Faces & Attributes -->
+                    <div class="container">
+                        Faces
+                        <div class="row">
+                            <h1>People</h1>                        
+                        </div>
+                        <div class="row">
+                            <!-- Group -->
+                            {% for key, person in grouped_faces.items %}
+                                <div class="col-4 people-group-col">
+                                    <div class="row people-group-row" style="background: rgb{{ person.person_color }};">
+                                        {% for face in person.faces %}
+                                        <div class="col-5 people-face-col">
+                                            <img src="data:image/jpeg;base64,{{ face.face_image }}" class="face-croped-image" alt="{{ face.id }}">
+                                        </div>
+                                        {% endfor %}                                               
                                     </div>
-                                    {% endfor %}                                               
                                 </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-                <div class="container">
-                    <!-- Attributes -->
-                    <div class="row">
-                        <h1>Attributes</h1>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="container">
-                                <!-- Gender -->
-                                <div class="row">
-                                    <h3>Gender</h3>
-                                </div>
-                            </div>
+                            {% endfor %}
                         </div>
-                        <div class="col-md-4">
-                            <div class="container">
-                                <!-- Age -->
-                                <div class="row">
-                                    <h3>Age</h3>
+                    </div>
+                    <div class="container">
+                        <!-- Attributes -->
+                        <div class="row">
+                            <h1>Attributes</h1>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="container">
+                                    <!-- Gender -->
+                                    <div class="row">
+                                        <h3>Gender</h3>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="container">
-                                <!-- Emotion -->
-                                <div class="row">
-                                    <h3>Emotion</h3>
+                            <div class="col-md-4">
+                                <div class="container">
+                                    <!-- Age -->
+                                    <div class="row">
+                                        <h3>Age</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="container">
+                                    <!-- Emotion -->
+                                    <div class="row">
+                                        <h3>Emotion</h3>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -71,5 +75,29 @@
                 </div>
             </div>
         </div>
+        <modal v-if="showModal" @close="showModal = false"></modal>
     </div>
+    <script type="text/x-template" id="modal-loading">
+        <transition name="modal">
+            <div class="modal-mask">
+                <div class="modal-wrapper">
+                    <div class="modal-container">
+                        <div class="modal-header">
+                            <slot name="header">
+                                Loading
+                            </slot>
+                        </div>
+
+                        <div class="modal-body">
+                            <slot name="modal-body">
+                                Analyzing & clustering faces...
+                            </slot>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </transition>
+    </script>
+    <script src="{% static 'js/vue.js' %}"></script>
+    <script src="{% static 'js/visualizer/dashboard.js' %}"></script>
 {% endblock contents %}
