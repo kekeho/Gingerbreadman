@@ -18,9 +18,12 @@ var app = new Vue({
         grouped_faces: null,
     },
 
-    mounted() {
+    created() {
         this.get_faces();
-        this.map();
+    },
+
+    mounted() {
+        this.map();        
     },
 
     methods: {
