@@ -4,65 +4,62 @@
 {% block contents %}
     <link rel="stylesheet" href="{% static 'css/visualizer/visualizer.css' %}">
     <link rel="stylesheet" href="{% static 'css/visualizer/modal.css' %}">
+    <link rel="stylesheet" href="{% static 'css/openlayers-v6.1.0-dist/ol.css' %}">
     <div id="app">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-7">
-                    <div class="container">
-                        <!-- Map -->
-                        <div class="row">
-                            <h1>Map</h1>
-                        </div>
-                        <div class="row">
-                            <!-- embedded map -->
-                        </div>
+        <div class="row">
+            <div class="col-md-7 map-col">
+                <!-- Map -->
+                <div class="row">
+                    <!-- embedded map -->
+                    <div class="col">
+                        <div id="map" class="h-100" ref="map"></div>
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <!-- Faces & Attributes -->
-                    <div class="container">
-                        <div class="row">
-                            <h1>People</h1>                        
-                        </div>
-                            <!-- Group -->
-                            <div class="row" v-for="group in grouped_faces">
-                                <div class="col-4 person-col" v-for="person in group">
-                                    <div class="row person-row">
-                                        <div class="col-6 face-col" v-for="face in person.faces">
-                                            <img v-bind:src="face.face_image" class="face-croped-image" alt="{{ face.id }}">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+            </div>
+            <div class="col-md-5 side-panel">
+                <!-- Faces & Attributes -->
+                <div class="container">
+                    <div class="row">
+                        <h1>People</h1>                        
                     </div>
-                    <div class="container">
-                        <!-- Attributes -->
-                        <div class="row">
-                            <h1>Attributes</h1>
+                        <!-- Group -->
+                        <div class="row" v-for="group in grouped_faces">
+                            <div class="col-4 person-col" v-for="person in group">
+                                <div class="row person-row">
+                                    <div class="col-6 face-col" v-for="face in person.faces">
+                                        <img v-bind:src="face.face_image" class="face-croped-image" alt="{{ face.id }}">
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="container">
-                                    <!-- Gender -->
-                                    <div class="row">
-                                        <h3>Gender</h3>
-                                    </div>
+                </div>
+                <div class="container">
+                    <!-- Attributes -->
+                    <div class="row">
+                        <h1>Attributes</h1>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="container">
+                                <!-- Gender -->
+                                <div class="row">
+                                    <h3>Gender</h3>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <div class="container">
-                                    <!-- Age -->
-                                    <div class="row">
-                                        <h3>Age</h3>
-                                    </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="container">
+                                <!-- Age -->
+                                <div class="row">
+                                    <h3>Age</h3>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <div class="container">
-                                    <!-- Emotion -->
-                                    <div class="row">
-                                        <h3>Emotion</h3>
-                                    </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="container">
+                                <!-- Emotion -->
+                                <div class="row">
+                                    <h3>Emotion</h3>
                                 </div>
                             </div>
                         </div>
@@ -92,6 +89,7 @@
             </div>
         </transition>
     </script>
+    <script src="{% static 'js/openlayers-v6.1.0-dist/ol.js' %}"></script>
     <script src="{% static 'js/vue.js' %}"></script>
     <script src="{% static 'js/axios.min.js' %}"></script>
     <script src="{% static 'js/visualizer/dashboard.js' %}"></script>

@@ -20,6 +20,7 @@ var app = new Vue({
 
     mounted() {
         this.get_faces();
+        this.map();
     },
 
     methods: {
@@ -33,6 +34,29 @@ var app = new Vue({
                 this.loading_modal_message = 'Cannot loading grouped faces';
                 this.loading_modal_title = 'ERROR';
             });
-        }
+        },
+    
+        // OSM with OpenLayers
+        map() {
+            // let map_dom = document.getElementById('map');
+
+            // let client_rect = map_dom.getBoundingClientRect();
+            // let height = window.innerHeight - client_rect.top;
+            // map_dom.style.height = height + 'px';
+
+
+            let map = new ol.Map({
+                target: 'map',
+                layers: [
+                    new ol.layer.Tile({
+                        source: new ol.source.OSM(),
+                    })
+                ],
+                view: new ol.View({
+                    center: ol.proj.fromLonLat([37.41, 8.82]),
+                    zoom: 4,
+                })
+            });
+        },
     }
 });
