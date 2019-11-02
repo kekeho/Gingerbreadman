@@ -1,20 +1,18 @@
 .face-croped-image {
+    padding: 0;
     width: 100%;
     height: auto;
-    margin: 0;
+    margin: 0 !important;
 }
 
-.people-face-col {
-    margin: 0;
-    padding: 0;
+.person-row {
+    padding: 0.2rem;
 }
 
-.people-group-row {
-    padding: 0.5rem;
-    margin: 0;
-}
-
-.people-group-col {
-    padding: 0;
+.person-col {
     background: #dedede;
+}
+
+.face-col {
+    padding: 0;
 }

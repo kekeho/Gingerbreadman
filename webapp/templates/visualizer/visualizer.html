@@ -21,24 +21,19 @@
                 <div class="col-md-3">
                     <!-- Faces & Attributes -->
                     <div class="container">
-                        Faces
                         <div class="row">
                             <h1>People</h1>                        
                         </div>
-                        <div class="row">
                             <!-- Group -->
-                            {% for key, person in grouped_faces.items %}
-                                <div class="col-4 people-group-col">
-                                    <div class="row people-group-row" style="background: rgb{{ person.person_color }};">
-                                        {% for face in person.faces %}
-                                        <div class="col-5 people-face-col">
-                                            <img src="data:image/jpeg;base64,{{ face.face_image }}" class="face-croped-image" alt="{{ face.id }}">
+                            <div class="row" v-for="group in grouped_faces">
+                                <div class="col-4 person-col" v-for="person in group">
+                                    <div class="row person-row">
+                                        <div class="col-6 face-col" v-for="face in person.faces">
+                                            <img v-bind:src="face.face_image" class="face-croped-image" alt="{{ face.id }}">
                                         </div>
-                                        {% endfor %}                                               
                                     </div>
                                 </div>
-                            {% endfor %}
-                        </div>
+                            </div>
                     </div>
                     <div class="container">
                         <!-- Attributes -->

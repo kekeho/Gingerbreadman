@@ -2,6 +2,11 @@ Vue.component('simple_modal', {
     template: '#simple_modal',
 });
 
+// people components
+Vue.component('people', {
+    template: '#people',
+});
+
 
 var app = new Vue({
     el: '#app',

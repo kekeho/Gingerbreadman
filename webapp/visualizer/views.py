@@ -71,6 +71,7 @@ def grouping(request):
                     croped = image.crop((left, top, right, bottom))
                     croped.save(onmemory_file, 'jpeg')
                     b64 = base64.b64encode(onmemory_file.getvalue())
+                    b64 = b'data:image/jpeg;base64,' + b64  # HTML img src
                     grouped_faces[group_id]['faces'][i]['face_image'] = str(b64)[2:-1]
     
     # Set person color (random)
