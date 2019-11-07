@@ -24,7 +24,7 @@
                     </div>
                         <!-- Group -->
                         <div class="row" v-for="group in grouped_faces">
-                            <div class="col-4 person-col" v-for="person in group">
+                            <div class="col-4 col-lg-3 col-xl-2 person-col" v-for="person in group">
                                 <div class="row person-row">
                                     <div class="col-6 face-col" v-for="face in person.faces">
                                         <img v-bind:src="face.face_image" class="face-croped-image" alt="{{ face.id }}">
