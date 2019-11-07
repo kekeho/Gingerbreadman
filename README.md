@@ -1,5 +1,6 @@
 # Gingerbreadman
 
+![gmtitle](docs/logo/gmtitle.svg)  
 GUI Tools for Face tacking & Analyze attributes
 
 ## Build
