@@ -1,14 +1,5 @@
 version: '2.3'
 services:
-  webapp:
-    build: webapp
-    depends_on:
-      - db-controller
-    ports:
-      - "8080:8080"
-    volumes:
-      - "./webapp:/code"
-  
   db:
     image: postgres
     environment:
@@ -21,6 +12,9 @@ services:
     build: db_controller
     depends_on:
       - db
+      - service_face_grouping
+    ports:
+      - "8080:8080"
     environment:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
