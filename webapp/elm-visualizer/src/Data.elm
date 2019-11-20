@@ -1,4 +1,6 @@
-module Data exposing (setAllPlaces, allPlaceDecoder, Model, ControllerModel, Person, FaceLocation, Place, Gender, Emotion)
+module Data exposing
+    ( setAllPlaces, allPlaceDecoder
+    , Model, ControllerModel, Person, FaceLocation, Place, Gender, Emotion)
 
 import Http
 import Json.Decode as D exposing (Decoder)

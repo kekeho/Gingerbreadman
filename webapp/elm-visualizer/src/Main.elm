@@ -81,7 +81,7 @@ view model =
             , div [ class "col-5" ]
                 [ h1 []
                     [ text "Panel" ]
-                , viewController model.controller
+                , viewController model
                 ]
             ]
         ]
