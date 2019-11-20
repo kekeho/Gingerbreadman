@@ -5,10 +5,11 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http
+import Url.Builder
 import Json.Decode as D exposing (Decoder)
 
-import Person exposing (..)
-import Panel exposing (ControllerModel, viewController)
+import Panel exposing (viewController)
+import Data exposing (..)
 
 
 -- MAIN
@@ -27,20 +28,22 @@ main =
 
 init : () -> (Model, Cmd Msg)
 init _ =
-    ({controller =
-        { fromTimeString = "1900:01:01T00:00"
-        , toTimeString  = "2100:12:31T00:00"
-        , places = Nothing
+    (
+        -- Initialize model
+        { controller =
+            { fromTimeString = "1900:01:01T00:00"
+            , toTimeString  = "2100:12:31T00:00"
+            , places = Nothing
+            }
+        , allPlaces = Nothing
+        , people = Nothing}
+    
+    -- Command to get all places
+    , Http.get
+        { url = (Url.Builder.absolute ["visualizer", "get_places_all"] [])
+        , expect = Http.expectJson GotAllPlaces allPlaceDecoder
         }
-    , people = Nothing}, Cmd.none)
-
-
-type alias Model =
-    { controller : ControllerModel
-    , people : Maybe (List Person)
-    }
-
-
+    )
 
 
 
@@ -49,6 +52,7 @@ type alias Model =
 
 type Msg
     = SetController ControllerModel
+    | GotAllPlaces (Result Http.Error (List Place))
     | Analyze
     | Analyzed
 
@@ -56,6 +60,8 @@ type Msg
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
+        GotAllPlaces result ->
+            (setAllPlaces model result, Cmd.none)
         _ ->
             (model, Cmd.none)
 

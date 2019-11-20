@@ -1,9 +1,9 @@
-module Panel exposing (viewController, ControllerModel)
+module Panel exposing (viewController)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
 
-import Person exposing (Place)
+import Data exposing (Place, ControllerModel)
 
 
 viewController : ControllerModel -> Html msg
@@ -26,12 +26,3 @@ viewController controller =
 
 -- viewPlacesTags : List Place -> Html msg
 
-
-
--- MODEL
-
-type alias ControllerModel =
-    { fromTimeString : String 
-    , toTimeString : String
-    , places : Maybe (List Place)
-    }
