@@ -10,11 +10,11 @@ from io import BytesIO
 import random
 
 
-def select(request):
+def get_places_all(request):
     allowed_methods = ['GET']
-    if request.method not in allowed_methods:
+    if request.methid not in allowed_methods:
         return HttpResponseNotAllowed(allowed_methods)
-
+    
     places = requests.get('http://db-controller:8888/get_places_all').json()
     return render(request, 'visualizer/select.html', places)
 
@@ -23,12 +23,6 @@ def dashboard(request):
     allowed_methods = ['GET']
     if request.method not in allowed_methods:
         return HttpResponseNotAllowed(allowed_methods)
-    
-    get_params = request.GET.urlencode()
-    # if not selected date range & places yet
-    if get_params == '':
-        return redirect('visualizer:select')
-
 
     response = render(request, 'visualizer/visualizer.html')
     return response
