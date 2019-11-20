@@ -21,8 +21,11 @@ from . import view_utils
 
 def get_places_all(request):
     places = models.Place.objects.all()
-    resp_data = {'places': [p.name for p in places]}
-    return JsonResponse(resp_data)
+    resp_data = [{'name': p.name,
+                  'latitude': p.latitude,
+                  'longitude': p.longitude}
+                 for p in places]
+    return JsonResponse(resp_data, safe=False)
 
 
 @csrf_exempt

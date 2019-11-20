@@ -12,11 +12,11 @@ import random
 
 def get_places_all(request):
     allowed_methods = ['GET']
-    if request.methid not in allowed_methods:
+    if request.method not in allowed_methods:
         return HttpResponseNotAllowed(allowed_methods)
     
     places = requests.get('http://db-controller:8888/get_places_all').json()
-    return render(request, 'visualizer/select.html', places)
+    return JsonResponse(places, safe=False)
 
 
 def dashboard(request):
