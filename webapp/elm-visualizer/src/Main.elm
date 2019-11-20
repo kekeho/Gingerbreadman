@@ -51,20 +51,21 @@ init _ =
 -- UDPATE
 
 type Msg
-    = SetController ControllerModel
+    = ControllerMsg Panel.Msg
     | GotAllPlaces (Result Http.Error (List Place))
-    | Analyze
-    | Analyzed
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
+        ControllerMsg subMsg ->
+            let 
+                (model_, cmd) =
+                    Panel.update subMsg model
+            in
+                (model_, Cmd.map ControllerMsg cmd)
         GotAllPlaces result ->
             (setAllPlaces model result, Cmd.none)
-        _ ->
-            (model, Cmd.none)
-
 
 
 -- VIEW
@@ -81,7 +82,7 @@ view model =
             , div [ class "col-5" ]
                 [ h1 []
                     [ text "Panel" ]
-                , viewController model
+                , Html.map ControllerMsg (viewController model)
                 ]
             ]
         ]
