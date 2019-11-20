@@ -12,6 +12,8 @@ import Data exposing (Place, Model, ControllerModel)
 type Msg
     = AddSelectedPlace Int Place
     | DelSelectedPlace Int
+    | SetFromTime String
+    | SetToTime String
     | Analyze
 
 
@@ -58,6 +60,29 @@ update msg model =
             }, Cmd.none)
             
 
+        SetFromTime time ->
+            ({ model
+            | controller =
+                let
+                    controller = model.controller
+                in
+                    { controller | fromTimeString = time }
+            }
+            , Cmd.none
+            )
+        
+
+        SetToTime time ->
+            ({ model
+            | controller =
+                let
+                    controller = model.controller
+                in
+                    { controller | toTimeString = time }
+            }
+            , Cmd.none
+            )
+        
         _ ->
             (model, Cmd.none)
 
