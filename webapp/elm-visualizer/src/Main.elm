@@ -27,11 +27,16 @@ main =
 
 init : () -> (Model, Cmd Msg)
 init _ =
-    ({controller = Nothing, people = Nothing}, Cmd.none)
+    ({controller =
+        { fromTimeString = "1900:01:01T00:00"
+        , toTimeString  = "2100:12:31T00:00"
+        , places = Nothing
+        }
+    , people = Nothing}, Cmd.none)
 
 
 type alias Model =
-    { controller : Maybe ControllerModel
+    { controller : ControllerModel
     , people : Maybe (List Person)
     }
 
