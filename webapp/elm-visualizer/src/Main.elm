@@ -8,6 +8,7 @@ import Http
 import Json.Decode as D exposing (Decoder)
 
 import Person exposing (..)
+import Panel exposing (ControllerModel, viewController)
 
 
 -- MAIN
@@ -35,11 +36,7 @@ type alias Model =
     }
 
 
-type alias ControllerModel =
-    { fromTimeString : String 
-    , toTimeString : String
-    , places : List Place
-    }
+
 
 
 
@@ -73,6 +70,7 @@ view model =
             , div [ class "col-5" ]
                 [ h1 []
                     [ text "Panel" ]
+                , viewController model.controller
                 ]
             ]
         ]
