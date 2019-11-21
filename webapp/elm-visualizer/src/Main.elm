@@ -8,7 +8,7 @@ import Http
 import Url.Builder
 import Json.Decode as D exposing (Decoder)
 
-import Panel exposing (viewController)
+import Controller exposing (viewController)
 import Data exposing (..)
 
 
@@ -51,7 +51,7 @@ init _ =
 -- UDPATE
 
 type Msg
-    = ControllerMsg Panel.Msg
+    = ControllerMsg Controller.Msg
     | GotAllPlaces (Result Http.Error (List Place))
 
 
@@ -61,7 +61,7 @@ update msg model =
         ControllerMsg subMsg ->
             let 
                 (model_, cmd) =
-                    Panel.update subMsg model
+                    Controller.update subMsg model
             in
                 (model_, Cmd.map ControllerMsg cmd)
         GotAllPlaces result ->

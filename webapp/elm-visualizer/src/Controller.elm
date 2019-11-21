@@ -1,4 +1,4 @@
-module Panel exposing (viewController, Msg, update)
+module Controller exposing (viewController, Msg, update)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
