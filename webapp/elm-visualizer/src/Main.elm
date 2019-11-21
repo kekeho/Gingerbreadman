@@ -8,7 +8,8 @@ import Http
 import Url.Builder
 import Json.Decode as D exposing (Decoder)
 
-import Controller exposing (viewController)
+import SidePanel
+import Controller
 import Data exposing (..)
 
 
@@ -51,19 +52,19 @@ init _ =
 -- UDPATE
 
 type Msg
-    = ControllerMsg Controller.Msg
+    = SidePanelMsg SidePanel.Msg
     | GotAllPlaces (Result Http.Error (List Place))
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
-        ControllerMsg subMsg ->
+        SidePanelMsg subMsg ->
             let 
                 (model_, cmd) =
-                    Controller.update subMsg model
+                    SidePanel.update subMsg model
             in
-                (model_, Cmd.map ControllerMsg cmd)
+                (model_, Cmd.map SidePanelMsg cmd)
         GotAllPlaces result ->
             (setAllPlaces model result, Cmd.none)
 
@@ -80,9 +81,6 @@ view model =
                     [ text "Map" ]
                 ]
             , div [ class "col-5" ]
-                [ h1 []
-                    [ text "Panel" ]
-                , Html.map ControllerMsg (viewController model)
-                ]
+                [ Html.map SidePanelMsg (SidePanel.view model) ]
             ]
         ]

@@ -1,4 +1,4 @@
-module Controller exposing (viewController, Msg, update)
+module Controller exposing (view, Msg, update)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -112,8 +112,8 @@ update msg model =
 
 -- VIEW
 
-viewController : Model -> Html Msg
-viewController model =
+view : Model -> Html Msg
+view model =
     div [ class "row" ]
         [ div [ class "col-12" ]
             [ h1 [] [ text "Controller" ] ]
