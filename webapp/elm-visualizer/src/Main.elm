@@ -31,8 +31,8 @@ init _ =
     (
         -- Initialize model
         { controller =
-            { fromTimeString = "1900:01:01T00:00"
-            , toTimeString  = "2100:12:31T00:00"
+            { fromTimeString = "1900-01-01T00:00"
+            , toTimeString  = "2100-12-31T00:00"
             , places = Nothing
             }
         , allPlaces = Nothing
