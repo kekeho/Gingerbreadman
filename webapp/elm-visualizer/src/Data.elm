@@ -1,36 +1,41 @@
 module Data exposing
-    ( setAllPlaces, allPlaceDecoder
-    , Model, ControllerModel, Person, FaceLocation, Place, Gender, Emotion)
+    ( ControllerModel
+    , Emotion
+    , FaceLocation
+    , Gender
+    , Model
+    , Person
+    , Place
+    , allPlaceDecoder
+    , setAllPlaces
+    )
 
 import Http
 import Json.Decode as D exposing (Decoder)
 
 
-setAllPlaces : Model -> (Result Http.Error (List Place)) -> Model
+setAllPlaces : Model -> Result Http.Error (List Place) -> Model
 setAllPlaces model result =
     case result of
         Ok places ->
             { model | allPlaces = Just places }
+
         Err _ ->
             model
 
 
-
-
-
 allPlaceDecoder : Decoder (List Place)
 allPlaceDecoder =
-    (D.map3 Place
-    (D.field "name" D.string)
-    (D.field "latitude" D.float)
-    (D.field "longitude" D.float))
-    |> D.list
-
-
+    D.map3 Place
+        (D.field "name" D.string)
+        (D.field "latitude" D.float)
+        (D.field "longitude" D.float)
+        |> D.list
 
 
 
 -- MODEL TYPES
+
 
 type alias Model =
     { controller : ControllerModel
@@ -40,7 +45,7 @@ type alias Model =
 
 
 type alias ControllerModel =
-    { fromTimeString : String 
+    { fromTimeString : String
     , toTimeString : String
     , places : Maybe (List Place)
     }
@@ -58,6 +63,7 @@ type alias Person =
     , emotion : Maybe Emotion
     }
 
+
 type alias FaceLocation =
     { x : Int
     , y : Int
@@ -65,16 +71,19 @@ type alias FaceLocation =
     , h : Int
     }
 
+
 type alias Place =
     { name : String
     , latitude : Float
     , longitude : Float
     }
 
+
 type Gender
     = NotKnown
     | Male
     | Female
+
 
 type Emotion
     = Smile

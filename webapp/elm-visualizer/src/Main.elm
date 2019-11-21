@@ -1,23 +1,24 @@
 module Main exposing (main)
 
 import Browser
+import Controller
+import Data exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http
-import Url.Builder
 import Json.Decode as D exposing (Decoder)
-
 import SidePanel
-import Controller
-import Data exposing (..)
+import Url.Builder
+
 
 
 -- MAIN
 
+
 main : Program () Model Msg
 main =
-    Browser.element 
+    Browser.element
         { init = init
         , view = view
         , update = update
@@ -25,48 +26,51 @@ main =
         }
 
 
+
 -- MODEL
 
-init : () -> (Model, Cmd Msg)
+
+init : () -> ( Model, Cmd Msg )
 init _ =
-    (
-        -- Initialize model
-        { controller =
+    ( -- Initialize model
+      { controller =
             { fromTimeString = "1900-01-01T00:00"
-            , toTimeString  = "2100-12-31T00:00"
+            , toTimeString = "2100-12-31T00:00"
             , places = Nothing
             }
-        , allPlaces = Nothing
-        , people = Nothing}
-    
-    -- Command to get all places
+      , allPlaces = Nothing
+      , people = Nothing
+      }
+      -- Command to get all places
     , Http.get
-        { url = (Url.Builder.absolute ["visualizer", "get_places_all"] [])
+        { url = Url.Builder.absolute [ "visualizer", "get_places_all" ] []
         , expect = Http.expectJson GotAllPlaces allPlaceDecoder
         }
     )
 
 
 
-
 -- UDPATE
+
 
 type Msg
     = SidePanelMsg SidePanel.Msg
     | GotAllPlaces (Result Http.Error (List Place))
 
 
-update : Msg -> Model -> (Model, Cmd Msg)
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         SidePanelMsg subMsg ->
-            let 
-                (model_, cmd) =
+            let
+                ( model_, cmd ) =
                     SidePanel.update subMsg model
             in
-                (model_, Cmd.map SidePanelMsg cmd)
+            ( model_, Cmd.map SidePanelMsg cmd )
+
         GotAllPlaces result ->
-            (setAllPlaces model result, Cmd.none)
+            ( setAllPlaces model result, Cmd.none )
+
 
 
 -- VIEW
