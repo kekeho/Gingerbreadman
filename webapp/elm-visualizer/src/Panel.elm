@@ -3,6 +3,8 @@ module Panel exposing (viewController, Msg, update)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput, onClick)
+import Url.Builder
+import Http
 
 import Data exposing (Place, Model, ControllerModel)
 
@@ -15,6 +17,7 @@ type Msg
     | SetFromTime String
     | SetToTime String
     | Analyze
+    | Analyzed (Result Http.Error String)
 
 
 
@@ -83,6 +86,25 @@ update msg model =
             , Cmd.none
             )
         
+        
+        Analyze ->
+            ( model
+            , 
+            
+            let
+                path = Url.Builder.absolute ["visualizer", "grouping"]
+            in
+                case groupingQuery model of
+                    Just query ->
+                        Http.get
+                            { url = path query
+                            , expect = Http.expectString Analyzed
+                            }
+                    Nothing ->
+                        Cmd.none
+
+            
+            )
         _ ->
             (model, Cmd.none)
 
@@ -131,7 +153,7 @@ viewController model =
         
         -- Analyze button
         , div [ class "col-12" ]
-            [ button [ type_ "button", class "btn btn-dark" ]
+            [ button [ type_ "button", class "btn btn-dark", onClick Analyze ]
                 [ text "Analyze" ]
             ]
         ]
@@ -156,5 +178,22 @@ addChecker places place =
     in
         List.isEmpty filterd
 
+
+groupingQuery : Model -> Maybe (List Url.Builder.QueryParameter)
+groupingQuery model =
+    let
+        timeQuery =
+            [ Url.Builder.string "datetime-from" model.controller.fromTimeString
+            , Url.Builder.string "datetime-to" model.controller.toTimeString
+            ]
+    in
+        case model.controller.places of
+            Just places ->
+                Just
+                    ( timeQuery
+                    ++ List.map (\p -> Url.Builder.string "places" p.name) places
+                    )
+            Nothing ->
+                Nothing
 
 
