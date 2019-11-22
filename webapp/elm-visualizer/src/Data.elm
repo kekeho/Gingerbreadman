@@ -30,6 +30,7 @@ type alias ControllerModel =
     { fromTimeString : String
     , toTimeString : String
     , places : Maybe (List Place)
+    , error : Maybe ControllerError
     }
 
 
@@ -44,9 +45,16 @@ type ControllerErrorType
 
 
 type alias Person =
+    { faces : List Face
+    , color : RgbColor
+    }
+
+
+type alias Face =
     { id : String
     , imageId : String
     , imageUrl : String
+    , faceImageB64 : String
     , faceLocation : FaceLocation
     , faceEncoding : List Float
     , place : Place
@@ -90,6 +98,10 @@ type Emotion
     | Surprise
 
 
+type alias RgbColor =
+    { r : Int, g : Int, b : Int }
+
+
 
 -- JSON DECODERS
 
@@ -97,10 +109,10 @@ type Emotion
 faceLocationDecoder : Decoder FaceLocation
 faceLocationDecoder =
     D.map4 FaceLocation
-        (D.field "x" D.int)
-        (D.field "y" D.int)
-        (D.field "w" D.int)
-        (D.field "h" D.int)
+        (D.index 0 D.int)
+        (D.index 1 D.int)
+        (D.index 2 D.int)
+        (D.index 3 D.int)
 
 
 placeDecoder : Decoder Place
@@ -111,12 +123,33 @@ placeDecoder =
         (D.field "longitude" D.float)
 
 
+peopleDecoder : Decoder (List Person)
+peopleDecoder =
+    D.field "grouped_faces" (D.list personDecoder)
+
+
 personDecoder : Decoder Person
 personDecoder =
-    D.succeed Person
+    D.map2 Person
+        (D.field "faces" (D.list faceDecoder))
+        (D.field "person_color" rgbColorDecoder)
+
+
+rgbColorDecoder : Decoder RgbColor
+rgbColorDecoder =
+    D.map3 RgbColor
+        (D.index 0 D.int)
+        (D.index 1 D.int)
+        (D.index 2 D.int)
+
+
+faceDecoder : Decoder Face
+faceDecoder =
+    D.succeed Face
         |> P.required "id" D.string
         |> P.required "image_id" D.string
         |> P.required "image_url" D.string
+        |> P.required "face_image" D.string
         |> P.required "face_location" faceLocationDecoder
         |> P.required "face_encoding" (D.list D.float)
         |> P.required "place" placeDecoder

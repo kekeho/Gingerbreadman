@@ -1,6 +1,6 @@
 module Controller exposing (Msg, update, view)
 
-import Data exposing (ControllerModel, Model, Place)
+import Data exposing (ControllerModel, Model, Person, Place)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
@@ -18,7 +18,7 @@ type Msg
     | SetFromTime String
     | SetToTime String
     | Analyze
-    | Analyzed (Result Http.Error String)
+    | Analyzed (Result Http.Error (List Person))
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -106,15 +106,51 @@ update msg model =
                 Just query ->
                     Http.get
                         { url = path query
-                        , expect = Http.expectString Analyzed
+                        , expect = Http.expectJson Analyzed Data.peopleDecoder
                         }
 
                 Nothing ->
                     Cmd.none
             )
 
-        _ ->
-            ( model, Cmd.none )
+        Analyzed result ->
+            case result of
+                Ok people ->
+                    ( { model
+                        | people = Just people
+                      }
+                    , Cmd.none
+                    )
+
+                Err e ->
+                    let
+                        errMsg =
+                            case e of
+                                Http.BadUrl url ->
+                                    "Bad URL :" ++ url
+
+                                Http.Timeout ->
+                                    "Timeout"
+
+                                Http.NetworkError ->
+                                    "Network Error"
+
+                                Http.BadStatus status ->
+                                    String.fromInt status ++ " Bad Status"
+
+                                Http.BadBody body ->
+                                    "Bad Body: " ++ body
+                    in
+                    ( { model
+                        | controller =
+                            let
+                                controller =
+                                    model.controller
+                            in
+                            { controller | error = Just (Data.ControllerError errMsg Data.GroupingError) }
+                      }
+                    , Cmd.none
+                    )
 
 
 
