@@ -48,10 +48,10 @@ def grouping(request):
     # Grouping
     headers = {'Content-Type': 'application/json'}
     grouped_faces = requests.post('http://service_face_grouping:8000/cluster/', json.dumps(faces), headers=headers).json()
-
+    grouped_faces = list(grouped_faces.values())
     # Get images as base64
     base_url = 'http://db-controller:8888'
-    for group_id, person in grouped_faces.items():
+    for group_id, person in enumerate(grouped_faces):
         for i, face in enumerate(person['faces']):
             image_url = urllib.parse.urljoin(base_url, face['image_url'])
             
@@ -69,7 +69,7 @@ def grouping(request):
                     grouped_faces[group_id]['faces'][i]['face_image'] = str(b64)[2:-1]
     
     # Set person color (random)
-    for group_id in grouped_faces.keys():
+    for group_id, _ in enumerate(grouped_faces):
         grouped_faces[group_id]['person_color'] = tuple(map(lambda ab:random.randint(*ab), [(128, 255)] * 3))
 
     context = {'grouped_faces': grouped_faces}
