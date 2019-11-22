@@ -37,6 +37,7 @@ init _ =
             { fromTimeString = "1900-01-01T00:00"
             , toTimeString = "2100-12-31T00:00"
             , places = Nothing
+            , error = Nothing
             }
       , allPlaces = Nothing
       , people = Nothing

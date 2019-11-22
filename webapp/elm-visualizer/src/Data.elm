@@ -33,6 +33,16 @@ type alias ControllerModel =
     }
 
 
+type alias ControllerError =
+    { message : String
+    , errorType : ControllerErrorType
+    }
+
+
+type ControllerErrorType
+    = GroupingError
+
+
 type alias Person =
     { id : String
     , imageId : String
