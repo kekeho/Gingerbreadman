@@ -1,17 +1,8 @@
-module Data exposing
-    ( ControllerModel
-    , Emotion
-    , FaceLocation
-    , Gender
-    , Model
-    , Person
-    , Place
-    , allPlaceDecoder
-    , setAllPlaces
-    )
+module Data exposing (..)
 
 import Http
 import Json.Decode as D exposing (Decoder)
+import Json.Decode.Pipeline as P
 
 
 setAllPlaces : Model -> Result Http.Error (List Place) -> Model
@@ -22,15 +13,6 @@ setAllPlaces model result =
 
         Err _ ->
             model
-
-
-allPlaceDecoder : Decoder (List Place)
-allPlaceDecoder =
-    D.map3 Place
-        (D.field "name" D.string)
-        (D.field "latitude" D.float)
-        (D.field "longitude" D.float)
-        |> D.list
 
 
 
@@ -58,9 +40,10 @@ type alias Person =
     , faceLocation : FaceLocation
     , faceEncoding : List Float
     , place : Place
-    , gender : Maybe Gender
-    , age : Maybe Float
-    , emotion : Maybe Emotion
+
+    -- , gender : Maybe Gender
+    -- , age : Maybe Float
+    -- , emotion : Maybe Emotion
     }
 
 
@@ -95,3 +78,44 @@ type Emotion
     | Neutral
     | Sadness
     | Surprise
+
+
+
+-- JSON DECODERS
+
+
+faceLocationDecoder : Decoder FaceLocation
+faceLocationDecoder =
+    D.map4 FaceLocation
+        (D.field "x" D.int)
+        (D.field "y" D.int)
+        (D.field "w" D.int)
+        (D.field "h" D.int)
+
+
+placeDecoder : Decoder Place
+placeDecoder =
+    D.map3 Place
+        (D.field "name" D.string)
+        (D.field "latitude" D.float)
+        (D.field "longitude" D.float)
+
+
+personDecoder : Decoder Person
+personDecoder =
+    D.succeed Person
+        |> P.required "id" D.string
+        |> P.required "image_id" D.string
+        |> P.required "image_url" D.string
+        |> P.required "face_location" faceLocationDecoder
+        |> P.required "face_encoding" (D.list D.float)
+        |> P.required "place" placeDecoder
+
+
+allPlaceDecoder : Decoder (List Place)
+allPlaceDecoder =
+    D.map3 Place
+        (D.field "name" D.string)
+        (D.field "latitude" D.float)
+        (D.field "longitude" D.float)
+        |> D.list
