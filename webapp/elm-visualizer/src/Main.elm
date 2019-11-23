@@ -46,9 +46,9 @@ init _ =
       -- Command to get all places
     , Cmd.batch
         [ Http.get
-        { url = Url.Builder.absolute [ "visualizer", "get_places_all" ] []
-        , expect = Http.expectJson GotAllPlaces allPlaceDecoder
-        }
+            { url = Url.Builder.absolute [ "visualizer", "get_places_all" ] []
+            , expect = Http.expectJson GotAllPlaces allPlaceDecoder
+            }
 
         -- Init OpenLayers Map
         , Map.initMap "olmap"
@@ -89,6 +89,7 @@ view model =
         [ div [ class "row mainrow" ]
             [ div [ class "col-7" ]
                 [ Map.view "olmap" ]
+            , div [ class "col-5 sidepanel-root-col" ]
                 [ Html.map SidePanelMsg (SidePanel.view model) ]
             ]
         ]
