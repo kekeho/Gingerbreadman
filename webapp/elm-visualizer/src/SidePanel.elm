@@ -14,8 +14,7 @@ import People
 view : Model -> Html Msg
 view model =
     div [ class "sidepanel" ]
-        [ h1 [] [ text "Panel" ]
-        , People.view model
+        [ People.view model
         , Html.map ControllerMsg (Controller.view model)
         ]
 
