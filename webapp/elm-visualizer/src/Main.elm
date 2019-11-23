@@ -8,6 +8,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http
 import Json.Decode as D exposing (Decoder)
+import Map
 import SidePanel
 import Url.Builder
 
@@ -43,10 +44,15 @@ init _ =
       , people = Nothing
       }
       -- Command to get all places
-    , Http.get
+    , Cmd.batch
+        [ Http.get
         { url = Url.Builder.absolute [ "visualizer", "get_places_all" ] []
         , expect = Http.expectJson GotAllPlaces allPlaceDecoder
         }
+
+        -- Init OpenLayers Map
+        , Map.initMap "olmap"
+        ]
     )
 
 
@@ -79,13 +85,10 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    div [ class "container" ]
-        [ div [ class "row" ]
+    div [ class "container maincontainer" ]
+        [ div [ class "row mainrow" ]
             [ div [ class "col-7" ]
-                [ h1 []
-                    [ text "Map" ]
-                ]
-            , div [ class "col-5" ]
+                [ Map.view "olmap" ]
                 [ Html.map SidePanelMsg (SidePanel.view model) ]
             ]
         ]
