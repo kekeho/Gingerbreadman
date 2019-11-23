@@ -37,7 +37,7 @@ viewPerson person =
         imgs =
             List.map (\f -> div [ class "col-4 face-col" ] [ imageWithBase64 f.faceImageB64 "face-img" ]) person.faces
     in
-    div [ class "col-4", style "background-color: " (rgbColorToCssString person.color ++ ";") ]
+    div [ class "col-4", style "background-color" (rgbColorToCssString person.color) ]
         [ div [ class "row face-row" ] imgs ]
 
 
