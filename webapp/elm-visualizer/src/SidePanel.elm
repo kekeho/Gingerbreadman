@@ -4,6 +4,7 @@ import Controller
 import Data exposing (Model)
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import People
 
 
 
@@ -14,6 +15,7 @@ view : Model -> Html Msg
 view model =
     div []
         [ h1 [] [ text "Panel" ]
+        , People.view model
         , Html.map ControllerMsg (Controller.view model)
         ]
 
