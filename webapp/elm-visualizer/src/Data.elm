@@ -3,6 +3,7 @@ module Data exposing (..)
 import Http
 import Json.Decode as D exposing (Decoder)
 import Json.Decode.Pipeline as P
+import Time
 
 
 setAllPlaces : Model -> Result Http.Error (List Place) -> Model
@@ -58,6 +59,7 @@ type alias Face =
     , faceLocation : FaceLocation
     , faceEncoding : List Float
     , place : Place
+    , datetime : Time.Posix
 
     -- , gender : Maybe Gender
     -- , age : Maybe Float
@@ -153,6 +155,7 @@ faceDecoder =
         |> P.required "face_location" faceLocationDecoder
         |> P.required "face_encoding" (D.list D.float)
         |> P.required "place" placeDecoder
+        |> P.required "posix_millisec" datetimeDecoder
 
 
 allPlaceDecoder : Decoder (List Place)
@@ -162,3 +165,8 @@ allPlaceDecoder =
         (D.field "latitude" D.float)
         (D.field "longitude" D.float)
         |> D.list
+
+
+datetimeDecoder : Decoder Time.Posix
+datetimeDecoder =
+    D.map Time.millisToPosix D.int

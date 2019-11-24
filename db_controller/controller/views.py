@@ -196,6 +196,7 @@ def get_face_encodings(request):
             'latitude': face.image.place.latitude,
             'longitude': face.image.place.longitude,
         },
+        'posix_millisec' : int(face.image.datetime.timestamp() * 1e3),
         'gender': str(face.gender.id) if face.gender else -1,
         'age': int(face.age.id) if face.age else -1,
         'emotion': {
