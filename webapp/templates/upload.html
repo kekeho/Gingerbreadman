@@ -31,7 +31,7 @@
                         <select class="form-control" name="place_selected">
                             <optgroup label="Existing places">
                                 {% for place in places %}
-                                    <option value="{{ place.name }}">{{ place }}</option>
+                                    <option value="{{ place.name }}">{{ place.name }} ({{ place.latitude }}, {{ place.longitude }})</option>
                                 {% endfor %}
                             </optgroup>
                         </select></div>

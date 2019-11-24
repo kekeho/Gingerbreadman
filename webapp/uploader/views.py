@@ -17,9 +17,12 @@ from . import models
 
 def upload_images(request):
     if request.method == 'GET':
-        context = requests.get(
-            "http://db-controller:8888/get_places_all"
-        ).json()
+        context = {
+            "places": 
+                requests.get(
+                    "http://db-controller:8888/get_places_all"
+                ).json()
+            }
         return render(request, 'upload.html', context)
 
     elif request.method == 'POST':
