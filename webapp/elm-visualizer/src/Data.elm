@@ -124,6 +124,41 @@ sortWithTime person =
 
 
 
+getTrafficPattern : Person -> Maybe (List (List Place))
+getTrafficPattern person =
+    let
+        places = List.map .place person.faces
+    in
+        case places of
+                head :: body ->
+                    Just (trafficPatternHelper head body)
+                _ ->
+                    Nothing
+
+
+trafficPatternHelper : Place -> List Place -> List (List Place)
+trafficPatternHelper head body =
+    let
+        pattern = trafficPatternMatchHelper head body
+    in
+        case body of
+            next :: list ->
+                pattern ++ trafficPatternHelper next list
+            
+            _ ->
+                []
+
+
+trafficPatternMatchHelper : Place -> List Place -> List (List Place)
+trafficPatternMatchHelper head list =
+    case list of
+        next :: body ->
+            [head, next] :: trafficPatternHelper head body
+        
+        _ ->
+            []
+
+
 -- JSON DECODERS
 
 
