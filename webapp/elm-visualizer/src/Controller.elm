@@ -117,7 +117,7 @@ update msg model =
             case result of
                 Ok people ->
                     ( { model
-                        | people = Just people
+                        | people = Just (List.map Data.sortWithTime people)
                       }
                     , Cmd.none
                     )

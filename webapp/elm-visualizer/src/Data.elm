@@ -105,6 +105,25 @@ type alias RgbColor =
 
 
 
+-- FUNCTIONS
+
+
+sortWithTime : Person -> Person
+sortWithTime person =
+    let
+        times =
+            List.map
+                (\f -> { posix = Time.posixToMillis f.datetime, face = f })
+                person.faces
+
+        sortedFaces =
+            List.sortBy .posix times
+                |> List.map (\t -> t.face)
+    in
+    { person | faces = sortedFaces }
+
+
+
 -- JSON DECODERS
 
 
