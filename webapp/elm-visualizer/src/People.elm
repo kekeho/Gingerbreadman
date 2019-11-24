@@ -16,6 +16,8 @@ view model =
             [ h1 [] [ text "People" ] ]
         , div [ class "col-12" ]
             [ viewPersonRow model ]
+        , div [ class "col-12" ]
+            [ viewTrafficCount model ]
         ]
 
 
@@ -42,6 +44,50 @@ viewPerson person =
         , div [ class "row" ]
             [ placesHistoryString person ]
         ]
+
+
+viewTrafficCount : Model -> Html msg
+viewTrafficCount model =
+    let
+        traffics =
+            case model.people of
+                Just p ->
+                    Just (Data.getTraffic p)
+
+                Nothing ->
+                    Nothing
+    in
+    case traffics of
+        Just t ->
+            div []
+                (List.map trafficString t
+                    |> List.map (\s -> div [] [ text s ])
+                )
+
+        Nothing ->
+            div []
+                [ text "" ]
+
+
+trafficString : Data.Traffic -> String
+trafficString traffic =
+    let
+        places =
+            traffic.places
+
+        head =
+            List.head places
+
+        body =
+            List.drop 1 places
+                |> List.map .name
+    in
+    case head of
+        Just h ->
+            h.name ++ List.foldl (\n p -> p ++ " -> " ++ n) "" body ++ ": " ++ String.fromInt traffic.count
+
+        Nothing ->
+            ""
 
 
 placesHistoryString : Person -> Html msg

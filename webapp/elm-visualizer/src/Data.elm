@@ -1,8 +1,10 @@
 module Data exposing (..)
 
+import EverySet
 import Http
 import Json.Decode as D exposing (Decoder)
 import Json.Decode.Pipeline as P
+import List.Extra
 import Time
 
 
@@ -105,6 +107,24 @@ type alias RgbColor =
 
 
 
+{-
+   Traffic per places
+   example:
+       { places = [Tokyo, Paris, London, Osaka, Tokyo]
+       , count: 23
+       }
+       means, There were 23 people who started from Tokyo and
+       traveled around cities Paris -> London -> Osaka and returned to Tokyo
+-}
+
+
+type alias Traffic =
+    { places : List Place
+    , count : Int
+    }
+
+
+
 -- FUNCTIONS
 
 
@@ -123,40 +143,68 @@ sortWithTime person =
     { person | faces = sortedFaces }
 
 
-
-getTrafficPattern : Person -> Maybe (List (List Place))
-getTrafficPattern person =
+getTraffic : List Person -> List Traffic
+getTraffic people =
     let
-        places = List.map .place person.faces
+        allPattern =
+            List.map getTrafficPatternPerPerson people
+                |> List.concat
+
+        unique =
+            EverySet.fromList allPattern
     in
-        case places of
-                head :: body ->
-                    Just (trafficPatternHelper head body)
-                _ ->
-                    Nothing
+    EverySet.map (getTrafficHelper allPattern) unique
+        |> EverySet.toList
+
+
+getTrafficHelper : List (List Place) -> List Place -> Traffic
+getTrafficHelper allPattern pattern =
+    let
+        count =
+            List.Extra.count ((==) pattern) allPattern
+    in
+    { places = pattern
+    , count = count
+    }
+
+
+getTrafficPatternPerPerson : Person -> List (List Place)
+getTrafficPatternPerPerson person =
+    let
+        places =
+            List.map .place person.faces
+    in
+    case places of
+        head :: body ->
+            trafficPatternHelper head body
+
+        _ ->
+            []
 
 
 trafficPatternHelper : Place -> List Place -> List (List Place)
 trafficPatternHelper head body =
     let
-        pattern = trafficPatternMatchHelper head body
+        pattern =
+            trafficPatternMatchHelper head body
     in
-        case body of
-            next :: list ->
-                pattern ++ trafficPatternHelper next list
-            
-            _ ->
-                []
+    case body of
+        next :: list ->
+            pattern ++ trafficPatternHelper next list
+
+        _ ->
+            []
 
 
 trafficPatternMatchHelper : Place -> List Place -> List (List Place)
 trafficPatternMatchHelper head list =
     case list of
         next :: body ->
-            [head, next] :: trafficPatternHelper head body
-        
+            [ head, next ] :: trafficPatternHelper head body
+
         _ ->
             []
+
 
 
 -- JSON DECODERS
