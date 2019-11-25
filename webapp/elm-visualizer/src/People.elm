@@ -98,6 +98,7 @@ placesHistoryString person =
 
         places =
             List.map (\f -> f.place) faces
+                |> Data.placeHistoryNoDuplicate
 
         head =
             List.head places
