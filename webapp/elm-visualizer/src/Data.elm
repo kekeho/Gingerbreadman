@@ -145,6 +145,8 @@ sortWithTime person =
 
 
 -- [Tokyo, London, London, Paris, Tokyo] -> [Tokyo, London, Paris, Tokyo]
+
+
 placeHistoryNoDuplicate : List Place -> List Place
 placeHistoryNoDuplicate places =
     case places of
@@ -153,14 +155,16 @@ placeHistoryNoDuplicate places =
                 next :: body_ ->
                     case head == next of
                         True ->
-                            head  :: placeHistoryNoDuplicate body_
+                            head :: placeHistoryNoDuplicate body_
+
                         False ->
                             head :: placeHistoryNoDuplicate body
+
                 _ ->
                     head :: body
+
         _ ->
             places
-
 
 
 getTraffic : List Person -> List Traffic
