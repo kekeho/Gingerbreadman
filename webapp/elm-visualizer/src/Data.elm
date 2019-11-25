@@ -143,6 +143,26 @@ sortWithTime person =
     { person | faces = sortedFaces }
 
 
+
+-- [Tokyo, London, London, Paris, Tokyo] -> [Tokyo, London, Paris, Tokyo]
+placeHistoryNoDuplicate : List Place -> List Place
+placeHistoryNoDuplicate places =
+    case places of
+        head :: body ->
+            case body of
+                next :: body_ ->
+                    case head == next of
+                        True ->
+                            head  :: placeHistoryNoDuplicate body_
+                        False ->
+                            head :: placeHistoryNoDuplicate body
+                _ ->
+                    head :: body
+        _ ->
+            places
+
+
+
 getTraffic : List Person -> List Traffic
 getTraffic people =
     let
