@@ -1,3 +1,4 @@
 from django.contrib import admin
+from .models import Date, Place, Gender, AgeGroup, Image, Face, Person
 
-# Register your models here.
+admin.site.register([Date, Place, Gender, AgeGroup, Image, Face, Person])
