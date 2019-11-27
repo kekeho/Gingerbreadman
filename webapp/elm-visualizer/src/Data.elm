@@ -203,7 +203,6 @@ getTrafficPatternPerPerson person =
     case places of
         head :: body ->
             tHelper head body []
-                |> Debug.log "tp"
 
         _ ->
             []
@@ -231,7 +230,7 @@ trafficPatternHelper head body already =
     in
     case body of
         next :: nextBody ->
-            trafficPatternHelper (Debug.log "nextHead" (head ++ [ next ])) nextBody (pattern ++ already)
+            trafficPatternHelper (head ++ [ next ]) nextBody (pattern ++ already)
 
         _ ->
             pattern ++ already
@@ -239,7 +238,7 @@ trafficPatternHelper head body already =
 
 trafficPatternMatchHelper : List Place -> List Place -> List (List Place)
 trafficPatternMatchHelper head body =
-    Debug.log "match" (List.map (\p -> head ++ [ p ]) body)
+    List.map (\p -> head ++ [ p ]) body
 
 
 
