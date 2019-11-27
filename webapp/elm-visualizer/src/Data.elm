@@ -195,39 +195,51 @@ getTrafficHelper allPattern pattern =
 getTrafficPatternPerPerson : Person -> List (List Place)
 getTrafficPatternPerPerson person =
     let
+        places : List Place
         places =
             List.map .place person.faces
+                |> placeHistoryNoDuplicate
     in
     case places of
         head :: body ->
-            trafficPatternHelper head body
+            tHelper head body []
+                |> Debug.log "tp"
 
         _ ->
             []
 
 
-trafficPatternHelper : Place -> List Place -> List (List Place)
-trafficPatternHelper head body =
+tHelper : Place -> List Place -> List (List Place) -> List (List Place)
+tHelper head body already =
+    let
+        pattern =
+            trafficPatternHelper [ head ] body already
+    in
+    case body of
+        nextHead :: nextBody ->
+            trafficPatternHelper [ nextHead ] nextBody pattern
+
+        _ ->
+            pattern ++ already
+
+
+trafficPatternHelper : List Place -> List Place -> List (List Place) -> List (List Place)
+trafficPatternHelper head body already =
     let
         pattern =
             trafficPatternMatchHelper head body
     in
     case body of
-        next :: list ->
-            pattern ++ trafficPatternHelper next list
+        next :: nextBody ->
+            trafficPatternHelper (Debug.log "nextHead" (head ++ [ next ])) nextBody (pattern ++ already)
 
         _ ->
-            []
+            pattern ++ already
 
 
-trafficPatternMatchHelper : Place -> List Place -> List (List Place)
-trafficPatternMatchHelper head list =
-    case list of
-        next :: body ->
-            [ head, next ] :: trafficPatternHelper head body
-
-        _ ->
-            []
+trafficPatternMatchHelper : List Place -> List Place -> List (List Place)
+trafficPatternMatchHelper head body =
+    Debug.log "match" (List.map (\p -> head ++ [ p ]) body)
 
 
 
