@@ -201,6 +201,16 @@ view model =
         , div [ class "col-12" ]
             [ button [ type_ "button", class "btn btn-dark", onClick Analyze ]
                 [ text "Analyze" ]
+            
+            , div []
+                (case model.controller.error of
+                    Just error ->
+                        [ text ("ERROR: " ++ error.message 
+                        ++ ". Perhaps, service/face_grouping is dead...")
+                        ]
+                    Nothing ->
+                        []
+                )
             ]
         ]
 
