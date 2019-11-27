@@ -16,13 +16,13 @@ from . import models
 
 
 def upload_images(request):
+    places = requests.get(
+        "http://db-controller:8888/get_places_all"
+    ).json()
+
+
     if request.method == 'GET':
-        context = {
-            "places": 
-                requests.get(
-                    "http://db-controller:8888/get_places_all"
-                ).json()
-            }
+        context = {"places": places}
         return render(request, 'upload.html', context)
 
     elif request.method == 'POST':
@@ -39,7 +39,13 @@ def upload_images(request):
 
         result = requests.post(url='http://db-controller:8888/regist_images/',
                                data=data, files=files)
-        return render(request, 'upload.html', context=result.json())
+        
+        context = {
+            "places": places,
+            "result": result.json() 
+        }
+
+        return render(request, 'upload.html', context=context)
 
     else:
         return HttpResponseNotAllowed(['GET', 'POST'])
