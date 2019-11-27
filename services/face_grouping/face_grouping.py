@@ -23,7 +23,7 @@ def clustering():
     # compressed = compressor.fit_transform(face_encodings)
 
     # Clustering
-    model = DBSCAN(eps=0.5, min_samples=1)
+    model = DBSCAN(eps=0.6, min_samples=1)
     cluster = model.fit(face_encodings)
 
     grouped = dict()
