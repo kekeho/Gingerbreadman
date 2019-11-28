@@ -241,6 +241,12 @@ trafficPatternMatchHelper head body =
     List.map (\p -> head ++ [ p ]) body
 
 
+trafficSortWithCount : List Traffic -> List Traffic
+trafficSortWithCount traffics =
+    List.sortBy .count traffics
+        |> List.reverse
+
+
 
 -- JSON DECODERS
 

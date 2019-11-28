@@ -59,7 +59,10 @@ viewTrafficCount model =
         traffics =
             case model.people of
                 Just p ->
-                    Just (Data.getTraffic p)
+                    Just
+                        (Data.getTraffic p
+                            |> Data.trafficSortWithCount
+                        )
 
                 Nothing ->
                     Nothing
