@@ -87,9 +87,9 @@ view : Model -> Html Msg
 view model =
     div [ class "container maincontainer" ]
         [ div [ class "row mainrow" ]
-            [ div [ class "col-7" ]
+            [ div [ class "col-6" ]
                 [ Map.view "olmap" ]
-            , div [ class "col-5 sidepanel-root-col" ]
+            , div [ class "col-6 sidepanel-root-col" ]
                 [ Html.map SidePanelMsg (SidePanel.view model) ]
             ]
         ]
