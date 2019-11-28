@@ -23,7 +23,7 @@ view model =
 
 viewPersonRow : Model -> Html msg
 viewPersonRow model =
-    div [ class "row" ]
+    div [ class "row people-row" ]
         (case model.people of
             Just personList ->
                 List.map viewPerson personList

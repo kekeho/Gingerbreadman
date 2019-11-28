@@ -51,3 +51,9 @@
     margin: 0;
     width: 100vw;
 }
+
+
+.people-row {
+    max-height: 40vh;
+    overflow-y: scroll;
+}
