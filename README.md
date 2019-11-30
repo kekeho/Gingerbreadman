@@ -3,6 +3,8 @@
 ![gmtitle](docs/logo/gmtitle.svg)  
 GUI Tools for Face tacking & Analyze attributes
 
+**NOTICE**: Now developing on **[Develop brantch](https://github.com/kekeho/Gingerbreadman/tree/develop)**.
+
 ## Build
 
 Just two steps.
@@ -35,4 +37,4 @@ and, open browser [http://localhost:8080](http://localhost:8080)
 
 ## License
 
-MIT [View license file](./LICENSE)
+GPLv3 [View license file](./LICENSE)
