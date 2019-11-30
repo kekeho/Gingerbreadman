@@ -1,0 +1,12 @@
+*.pyc
+.vscode/
+*/__pychache__/
+.jshintrc
+
+db_controller/media/images
+
+db_controller/env
+services/*/env
+
+elm.js
+webapp/elm-visualizer/elm-stuff/
