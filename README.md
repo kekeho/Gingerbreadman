@@ -39,4 +39,4 @@ and, open browser [http://localhost:8080](http://localhost:8080)
 
 ## License
 
-MIT [View license file](./LICENSE)
+GPLv3 [View license file](./LICENSE)
