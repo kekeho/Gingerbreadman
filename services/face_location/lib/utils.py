@@ -24,6 +24,10 @@ from io import BytesIO
 import json
 from urllib.parse import urljoin
 import multiprocessing as mp
+import os
+
+
+GPU_ENV = True if os.getenv('GB_GPU') else False
 
 
 def get_image(url: str) -> Image.Image:
@@ -36,6 +40,10 @@ def get_image(url: str) -> Image.Image:
 def get_images_with_url(urls: List[str]) -> np.ndarray:
     images = [np.asarray(get_image(url)) for url in urls]
     return np.array(images)
+
+
+def mp_cnn_wrapper(image: np.ndarray):
+    return face_recognition.api.face_locations(image, model='cnn')
 
 
 class RegistError(Exception):
@@ -69,21 +77,17 @@ class LocationAnalzyer(object):
             self.unanalyzed_urls.append(normalize_url)
 
     def analyze_face_locations(self):
-        # if check_same_size(images):
-        #     locations = face_recognition.api.batch_face_locations(images)  # TODO: UP TO 50
-        # else:
-        #     locations = [face_recognition.api.face_locations(i, model='cnn')  # TODO: UP TO 50
-        #                  for i in images]
-
-        print(f'ANALYZING {self.images}')
-
-        # CPU Multiprocessing
-        with mp.Pool(mp.cpu_count()) as pool:
-            self.locations = pool.map(face_recognition.api.face_locations, self.images)
-
-
-        # self.locations = [face_recognition.api.face_locations(i, model='cnn')  # TODO: UP TO 50
-                        #   for i in self.images]
+        if GPU_ENV:
+            if check_same_size(images):
+                self.locations = face_recognition.api.batch_face_locations(images)
+            else:
+                # Multiprocessing with CNN
+                with mp.Pool(mp.cpu_count()) as pool:
+                    self.locations = pool.map(mp_cnn_wrapper, self.images)
+        else:
+            # CPU Multiprocessing without CNN
+            with mp.Pool(mp.cpu_count()) as pool:
+                self.locations = pool.map(face_recognition.api.face_locations(image), self.images)
 
     def regist(self):
         if len(self.locations) <= 0:
