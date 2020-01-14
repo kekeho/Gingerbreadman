@@ -47,6 +47,15 @@ def mp_cnn_wrapper(image: np.ndarray):
     return face_recognition.api.face_locations(image, model='cnn')
 
 
+def check_same_size(images: np.array):
+    first = images[0].shape
+    for i in images[1:]:
+        if i.shape != first:
+            return False
+    
+    return True
+
+
 class RegistError(Exception):
     pass
 
@@ -79,8 +88,8 @@ class LocationAnalzyer(object):
 
     def analyze_face_locations(self):
         if GPU_ENV:
-            if check_same_size(images):
-                self.locations = face_recognition.api.batch_face_locations(images)
+            if check_same_size(self.images):
+                self.locations = face_recognition.api.batch_face_locations(self.images)
             else:
                 # Multiprocessing with CNN
                 with mp.Pool(mp.cpu_count()) as pool:
