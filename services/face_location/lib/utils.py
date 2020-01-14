@@ -71,7 +71,7 @@ class LocationAnalzyer(object):
         self.__get_unanalyzed_urls_ids()
         self.images = get_images_with_url(self.unanalyzed_urls)
 
-        self.locations = None
+        self.locations = []
 
     def __get_unanalyzed_urls_ids(self) -> List[str]:
         print(f'CHECK FROM {self.get_unanalyzed_images_endpoint}')
