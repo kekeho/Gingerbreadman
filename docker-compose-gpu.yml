@@ -33,6 +33,8 @@ services:
       context: "services/face_location"
       dockerfile: "Dockerfile_GPU"
     runtime: nvidia
+    environment:
+      - GB_GPU=True
     depends_on:
       - db-controller
     volumes:

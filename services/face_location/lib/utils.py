@@ -27,7 +27,7 @@ import multiprocessing as mp
 import os
 
 
-GPU_ENV = True if os.getenv('GB_GPU') else False
+GPU_ENV = True if os.getenv('GB_GPU') != None else False
 
 
 def get_image(url: str) -> Image.Image:
@@ -87,7 +87,7 @@ class LocationAnalzyer(object):
         else:
             # CPU Multiprocessing without CNN
             with mp.Pool(mp.cpu_count()) as pool:
-                self.locations = pool.map(face_recognition.api.face_locations(image), self.images)
+                self.locations = pool.map(face_recognition.api.face_locations(images), self.images)
 
     def regist(self):
         if len(self.locations) <= 0:
