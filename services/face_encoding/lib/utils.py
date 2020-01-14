@@ -23,6 +23,7 @@ import numpy as np
 from io import BytesIO
 import json
 from urllib.parse import urljoin
+import multiprocessing as mp
 
 
 def get_image(url: str) -> Image.Image:
@@ -36,6 +37,9 @@ def get_images_with_url(urls: List[str]) -> np.ndarray:
     images = [np.asarray(get_image(url)) for url in urls]
     return np.array(images)
 
+
+def mp_wrapper(args):
+    return list(face_recognition.face_encodings(args[0], known_face_locations=args[1])[0])
 
 class RegistError(Exception):
     pass
@@ -72,8 +76,12 @@ class EncodingAnalzyer(object):
             self.known_locations.append(location)
 
     def analyze_face_encodings(self):
-        self.encodings = [list(face_recognition.face_encodings(img, known_face_locations=loc)[0])
-                          for img, loc in zip(self.images, self.known_locations)]
+        # self.encodings = [list(face_recognition.face_encodings(img, known_face_locations=loc)[0])
+        #                   for img, loc in zip(self.images, self.known_locations)]
+        
+        # CPU Multiprocessing
+        with mp.Pool(mp.cpu_count()) as pool:
+            self.encodings = pool.map(mp_wrapper, zip(self.images, self.known_locations))
 
     def regist(self):
         if len(self.encodings) <= 0:

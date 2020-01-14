@@ -23,6 +23,7 @@ import numpy as np
 from io import BytesIO
 import json
 from urllib.parse import urljoin
+import multiprocessing as mp
 
 
 def get_image(url: str) -> Image.Image:
@@ -75,8 +76,14 @@ class LocationAnalzyer(object):
         #                  for i in images]
 
         print(f'ANALYZING {self.images}')
-        self.locations = [face_recognition.api.face_locations(i, model='cnn')  # TODO: UP TO 50
-                          for i in self.images]
+
+        # CPU Multiprocessing
+        with mp.Pool(mp.cpu_count()) as pool:
+            self.locations = pool.map(face_recognition.api.face_locations, self.images)
+
+
+        # self.locations = [face_recognition.api.face_locations(i, model='cnn')  # TODO: UP TO 50
+                        #   for i in self.images]
 
     def regist(self):
         if len(self.locations) <= 0:
