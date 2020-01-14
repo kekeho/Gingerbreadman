@@ -38,9 +38,9 @@ def get_image(url: str) -> Image.Image:
     return pil_image
 
 
-def get_images_with_url(urls: List[str]) -> np.ndarray:
+def get_images_with_url(urls: List[str]) -> List[np.ndarray]:
     images = [np.asarray(get_image(url)) for url in urls]
-    return np.array(images)
+    return images
 
 
 def mp_cnn_wrapper(image: np.ndarray):
@@ -87,6 +87,9 @@ class LocationAnalzyer(object):
             self.unanalyzed_urls.append(normalize_url)
 
     def analyze_face_locations(self):
+        if len(self.images) <= 0:
+            return
+
         if GPU_ENV:
             if check_same_size(self.images):
                 self.locations = face_recognition.api.batch_face_locations(self.images)
