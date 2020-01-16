@@ -106,12 +106,15 @@ class LocationAnalzyer(object):
                 self.locations = pool.map(face_recognition.api.face_locations, self.images)
 
     def regist(self):
-        if len(self.locations) <= 0:
+        if len(self.unanalyzed_ids) <= 0:
             return 0
-        
+
         data = []
         for id, locations in zip(self.unanalyzed_ids, self.locations):
-            data += [{'image_id': id, 'location': l} for l in locations]
+            if len(locations) > 0:
+                data += [{'image_id': id, 'location': l} for l in locations]
+            else:
+                data += [{'image_id': id, 'location': []}]
         
         resp = requests.post(self.regist_entrypoint, json=data)
 

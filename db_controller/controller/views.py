@@ -115,19 +115,21 @@ def regist_faces(request):
     face_list = json.loads(request.body)
 
     for face_info in face_list:
-        face = models.Face()
         parent_image = models.Image.objects.get(id=face_info['image_id'])
-        face.image = parent_image
         parent_image.service_face_location_analyzed = True
-
-        (x, y, w, h) = face_info['location']
-        face.face_location_x = x
-        face.face_location_y = y
-        face.face_location_w = w
-        face.face_location_h = h
-
         parent_image.save()
-        face.save()
+        
+        if face_info['location'] != []:
+            face = models.Face()
+            face.image = parent_image
+            
+            (x, y, w, h) = face_info['location']
+            face.face_location_x = x
+            face.face_location_y = y
+            face.face_location_w = w
+            face.face_location_h = h
+            
+            face.save()
 
     return JsonResponse({'message': 'Done'})
 
