@@ -79,7 +79,10 @@ class LocationAnalzyer(object):
         if resp.status_code == 404:
             return
 
-        resp_json = resp.json()
+        try:
+            resp_json = resp.json()
+        except json.decoder.JSONDecodeError as e:
+            return
 
         for id, url in resp_json:
             self.unanalyzed_ids.append(id)
