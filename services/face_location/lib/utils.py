@@ -95,7 +95,7 @@ class LocationAnalzyer(object):
 
         if GPU_ENV:
             if check_same_size(self.images):
-                self.locations = face_recognition.api.batch_face_locations(self.images)
+                self.locations = face_recognition.api.batch_face_locations(self.images, batch_size=30)
             else:
                 # Multiprocessing with CNN
                 with mp.Pool(mp.cpu_count()) as pool:
