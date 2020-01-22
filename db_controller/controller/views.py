@@ -93,7 +93,7 @@ def get_unanalyzed_face_location_images(request):
     if request.method != 'GET':
         HttpResponseNotAllowed(["GET"])
 
-    images = models.Image.objects.filter(service_face_location_analyzed=False)
+    images = models.Image.objects.filter(service_face_location_analyzed=False)[:1000]  # 1000 images per request
     if list(images) == []:
         return HttpResponseNotFound()
 
@@ -139,7 +139,7 @@ def get_unanalyzed_face_encoding_faces(request):
     if request.method != 'GET':
         HttpResponseNotAllowed(['GET'])
 
-    faces = models.Face.objects.filter(service_face_encoding_analyzed=False)
+    faces = models.Face.objects.filter(service_face_encoding_analyzed=False)[:1000]  # 1000 images per request
     if list(faces) == []:
         return HttpResponseNotFound()
 
