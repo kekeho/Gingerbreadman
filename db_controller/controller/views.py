@@ -16,7 +16,7 @@
 # along with Gingerbreadman.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.shortcuts import render
-from django.http import HttpResponseNotAllowed, Http404, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseNotAllowed, Http404, HttpResponseNotFound
 from django.utils import timezone
 from datetime import datetime
 from django.http.response import JsonResponse
@@ -226,3 +226,12 @@ def get_face_encodings(request):
     } for face in faces]
 
     return JsonResponse(return_faces_info, safe=False)
+
+
+def get_unanalyzed_images_count(request):
+    allowed_method = ['GET']
+    if request.method not in allowed_method:
+        return HttpResponseNotAllowed(allowed_method)
+    
+    count = models.Image.objects.filter(service_face_location_analyzed=False).count()
+    return HttpResponse(count)
