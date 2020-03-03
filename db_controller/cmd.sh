@@ -1,2 +1,3 @@
 python manage.py migrate
-python manage.py runserver 0.0.0.0:8888
+
+uwsgi --socket :8000 --module db_controller.wsgi
