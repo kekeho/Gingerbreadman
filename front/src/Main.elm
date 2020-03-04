@@ -72,6 +72,7 @@ init flags url key =
         }
     , upload = 
         { places = Nothing
+        , getPlacesError = Nothing
         , uploadResult = Nothing
         }
     }
@@ -115,8 +116,17 @@ update msg model =
                     ( model, Nav.load href )
         
         UrlChanged url ->
+            let
+                onLoadCmd =
+                    case Url.Parser.parse routeParser url of
+                        Just UploadPage ->
+                            Cmd.map UploadMsg Upload.getPlaces
+                        
+                        _ ->
+                            Cmd.none
+            in
             ( {model | url = url}
-            , Cmd.none)
+            , onLoadCmd)
         
         VisualizerMsg subMsg ->
             let

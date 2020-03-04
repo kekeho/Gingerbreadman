@@ -5070,6 +5070,23 @@ function _Http_track(router, xhr, tracker)
 	});
 }
 
+function _Url_percentEncode(string)
+{
+	return encodeURIComponent(string);
+}
+
+function _Url_percentDecode(string)
+{
+	try
+	{
+		return $elm$core$Maybe$Just(decodeURIComponent(string));
+	}
+	catch (e)
+	{
+		return $elm$core$Maybe$Nothing;
+	}
+}
+
 
 // DECODER
 
@@ -5246,24 +5263,7 @@ function _File_toUrl(blob)
 	});
 }
 
-
-
-function _Url_percentEncode(string)
-{
-	return encodeURIComponent(string);
-}
-
-function _Url_percentDecode(string)
-{
-	try
-	{
-		return $elm$core$Maybe$Just(decodeURIComponent(string));
-	}
-	catch (e)
-	{
-		return $elm$core$Maybe$Nothing;
-	}
-}var $author$project$Main$LinkClicked = function (a) {
+var $author$project$Main$LinkClicked = function (a) {
 	return {$: 'LinkClicked', a: a};
 };
 var $author$project$Main$UrlChanged = function (a) {
@@ -10919,7 +10919,7 @@ var $author$project$Main$init = F3(
 			{
 				key: key,
 				route: $author$project$Main$VisualizerPage,
-				upload: {places: $elm$core$Maybe$Nothing, uploadResult: $elm$core$Maybe$Nothing},
+				upload: {getPlacesError: $elm$core$Maybe$Nothing, places: $elm$core$Maybe$Nothing, uploadResult: $elm$core$Maybe$Nothing},
 				url: url,
 				visualizer: {test: 'hoge'}
 			},
@@ -10940,13 +10940,8 @@ var $author$project$Main$UploadMsg = function (a) {
 var $author$project$Main$VisualizerMsg = function (a) {
 	return {$: 'VisualizerMsg', a: a};
 };
-var $elm$browser$Browser$Navigation$load = _Browser_load;
-var $author$project$Upload$ImageSelected = F2(
-	function (a, b) {
-		return {$: 'ImageSelected', a: a, b: b};
-	});
-var $author$project$Upload$Uploaded = function (a) {
-	return {$: 'Uploaded', a: a};
+var $author$project$Upload$GotPlaces = function (a) {
+	return {$: 'GotPlaces', a: a};
 };
 var $elm$http$Http$BadStatus_ = F2(
 	function (a, b) {
@@ -10975,13 +10970,25 @@ var $elm$core$Maybe$isJust = function (maybe) {
 	}
 };
 var $elm$core$Platform$sendToSelf = _Platform_sendToSelf;
-var $elm$http$Http$expectBytesResponse = F2(
+var $elm$http$Http$emptyBody = _Http_emptyBody;
+var $elm$http$Http$expectStringResponse = F2(
 	function (toMsg, toResult) {
 		return A3(
 			_Http_expect,
-			'arraybuffer',
-			_Http_toDataView,
+			'',
+			$elm$core$Basics$identity,
 			A2($elm$core$Basics$composeR, toResult, toMsg));
+	});
+var $elm$core$Result$mapError = F2(
+	function (f, result) {
+		if (result.$ === 'Ok') {
+			var v = result.a;
+			return $elm$core$Result$Ok(v);
+		} else {
+			var e = result.a;
+			return $elm$core$Result$Err(
+				f(e));
+		}
 	});
 var $elm$http$Http$BadBody = function (a) {
 	return {$: 'BadBody', a: a};
@@ -10994,17 +11001,6 @@ var $elm$http$Http$BadUrl = function (a) {
 };
 var $elm$http$Http$NetworkError = {$: 'NetworkError'};
 var $elm$http$Http$Timeout = {$: 'Timeout'};
-var $elm$core$Result$mapError = F2(
-	function (f, result) {
-		if (result.$ === 'Ok') {
-			var v = result.a;
-			return $elm$core$Result$Ok(v);
-		} else {
-			var e = result.a;
-			return $elm$core$Result$Err(
-				f(e));
-		}
-	});
 var $elm$http$Http$resolve = F2(
 	function (toResult, response) {
 		switch (response.$) {
@@ -11028,37 +11024,35 @@ var $elm$http$Http$resolve = F2(
 					toResult(body));
 		}
 	});
-var $elm$http$Http$expectWhatever = function (toMsg) {
-	return A2(
-		$elm$http$Http$expectBytesResponse,
-		toMsg,
-		$elm$http$Http$resolve(
-			function (_v0) {
-				return $elm$core$Result$Ok(_Utils_Tuple0);
-			}));
-};
-var $elm$http$Http$filePart = _Http_pair;
-var $elm$time$Time$Posix = function (a) {
-	return {$: 'Posix', a: a};
-};
-var $elm$time$Time$millisToPosix = $elm$time$Time$Posix;
-var $elm$file$File$Select$files = F2(
-	function (mimes, toMsg) {
+var $elm$http$Http$expectJson = F2(
+	function (toMsg, decoder) {
 		return A2(
-			$elm$core$Task$perform,
-			function (_v0) {
-				var f = _v0.a;
-				var fs = _v0.b;
-				return A2(toMsg, f, fs);
-			},
-			_File_uploadOneOrMore(mimes));
+			$elm$http$Http$expectStringResponse,
+			toMsg,
+			$elm$http$Http$resolve(
+				function (string) {
+					return A2(
+						$elm$core$Result$mapError,
+						$elm$json$Json$Decode$errorToString,
+						A2($elm$json$Json$Decode$decodeString, decoder, string));
+				}));
 	});
-var $elm$http$Http$multipartBody = function (parts) {
-	return A2(
-		_Http_pair,
-		'',
-		_Http_toFormData(parts));
-};
+var $elm$http$Http$Header = F2(
+	function (a, b) {
+		return {$: 'Header', a: a, b: b};
+	});
+var $elm$http$Http$header = $elm$http$Http$Header;
+var $author$project$CommonData$Place = F3(
+	function (name, latitude, longitude) {
+		return {latitude: latitude, longitude: longitude, name: name};
+	});
+var $author$project$CommonData$placeDecoder = A4(
+	$elm$json$Json$Decode$map3,
+	$author$project$CommonData$Place,
+	A2($elm$json$Json$Decode$field, 'name', $elm$json$Json$Decode$string),
+	A2($elm$json$Json$Decode$field, 'latitude', $elm$json$Json$Decode$float),
+	A2($elm$json$Json$Decode$field, 'longitude', $elm$json$Json$Decode$float));
+var $author$project$CommonData$placesDecoder = $elm$json$Json$Decode$list($author$project$CommonData$placeDecoder);
 var $elm$http$Http$Request = function (a) {
 	return {$: 'Request', a: a};
 };
@@ -11209,121 +11203,20 @@ var $elm$http$Http$request = function (r) {
 		$elm$http$Http$Request(
 			{allowCookiesFromOtherDomains: false, body: r.body, expect: r.expect, headers: r.headers, method: r.method, timeout: r.timeout, tracker: r.tracker, url: r.url}));
 };
-var $elm$http$Http$post = function (r) {
-	return $elm$http$Http$request(
-		{body: r.body, expect: r.expect, headers: _List_Nil, method: 'POST', timeout: $elm$core$Maybe$Nothing, tracker: $elm$core$Maybe$Nothing, url: r.url});
-};
-var $author$project$Upload$update = F2(
-	function (msg, model) {
-		switch (msg.$) {
-			case 'ImageRequested':
-				return _Utils_Tuple2(
-					model,
-					A2(
-						$elm$file$File$Select$files,
-						_List_fromArray(
-							['image/*']),
-						$author$project$Upload$ImageSelected));
-			case 'ImageSelected':
-				var fstFile = msg.a;
-				var files = msg.b;
-				return _Utils_Tuple2(
-					model,
-					$elm$http$Http$post(
-						{
-							body: $elm$http$Http$multipartBody(
-								A2(
-									$elm$core$List$map,
-									function (f) {
-										return A2($elm$http$Http$filePart, 'images[]', f);
-									},
-									A2($elm$core$List$cons, fstFile, files))),
-							expect: $elm$http$Http$expectWhatever($author$project$Upload$Uploaded),
-							url: '/api/upload/'
-						}));
-			default:
-				var result = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							uploadResult: $elm$core$Maybe$Just(result)
-						}),
-					$elm$core$Platform$Cmd$none);
-		}
+var $author$project$Upload$getPlaces = $elm$http$Http$request(
+	{
+		body: $elm$http$Http$emptyBody,
+		expect: A2($elm$http$Http$expectJson, $author$project$Upload$GotPlaces, $author$project$CommonData$placesDecoder),
+		headers: _List_fromArray(
+			[
+				A2($elm$http$Http$header, 'Accept', 'application/json')
+			]),
+		method: 'GET',
+		timeout: $elm$core$Maybe$Nothing,
+		tracker: $elm$core$Maybe$Nothing,
+		url: '/api/db/get_places_all/'
 	});
-var $author$project$Visualizer$update = F2(
-	function (msg, model) {
-		return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-	});
-var $author$project$Main$update = F2(
-	function (msg, model) {
-		switch (msg.$) {
-			case 'LinkClicked':
-				var urlRequest = msg.a;
-				if (urlRequest.$ === 'Internal') {
-					var url = urlRequest.a;
-					return _Utils_Tuple2(
-						model,
-						A2(
-							$elm$browser$Browser$Navigation$pushUrl,
-							model.key,
-							$elm$url$Url$toString(url)));
-				} else {
-					var href = urlRequest.a;
-					return _Utils_Tuple2(
-						model,
-						$elm$browser$Browser$Navigation$load(href));
-				}
-			case 'UrlChanged':
-				var url = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{url: url}),
-					$elm$core$Platform$Cmd$none);
-			case 'VisualizerMsg':
-				var subMsg = msg.a;
-				var _v2 = A2($author$project$Visualizer$update, subMsg, model.visualizer);
-				var model_ = _v2.a;
-				var cmd = _v2.b;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{visualizer: model_}),
-					A2($elm$core$Platform$Cmd$map, $author$project$Main$VisualizerMsg, cmd));
-			default:
-				var subMsg = msg.a;
-				var _v3 = A2($author$project$Upload$update, subMsg, model.upload);
-				var model_ = _v3.a;
-				var cmd = _v3.b;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{upload: model_}),
-					A2($elm$core$Platform$Cmd$map, $author$project$Main$UploadMsg, cmd));
-		}
-	});
-var $elm$html$Html$h1 = _VirtualDom_node('h1');
-var $author$project$Main$notFoundView = {
-	body: _List_fromArray(
-		[
-			A2(
-			$elm$html$Html$div,
-			_List_Nil,
-			_List_fromArray(
-				[
-					A2(
-					$elm$html$Html$h1,
-					_List_Nil,
-					_List_fromArray(
-						[
-							$elm$html$Html$text('404')
-						]))
-				]))
-		]),
-	title: 'Gingerbreadman | 404 Error'
-};
+var $elm$browser$Browser$Navigation$load = _Browser_load;
 var $elm$url$Url$Parser$State = F5(
 	function (visited, unvisited, params, frag, value) {
 		return {frag: frag, params: params, unvisited: unvisited, value: value, visited: visited};
@@ -11531,7 +11424,201 @@ var $author$project$Main$routeParser = $elm$url$Url$Parser$oneOf(
 			$author$project$Main$UploadPage,
 			$elm$url$Url$Parser$s('upload'))
 		]));
+var $author$project$Upload$ImageSelected = F2(
+	function (a, b) {
+		return {$: 'ImageSelected', a: a, b: b};
+	});
+var $author$project$Upload$Uploaded = function (a) {
+	return {$: 'Uploaded', a: a};
+};
+var $elm$http$Http$expectBytesResponse = F2(
+	function (toMsg, toResult) {
+		return A3(
+			_Http_expect,
+			'arraybuffer',
+			_Http_toDataView,
+			A2($elm$core$Basics$composeR, toResult, toMsg));
+	});
+var $elm$http$Http$expectWhatever = function (toMsg) {
+	return A2(
+		$elm$http$Http$expectBytesResponse,
+		toMsg,
+		$elm$http$Http$resolve(
+			function (_v0) {
+				return $elm$core$Result$Ok(_Utils_Tuple0);
+			}));
+};
+var $elm$http$Http$filePart = _Http_pair;
+var $elm$time$Time$Posix = function (a) {
+	return {$: 'Posix', a: a};
+};
+var $elm$time$Time$millisToPosix = $elm$time$Time$Posix;
+var $elm$file$File$Select$files = F2(
+	function (mimes, toMsg) {
+		return A2(
+			$elm$core$Task$perform,
+			function (_v0) {
+				var f = _v0.a;
+				var fs = _v0.b;
+				return A2(toMsg, f, fs);
+			},
+			_File_uploadOneOrMore(mimes));
+	});
+var $elm$http$Http$multipartBody = function (parts) {
+	return A2(
+		_Http_pair,
+		'',
+		_Http_toFormData(parts));
+};
+var $elm$http$Http$post = function (r) {
+	return $elm$http$Http$request(
+		{body: r.body, expect: r.expect, headers: _List_Nil, method: 'POST', timeout: $elm$core$Maybe$Nothing, tracker: $elm$core$Maybe$Nothing, url: r.url});
+};
+var $author$project$Upload$update = F2(
+	function (msg, model) {
+		switch (msg.$) {
+			case 'ImageRequested':
+				return _Utils_Tuple2(
+					model,
+					A2(
+						$elm$file$File$Select$files,
+						_List_fromArray(
+							['image/*']),
+						$author$project$Upload$ImageSelected));
+			case 'ImageSelected':
+				var fstFile = msg.a;
+				var files = msg.b;
+				return _Utils_Tuple2(
+					model,
+					$elm$http$Http$post(
+						{
+							body: $elm$http$Http$multipartBody(
+								A2(
+									$elm$core$List$map,
+									function (f) {
+										return A2($elm$http$Http$filePart, 'images[]', f);
+									},
+									A2($elm$core$List$cons, fstFile, files))),
+							expect: $elm$http$Http$expectWhatever($author$project$Upload$Uploaded),
+							url: '/api/upload/'
+						}));
+			case 'Uploaded':
+				var result = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							uploadResult: $elm$core$Maybe$Just(result)
+						}),
+					$elm$core$Platform$Cmd$none);
+			default:
+				var result = msg.a;
+				if (result.$ === 'Ok') {
+					var places = result.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								getPlacesError: $elm$core$Maybe$Nothing,
+								places: $elm$core$Maybe$Just(places)
+							}),
+						$elm$core$Platform$Cmd$none);
+				} else {
+					var error = result.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								getPlacesError: $elm$core$Maybe$Just(error),
+								places: $elm$core$Maybe$Nothing
+							}),
+						$elm$core$Platform$Cmd$none);
+				}
+		}
+	});
+var $author$project$Visualizer$update = F2(
+	function (msg, model) {
+		return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+	});
+var $author$project$Main$update = F2(
+	function (msg, model) {
+		switch (msg.$) {
+			case 'LinkClicked':
+				var urlRequest = msg.a;
+				if (urlRequest.$ === 'Internal') {
+					var url = urlRequest.a;
+					return _Utils_Tuple2(
+						model,
+						A2(
+							$elm$browser$Browser$Navigation$pushUrl,
+							model.key,
+							$elm$url$Url$toString(url)));
+				} else {
+					var href = urlRequest.a;
+					return _Utils_Tuple2(
+						model,
+						$elm$browser$Browser$Navigation$load(href));
+				}
+			case 'UrlChanged':
+				var url = msg.a;
+				var onLoadCmd = function () {
+					var _v2 = A2($elm$url$Url$Parser$parse, $author$project$Main$routeParser, url);
+					if ((_v2.$ === 'Just') && (_v2.a.$ === 'UploadPage')) {
+						var _v3 = _v2.a;
+						return A2($elm$core$Platform$Cmd$map, $author$project$Main$UploadMsg, $author$project$Upload$getPlaces);
+					} else {
+						return $elm$core$Platform$Cmd$none;
+					}
+				}();
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{url: url}),
+					onLoadCmd);
+			case 'VisualizerMsg':
+				var subMsg = msg.a;
+				var _v4 = A2($author$project$Visualizer$update, subMsg, model.visualizer);
+				var model_ = _v4.a;
+				var cmd = _v4.b;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{visualizer: model_}),
+					A2($elm$core$Platform$Cmd$map, $author$project$Main$VisualizerMsg, cmd));
+			default:
+				var subMsg = msg.a;
+				var _v5 = A2($author$project$Upload$update, subMsg, model.upload);
+				var model_ = _v5.a;
+				var cmd = _v5.b;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{upload: model_}),
+					A2($elm$core$Platform$Cmd$map, $author$project$Main$UploadMsg, cmd));
+		}
+	});
+var $elm$html$Html$h1 = _VirtualDom_node('h1');
+var $author$project$Main$notFoundView = {
+	body: _List_fromArray(
+		[
+			A2(
+			$elm$html$Html$div,
+			_List_Nil,
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$h1,
+					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$text('404')
+						]))
+				]))
+		]),
+	title: 'Gingerbreadman | 404 Error'
+};
 var $author$project$Upload$ImageRequested = {$: 'ImageRequested'};
+var $elm$html$Html$h2 = _VirtualDom_node('h2');
 var $author$project$Upload$view = function (model) {
 	return {
 		body: _List_fromArray(
@@ -11540,30 +11627,101 @@ var $author$project$Upload$view = function (model) {
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('container maincontainer')
+						$elm$html$Html$Attributes$class('container')
 					]),
 				_List_fromArray(
 					[
 						A2(
-						$elm$html$Html$h1,
-						_List_Nil,
+						$elm$html$Html$div,
 						_List_fromArray(
 							[
-								$elm$html$Html$text('UPLOAD')
-							])),
-						A2(
-						$elm$html$Html$button,
-						_List_fromArray(
-							[
-								$elm$html$Html$Events$onClick($author$project$Upload$ImageRequested)
+								$elm$html$Html$Attributes$class('row')
 							]),
 						_List_fromArray(
 							[
-								$elm$html$Html$text('Upload')
+								A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('col upload-form')
+									]),
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$div,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('form-row')
+											]),
+										_List_fromArray(
+											[
+												A2(
+												$elm$html$Html$div,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$class('col')
+													]),
+												_List_fromArray(
+													[
+														A2(
+														$elm$html$Html$h1,
+														_List_fromArray(
+															[
+																$elm$html$Html$Attributes$class('title')
+															]),
+														_List_fromArray(
+															[
+																$elm$html$Html$text('Upload Images')
+															])),
+														A2(
+														$elm$html$Html$button,
+														_List_fromArray(
+															[
+																$elm$html$Html$Events$onClick($author$project$Upload$ImageRequested)
+															]),
+														_List_fromArray(
+															[
+																$elm$html$Html$text('Select Images')
+															]))
+													]))
+											])),
+										A2(
+										$elm$html$Html$div,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('form-row')
+											]),
+										_List_fromArray(
+											[
+												A2(
+												$elm$html$Html$div,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$class('col-lg-12')
+													]),
+												_List_fromArray(
+													[
+														A2(
+														$elm$html$Html$h2,
+														_List_Nil,
+														_List_fromArray(
+															[
+																$elm$html$Html$text('Select place tag')
+															]))
+													])),
+												A2(
+												$elm$html$Html$div,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$class('col')
+													]),
+												_List_Nil)
+											]))
+									]))
 							]))
 					]))
 			]),
-		title: 'Gingerbreadman | Upload'
+		title: 'Upload'
 	};
 };
 var $author$project$Visualizer$view = function (model) {
@@ -11623,4 +11781,4 @@ var $author$project$Main$main = $elm$browser$Browser$application(
 		view: $author$project$Main$view
 	});
 _Platform_export({'Main':{'init':$author$project$Main$main(
-	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"}},"unions":{"Main.Msg":{"args":[],"tags":{"LinkClicked":["Browser.UrlRequest"],"UrlChanged":["Url.Url"],"VisualizerMsg":["Visualizer.Msg"],"UploadMsg":["Upload.Msg"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Upload.Msg":{"args":[],"tags":{"ImageRequested":[],"ImageSelected":["File.File","List.List File.File"],"Uploaded":["Result.Result Http.Error ()"]}},"Visualizer.Msg":{"args":[],"tags":{"Hoge":[],"Fuga":[]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"File.File":{"args":[],"tags":{"File":[]}},"List.List":{"args":["a"],"tags":{}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}}}}})}});}(this));
+	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"},"CommonData.Place":{"args":[],"type":"{ name : String.String, latitude : Basics.Float, longitude : Basics.Float }"}},"unions":{"Main.Msg":{"args":[],"tags":{"LinkClicked":["Browser.UrlRequest"],"UrlChanged":["Url.Url"],"VisualizerMsg":["Visualizer.Msg"],"UploadMsg":["Upload.Msg"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Upload.Msg":{"args":[],"tags":{"ImageRequested":[],"ImageSelected":["File.File","List.List File.File"],"Uploaded":["Result.Result Http.Error ()"],"GotPlaces":["Result.Result Http.Error (List.List CommonData.Place)"]}},"Visualizer.Msg":{"args":[],"tags":{"Hoge":[],"Fuga":[]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"File.File":{"args":[],"tags":{"File":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"List.List":{"args":["a"],"tags":{}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}}}}})}});}(this));

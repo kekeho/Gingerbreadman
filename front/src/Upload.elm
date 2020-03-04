@@ -14,6 +14,7 @@ import Browser
 
 type alias Model =
     { places : Maybe (List Place)
+    , getPlacesError : Maybe Http.Error
     , uploadResult : Maybe ((Result Http.Error ()))
     }
 
@@ -24,6 +25,7 @@ type Msg
     = ImageRequested
     | ImageSelected  File.File (List File.File)
     | Uploaded (Result Http.Error ())
+    | GotPlaces (Result Http.Error (List Place))
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -42,19 +44,68 @@ update msg model =
         
         Uploaded result ->
             ( { model | uploadResult = Just result }, Cmd.none )
+        
+        GotPlaces result ->
+            case result of
+                Ok places ->
+                    ({ model | places = Just places, getPlacesError = Nothing }
+                    , Cmd.none
+                    )
+                
+                Err error ->
+                    ({ model | getPlacesError = Just error, places = Nothing}
+                    , Cmd.none
+                    )
+
 
 
 -- VIEW
 
 view : Model -> Browser.Document Msg
 view model =
-    { title = "Gingerbreadman | Upload"
+    { title = "Upload"
     , body =
-        [ div [ class "container maincontainer" ]
-            [ h1 [] [ text "UPLOAD" ]
-            , button [ onClick ImageRequested ] [ text "Upload" ]
+        [ div [ class "container" ]
+            [ div [ class "row" ]
+                [ div [ class "col upload-form" ]
+                    [ div [ class "form-row" ]
+                        [ div [ class "col"]
+                            [ h1 [ class "title" ] [ text "Upload Images" ]
+                            , button [ onClick ImageRequested ] [ text "Select Images" ]
+                            ]
+                        ]
+                    , div [ class "form-row"]
+                        [ div [ class "col-lg-12" ]
+                            [ h2 [ ]  [  text "Select place tag" ] ]
+                        , div [ class "col" ]
+                            [ 
+
+                            ]
+                        
+                        ]
+                    ]
+
+                ]
+
             ]
         ]
     }
+
+
+-- FUNC
+
+getPlaces : Cmd Msg
+getPlaces =
+    Http.request
+        { method = "GET"
+        , headers =
+            [ Http.header "Accept" "application/json"
+            ]
+        , url = "/api/db/get_places_all/"
+        , expect = Http.expectJson GotPlaces placesDecoder
+        , body = Http.emptyBody
+        , timeout = Nothing
+        , tracker = Nothing
+        }
 
 
