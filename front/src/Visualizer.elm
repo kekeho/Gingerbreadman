@@ -1,5 +1,9 @@
 module Visualizer exposing (..)
 
+import Browser
+import Html exposing (..)
+import Html.Attributes exposing (..)
+
 -- MODEL
 
 type alias Model =
@@ -20,3 +24,13 @@ update msg model =
         _ ->
             (model, Cmd.none)
 
+-- VIEW
+
+view : Model -> Browser.Document Msg
+view model =
+    { title = "Gingerbreadman | Visualizer"
+    , body =
+        [ div [ class "container maincontainer" ]
+            [ text "visualizer" ]
+        ]
+    }

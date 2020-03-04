@@ -20,7 +20,6 @@ module Main exposing (main)
 
 import Browser
 import Browser.Navigation as Nav
-import Visualizer
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -29,6 +28,9 @@ import Json.Decode as D exposing (Decoder)
 import Url.Builder
 import Url.Parser
 import Url
+
+import Visualizer
+import Upload
 
 
 -- MAIN
@@ -55,6 +57,7 @@ type alias Model =
     , url : Url.Url
     , route : Route
     , visualizer : Visualizer.Model
+    , upload : Upload.Model
     }
 
 
@@ -66,6 +69,10 @@ init flags url key =
     , route = VisualizerPage
     , visualizer =
         { test = "hoge"
+        }
+    , upload = 
+        { places = Nothing
+        , uploadResult = Nothing
         }
     }
       -- Command to get all places
@@ -93,6 +100,7 @@ type Msg
     = LinkClicked Browser.UrlRequest
     | UrlChanged Url.Url
     | VisualizerMsg Visualizer.Msg
+    | UploadMsg Upload.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -116,8 +124,15 @@ update msg model =
                     Visualizer.update subMsg model.visualizer
             in                
             ({ model | visualizer = model_ }, Cmd.map VisualizerMsg cmd)
-
-
+        
+        UploadMsg subMsg ->
+            let
+                ( model_, cmd ) =
+                    Upload.update subMsg model.upload
+            in
+            ( { model | upload = model_ }
+            , Cmd.map UploadMsg cmd
+            )
 
 
 -- VIEW
@@ -125,14 +140,35 @@ update msg model =
 
 view : Model -> Browser.Document Msg
 view model =
-    { title = "Gingerbreadman"
+    let
+        viewPage view_ model_ msg_ =
+            let
+                { title, body } = view_ model_
+            in
+            { title = "Gingerbreadman | " ++ title
+            , body = List.map (Html.map msg_) body
+            }
+    in
+    case Url.Parser.parse routeParser model.url of
+        Just VisualizerPage ->
+            viewPage Visualizer.view model.visualizer VisualizerMsg
+        
+        Just (UploadPage) ->
+            viewPage Upload.view model.upload UploadMsg
+        
+        Nothing ->
+            notFoundView
+            
+
+
+notFoundView : Browser.Document Msg
+notFoundView =
+    { title = "Gingerbreadman | 404 Error"
     , body =
-        [ div [ class "container maincontainer" ]
-            [ text "hogefuga"]
+        [ div [ ]
+            [ h1 [] [ text "404" ] ]
         ]
     }
-
-
 
 -- FUNCTIONS
 
