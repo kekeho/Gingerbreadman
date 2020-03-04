@@ -16,7 +16,7 @@
 // along with Gingerbreadman.  If not, see <http://www.gnu.org/licenses/>.
 
 // Elm Init
-var app = Elm.Main.init({node: document.getElementById('app')});
+var app = Elm.Main.init();
 
 
 // Elm PORT: Initialize OpenLayer
