@@ -74,6 +74,8 @@ init flags url key =
         { places = Nothing
         , getPlacesError = Nothing
         , uploadResult = Nothing
+        , selectedPlace = Nothing
+        , selectedImages = Nothing
         }
     }
       -- Command to get all places

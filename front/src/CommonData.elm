@@ -3,6 +3,11 @@ module CommonData exposing (..)
 import Json.Decode as D
 import Json.Decode exposing (Decoder)
 
+import Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events as Events exposing (on)
+
+
 
 -- COMMON MODEL
 
@@ -27,3 +32,8 @@ placesDecoder : Decoder (List Place)
 placesDecoder =
     D.list placeDecoder
 
+
+-- onchange event
+onChange : (String -> msg) -> Attribute msg
+onChange handler =
+    on "change" (D.map handler Events.targetValue)

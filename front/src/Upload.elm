@@ -14,6 +14,8 @@ import Browser
 
 type alias Model =
     { places : Maybe (List Place)
+    , selectedPlace : Maybe Place
+    , selectedImages : Maybe (List File.File)
     , getPlacesError : Maybe Http.Error
     , uploadResult : Maybe ((Result Http.Error ()))
     }
@@ -24,8 +26,10 @@ type alias Model =
 type Msg
     = ImageRequested
     | ImageSelected  File.File (List File.File)
+    | Upload
     | Uploaded (Result Http.Error ())
     | GotPlaces (Result Http.Error (List Place))
+    | PlaceSelected String
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -34,13 +38,24 @@ update msg model =
         ImageRequested -> 
             (model, File.Select.files ["image/*"] ImageSelected)
         ImageSelected fstFile files ->
-            ( model
-            , Http.post
-                { url = "/api/upload/"
-                , body = Http.multipartBody (List.map (\f -> Http.filePart "images[]" f) (fstFile :: files) )
-                , expect = Http.expectWhatever Uploaded
-                }
+            ( { model | selectedImages = Just (fstFile :: files) }
+            , Cmd.none
             )
+        
+        Upload ->
+            case model.selectedImages of
+                Just files ->
+                    ( model
+                    , Http.post
+                        { url = "/api/upload/"
+                        , body = Http.multipartBody (List.map (\f -> Http.filePart "images[]" f) files )
+                        , expect = Http.expectWhatever Uploaded
+                        }
+                    )
+                Nothing ->
+                    ( model
+                    , Cmd.none
+                    )
         
         Uploaded result ->
             ( { model | uploadResult = Just result }, Cmd.none )
@@ -56,6 +71,18 @@ update msg model =
                     ({ model | getPlacesError = Just error, places = Nothing}
                     , Cmd.none
                     )
+        
+        PlaceSelected placeString ->
+            let
+                place = 
+                    case model.places of
+                        Just places ->
+                            List.filter (\p -> p.name == placeString) places
+                                |> List.head
+                        Nothing ->
+                            Nothing
+            in
+            ( { model | selectedPlace = place }, Cmd.none )
 
 
 
@@ -77,11 +104,7 @@ view model =
                     , div [ class "form-row"]
                         [ div [ class "col-lg-12" ]
                             [ h2 [ ]  [  text "Select place tag" ] ]
-                        , div [ class "col" ]
-                            [ 
-
-                            ]
-                        
+                        , selectPlacesView model
                         ]
                     ]
 
@@ -91,6 +114,20 @@ view model =
         ]
     }
 
+
+selectPlacesView : Model -> Html Msg
+selectPlacesView model =
+    div [ class "col" ]
+        [ label [] [ text "Existing Places"]
+        , select [ class "form-control", onChange PlaceSelected ]
+            ( case model.places of
+                Just places ->
+                    (List.map (\p -> option [ value p.name ] [ text p.name ]) places )
+                        
+                Nothing ->
+                    [ ]
+            )
+        ]
 
 -- FUNC
 
