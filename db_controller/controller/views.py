@@ -48,8 +48,10 @@ def regist_images(request):
         images = request.FILES.getlist('images')
         print(len(images), images)
         images_mtimes = list(map(
-            int, request.POST.get('images_mtimes').split(',')
+            int, request.POST.getlist('images_mtimes')
         ))
+        print(len(images_mtimes), images_mtimes)
+        print(request.POST)
 
         # save to db
         for image, mtime in zip(images, images_mtimes):

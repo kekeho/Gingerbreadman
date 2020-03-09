@@ -39,7 +39,7 @@ type Msg
     | NewPlaceName String
     | NewPlaceLongitude String
     | NewPlaceLatitude String
-
+    | ErrorDialog String
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -54,19 +54,31 @@ update msg model =
 
         Upload ->
             case model.selectedImages of
-                Just files ->
-                    ( model
-                    , Http.post
-                        { url = "/api/upload/"
-                        , body = Http.multipartBody (List.map (\f -> Http.filePart "images[]" f) files)
-                        , expect = Http.expectWhatever Uploaded
-                        }
-                    )
-
                 Nothing ->
-                    ( model
-                    , Cmd.none
-                    )
+                    update (ErrorDialog "NO IMAGE") model
+                Just files ->
+                    case model.selectedPlace of
+                        Nothing ->
+                            update (ErrorDialog "NO SELECTED PLACE") model
+                    
+                        Just selectedPlace ->
+                            ( model
+                            , Http.post
+                                { url = "/api/db/regist_images/"
+                                , body =
+                                    Http.multipartBody 
+                                        (  (Http.stringPart "place_selected" selectedPlace.name)
+                                        :: (Http.stringPart "place_new" model.newPlace.name)
+                                        :: (Http.stringPart "new_latitude" (String.fromFloat model.newPlace.latitude))
+                                        :: (Http.stringPart "new_longitude" (String.fromFloat model.newPlace.longitude))
+                                        :: (List.map (\f -> Http.filePart "images" f) files)
+                                        ++ (List.map (\f -> Http.stringPart "images_mtimes" (msecToStr (File.lastModified f))) files)
+                                        )
+                                , expect = Http.expectWhatever Uploaded
+                                }
+                            )
+
+
 
         Uploaded result ->
             ( { model | uploadResult = Just result }, Cmd.none )
@@ -132,6 +144,10 @@ update msg model =
             ( { model | newPlace = { newPlace | longitude = lon } }
             , Cmd.none
             )
+        
+        ErrorDialog errString ->
+            -- TODO: エラーダイアログ
+            ( model, Cmd.none )
 
 
 
@@ -158,6 +174,17 @@ view model =
                             [ h2 [] [ text "Select place tag" ] ]
                         , selectPlacesView model
                         , newPlacesView model
+                        ]
+                    , div [ class "form-row" ]
+                        [ div [ class "col" ]
+                            [ input 
+                                [ class "form-control" 
+                                , type_ "submit"
+                                , value "Upload"
+                                , onClick Upload
+                                ]
+                                [ ]
+                            ]
                         ]
                     ]
                 ]

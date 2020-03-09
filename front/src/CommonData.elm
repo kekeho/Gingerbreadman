@@ -2,6 +2,7 @@ module CommonData exposing (..)
 
 import Json.Decode as D
 import Json.Decode exposing (Decoder)
+import Time
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -37,3 +38,9 @@ placesDecoder =
 onChange : (String -> msg) -> Attribute msg
 onChange handler =
     on "change" (D.map handler Events.targetValue)
+
+
+msecToStr : Time.Posix -> String
+msecToStr time =
+    Time.posixToMillis time
+        |> String.fromInt
