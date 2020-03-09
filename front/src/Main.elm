@@ -76,6 +76,7 @@ init flags url key =
         , uploadResult = Nothing
         , selectedPlace = Nothing
         , selectedImages = Nothing
+        , newPlace = { name = "", latitude = 0.0, longitude = 0.0 }
         }
     }
       -- Command to get all places

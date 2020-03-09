@@ -18,6 +18,7 @@ import List
 type alias Model =
     { places : Maybe (List Place)
     , selectedPlace : Maybe Place
+    , newPlace : Place
     , selectedImages : Maybe (List File.File)
     , getPlacesError : Maybe Http.Error
     , uploadResult : Maybe (Result Http.Error ())
@@ -35,6 +36,9 @@ type Msg
     | Uploaded (Result Http.Error ())
     | GotPlaces (Result Http.Error (List Place))
     | PlaceSelected String
+    | NewPlaceName String
+    | NewPlaceLongitude String
+    | NewPlaceLatitude String
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -70,7 +74,7 @@ update msg model =
         GotPlaces result ->
             case result of
                 Ok places ->
-                    ( { model | places = Just places, getPlacesError = Nothing }
+                    ( { model | places = Just places, getPlacesError = Nothing, selectedPlace = List.head places }
                     , Cmd.none
                     )
 
@@ -91,6 +95,44 @@ update msg model =
                             Nothing
             in
             ( { model | selectedPlace = place }, Cmd.none )
+        
+        NewPlaceName name ->
+            let
+                newPlace = model.newPlace
+            in
+            ( { model | newPlace = { newPlace | name = name }
+              }
+            , Cmd.none
+            )
+        
+        NewPlaceLatitude latitude ->
+            let
+                newPlace = model.newPlace
+                lat =
+                    case String.toFloat latitude of
+                        Just l ->
+                            l
+                        Nothing ->
+                            0.0
+            in
+            ( { model | newPlace = { newPlace | latitude = lat } }
+            , Cmd.none
+            )
+        
+        NewPlaceLongitude longitude ->
+            let
+                newPlace = model.newPlace
+                lon =
+                    case String.toFloat longitude of
+                        Just l ->
+                            l
+                        Nothing ->
+                            0.0
+            in
+            ( { model | newPlace = { newPlace | longitude = lon } }
+            , Cmd.none
+            )
+
 
 
 
@@ -115,6 +157,7 @@ view model =
                         [ div [ class "col-lg-12" ]
                             [ h2 [] [ text "Select place tag" ] ]
                         , selectPlacesView model
+                        , newPlacesView model
                         ]
                     ]
                 ]
@@ -156,6 +199,35 @@ filesCountView maybeFiles =
         )
 
 
+newPlacesView : Model -> Html Msg
+newPlacesView model =
+    div [ class "col" ]
+        [ input
+            [ type_ "text"
+            , class "form-control"
+            , placeholder "or create new place tag"
+            , onChange NewPlaceName
+            , value model.newPlace.name ]
+            [ ]
+
+        , input
+            [ type_ "number"
+            , placeholder "latitude"
+            , step "0.0000001"
+            , onChange NewPlaceLatitude
+            , value (String.fromFloat model.newPlace.latitude)
+            ]
+            [ ]
+        , input
+            [ type_ "number"
+            , placeholder "longitude"
+            , step "0.0000001"
+            , value (String.fromFloat model.newPlace.longitude)
+            , onChange NewPlaceLongitude
+            ]
+            [ ]
+        ]
+    
 
 -- FUNC
 
