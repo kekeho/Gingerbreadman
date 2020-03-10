@@ -10,6 +10,8 @@ import Html.Events exposing (onClick)
 import Http
 import List
 
+import ErrorPanel
+
 
 
 -- MODEL
@@ -22,6 +24,7 @@ type alias Model =
     , selectedImages : Maybe (List File.File)
     , getPlacesError : Maybe Http.Error
     , uploadResult : Maybe (Result Http.Error ())
+    , error : ErrorPanel.Model
     }
 
 
@@ -39,7 +42,7 @@ type Msg
     | NewPlaceName String
     | NewPlaceLongitude String
     | NewPlaceLatitude String
-    | ErrorDialog String
+    | ErrorMsg ErrorPanel.Msg
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -55,11 +58,12 @@ update msg model =
         Upload ->
             case model.selectedImages of
                 Nothing ->
-                    update (ErrorDialog "NO IMAGE") model
+                    update (ErrorMsg (ErrorPanel.AddError { error = ErrorPanel.OnlyStr, str = "NO IMAGE"})) model
+
                 Just files ->
                     case model.selectedPlace of
                         Nothing ->
-                            update (ErrorDialog "NO SELECTED PLACE") model
+                            update (ErrorMsg (ErrorPanel.AddError { error = ErrorPanel.OnlyStr, str = "NO SELECTED PLACE"})) model
                     
                         Just selectedPlace ->
                             ( model
@@ -81,7 +85,13 @@ update msg model =
 
 
         Uploaded result ->
-            ( { model | uploadResult = Just result }, Cmd.none )
+            case result of
+                Ok _ ->
+                    ( { model | selectedImages = Nothing }
+                    , Cmd.none )
+
+                Err error ->
+                    update (ErrorMsg (ErrorPanel.AddError { error = (ErrorPanel.HttpError error), str = "Failed to upload images"})) model
 
         GotPlaces result ->
             case result of
@@ -91,8 +101,12 @@ update msg model =
                     )
 
                 Err error ->
-                    ( { model | getPlacesError = Just error, places = Nothing }
-                    , Cmd.none
+                    let
+                        (newModel, cmd) =
+                            update (ErrorMsg (ErrorPanel.AddError { error = (ErrorPanel.HttpError error), str = "Failed to load location tags"})) model
+                    in
+                    ( { newModel | places = Nothing }
+                    , cmd
                     )
 
         PlaceSelected placeString ->
@@ -145,11 +159,13 @@ update msg model =
             , Cmd.none
             )
         
-        ErrorDialog errString ->
-            -- TODO: エラーダイアログ
-            ( model, Cmd.none )
-
-
+        ErrorMsg subMsg ->
+            let
+                (model_, cmd) =
+                    ErrorPanel.update subMsg model.error
+            in
+                ( { model | error = model_ }
+                , Cmd.map ErrorMsg cmd)
 
 
 -- VIEW

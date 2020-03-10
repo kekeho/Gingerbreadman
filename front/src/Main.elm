@@ -31,6 +31,7 @@ import Url
 
 import Visualizer
 import Upload
+import ErrorPanel
 
 
 -- MAIN
@@ -56,6 +57,7 @@ type alias Model =
     { key : Nav.Key
     , url : Url.Url
     , route : Route
+    , errorList : ErrorPanel.Model
     , visualizer : Visualizer.Model
     , upload : Upload.Model
     }
@@ -67,6 +69,7 @@ init flags url key =
     { key = key
     , url = url
     , route = VisualizerPage
+    , errorList = [ ]
     , visualizer =
         { test = "hoge"
         }
@@ -77,6 +80,7 @@ init flags url key =
         , selectedPlace = Nothing
         , selectedImages = Nothing
         , newPlace = { name = "", latitude = 0.0, longitude = 0.0 }
+        , error = []
         }
     }
       -- Command to get all places
@@ -103,6 +107,7 @@ type Route
 type Msg
     = LinkClicked Browser.UrlRequest
     | UrlChanged Url.Url
+    | ErrorPanelMsg ErrorPanel.Msg
     | VisualizerMsg Visualizer.Msg
     | UploadMsg Upload.Msg
 
@@ -130,6 +135,15 @@ update msg model =
             in
             ( {model | url = url}
             , onLoadCmd)
+        
+        ErrorPanelMsg subMsg ->
+            let
+                ( model_, cmd ) =
+                    ErrorPanel.update subMsg model.errorList    
+            in
+            ( { model | errorList = model_}
+            , Cmd.map ErrorPanelMsg cmd)
+            
         
         VisualizerMsg subMsg ->
             let
