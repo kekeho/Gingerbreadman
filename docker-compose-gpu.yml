@@ -17,6 +17,8 @@ services:
       - "8080:8080"
     environment:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "8888:8888"
     volumes:
       - "./db_controller:/code"
   
@@ -25,6 +27,8 @@ services:
       context: "services/face_location"
       dockerfile: "Dockerfile_GPU"
     runtime: nvidia
+    environment:
+      - GB_GPU=True
     depends_on:
       - db-controller
     volumes:

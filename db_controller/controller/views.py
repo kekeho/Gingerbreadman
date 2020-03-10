@@ -1,11 +1,22 @@
-# Copyright (c) 2019 Hiroki Takemura (kekeho)
-#
-# This software is released under the MIT License.
-# https://opensource.org/licenses/MIT
-
+# Copyright (C) 2019 Hiroki Takemura (kekeho)
+# 
+# This file is part of Gingerbreadman.
+# 
+# Gingerbreadman is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# Gingerbreadman is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with Gingerbreadman.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.shortcuts import render
-from django.http import HttpResponseNotAllowed, Http404, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseNotAllowed, Http404, HttpResponseNotFound
 from django.utils import timezone
 from datetime import datetime
 from django.http.response import JsonResponse
@@ -21,8 +32,11 @@ from . import view_utils
 
 def get_places_all(request):
     places = models.Place.objects.all()
-    resp_data = {'places': [p.name for p in places]}
-    return JsonResponse(resp_data)
+    resp_data = [{'name': p.name,
+                  'latitude': p.latitude,
+                  'longitude': p.longitude}
+                 for p in places]
+    return JsonResponse(resp_data, safe=False)
 
 
 @csrf_exempt
@@ -34,8 +48,10 @@ def regist_images(request):
         images = request.FILES.getlist('images')
         print(len(images), images)
         images_mtimes = list(map(
-            int, request.POST.get('images_mtimes').split(',')
+            int, request.POST.getlist('images_mtimes')
         ))
+        print(len(images_mtimes), images_mtimes)
+        print(request.POST)
 
         # save to db
         for image, mtime in zip(images, images_mtimes):
@@ -79,7 +95,7 @@ def get_unanalyzed_face_location_images(request):
     if request.method != 'GET':
         HttpResponseNotAllowed(["GET"])
 
-    images = models.Image.objects.filter(service_face_location_analyzed=False)
+    images = models.Image.objects.filter(service_face_location_analyzed=False)[:1000]  # 1000 images per request
     if list(images) == []:
         return HttpResponseNotFound()
 
@@ -101,19 +117,21 @@ def regist_faces(request):
     face_list = json.loads(request.body)
 
     for face_info in face_list:
-        face = models.Face()
         parent_image = models.Image.objects.get(id=face_info['image_id'])
-        face.image = parent_image
         parent_image.service_face_location_analyzed = True
-
-        (x, y, w, h) = face_info['location']
-        face.face_location_x = x
-        face.face_location_y = y
-        face.face_location_w = w
-        face.face_location_h = h
-
         parent_image.save()
-        face.save()
+        
+        if face_info['location'] != []:
+            face = models.Face()
+            face.image = parent_image
+            
+            (x, y, w, h) = face_info['location']
+            face.face_location_x = x
+            face.face_location_y = y
+            face.face_location_w = w
+            face.face_location_h = h
+            
+            face.save()
 
     return JsonResponse({'message': 'Done'})
 
@@ -123,7 +141,7 @@ def get_unanalyzed_face_encoding_faces(request):
     if request.method != 'GET':
         HttpResponseNotAllowed(['GET'])
 
-    faces = models.Face.objects.filter(service_face_encoding_analyzed=False)
+    faces = models.Face.objects.filter(service_face_encoding_analyzed=False)[:1000]  # 1000 images per request
     if list(faces) == []:
         return HttpResponseNotFound()
 
@@ -193,6 +211,7 @@ def get_face_encodings(request):
             'latitude': face.image.place.latitude,
             'longitude': face.image.place.longitude,
         },
+        'posix_millisec' : int(face.image.datetime.timestamp() * 1e3),
         'gender': str(face.gender.id) if face.gender else -1,
         'age': int(face.age.id) if face.age else -1,
         'emotion': {
@@ -209,3 +228,12 @@ def get_face_encodings(request):
     } for face in faces]
 
     return JsonResponse(return_faces_info, safe=False)
+
+
+def get_unanalyzed_images_count(request):
+    allowed_method = ['GET']
+    if request.method not in allowed_method:
+        return HttpResponseNotAllowed(allowed_method)
+    
+    count = models.Image.objects.filter(service_face_location_analyzed=False).count()
+    return HttpResponse(count)

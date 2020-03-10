@@ -1,0 +1,57 @@
+{% extends "../base.html" %}
+
+{% comment %}
+ Copyright (C) 2019 Hiroki Takemura (kekeho)
+ 
+ This file is part of Gingerbreadman.
+ 
+ Gingerbreadman is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+ 
+ Gingerbreadman is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ 
+ You should have received a copy of the GNU General Public License
+ along with Gingerbreadman.  If not, see <http://www.gnu.org/licenses/>.
+{% endcomment %}
+
+
+{% block contents %}
+<link rel="stylesheet" href="/static/css/visualizer/select.css">
+<div class="container">
+    <div class="row">
+        <div class="col center pad-3rem">
+            <h1>Select dates & places</h1>
+        </div>
+    </div>
+    <form action="{% url 'visualizer:dashboard' %}" method="get">
+        <div class="row">
+            <div class="col col-md-6 center pad-3rem">
+                <h2>Date</h2>
+                from
+                <input type="datetime-local" name="datetime-from" placeholder="yyyy-mm-ddThh:mm" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}" required>
+                to
+                <input type="datetime-local" name="datetime-to" placeholder="yyyy-mm-ddThh:mm" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}" required>
+            </div>
+            <div class="col col-md-6 center pad-3rem">
+                <h2>Places</h2>
+                <select class="form-control" name="places" multiple required size="10">
+                    {% for place in places %}
+                    <option value="{{ place }}" label="{{ place }}">{{ place }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col center">
+                <input type="submit" value="Start">
+            </div>
+        </div>
+    </form>
+</div>
+
+{% endblock contents %}

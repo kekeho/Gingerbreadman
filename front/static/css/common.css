@@ -1,0 +1,19 @@
+
+.errorPanel {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+}
+
+
+.errorBox.row {
+    background-color: rgb(214, 214, 214);
+    padding: 0.2rem;
+    margin: 0.2rem;
+}
+
+
+.errorPanel .delButton {
+    margin: 0;
+    padding: 0;
+}

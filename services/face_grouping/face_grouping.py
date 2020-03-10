@@ -1,7 +1,19 @@
-# Copyright (c) 2019 Hiroki Takemura (kekeho)
+# Copyright (C) 2019 Hiroki Takemura (kekeho)
 # 
-# This software is released under the MIT License.
-# https://opensource.org/licenses/MIT
+# This file is part of Gingerbreadman.
+# 
+# Gingerbreadman is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# Gingerbreadman is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with Gingerbreadman.  If not, see <http://www.gnu.org/licenses/>.
 
 import flask
 from flask import request
@@ -23,7 +35,7 @@ def clustering():
     # compressed = compressor.fit_transform(face_encodings)
 
     # Clustering
-    model = DBSCAN(eps=0.5, min_samples=1)
+    model = DBSCAN(eps=0.6, min_samples=1)
     cluster = model.fit(face_encodings)
 
     grouped = dict()
@@ -31,9 +43,9 @@ def clustering():
         faces_json[i]['group_index'] = int(group_index)
 
         try:
-            grouped[int(group_index)].append(faces_json[i])
+            grouped[int(group_index)]['faces'].append(faces_json[i])
         except KeyError:
-            grouped[int(group_index)] = [faces_json[i]]
+            grouped[int(group_index)] = {'faces': [faces_json[i]]}
     
     return flask.jsonify(grouped)
 
