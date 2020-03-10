@@ -205,6 +205,10 @@ view model =
                     ]
                 ]
             ]
+
+        -- Errors
+        , div [ class "errorPanel" ]
+                    [ ErrorPanel.view model.error ]
         ]
     }
 

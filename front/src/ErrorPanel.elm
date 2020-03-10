@@ -51,4 +51,17 @@ update msg model =
 
 -- VIEW
 
+view : List ErrorModel -> Html msg
+view errorList =
+    div [ class "errorList" ]
+        ( List.map errorBoxView errorList )
 
+
+
+errorBoxView : ErrorModel -> Html msg
+errorBoxView error =
+    div [ class "errorBox" ]
+        [ div [ class "title" ]
+            [ text error.str ]
+        ]
+    

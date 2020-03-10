@@ -107,7 +107,6 @@ type Route
 type Msg
     = LinkClicked Browser.UrlRequest
     | UrlChanged Url.Url
-    | ErrorPanelMsg ErrorPanel.Msg
     | VisualizerMsg Visualizer.Msg
     | UploadMsg Upload.Msg
 
@@ -135,15 +134,6 @@ update msg model =
             in
             ( {model | url = url}
             , onLoadCmd)
-        
-        ErrorPanelMsg subMsg ->
-            let
-                ( model_, cmd ) =
-                    ErrorPanel.update subMsg model.errorList    
-            in
-            ( { model | errorList = model_}
-            , Cmd.map ErrorPanelMsg cmd)
-            
         
         VisualizerMsg subMsg ->
             let
@@ -173,7 +163,10 @@ view model =
                 { title, body } = view_ model_
             in
             { title = "Gingerbreadman | " ++ title
-            , body = List.map (Html.map msg_) body
+            , body = 
+                [ div [ class "app" ]
+                    ( List.map (Html.map msg_) body )
+                ]
             }
     in
     case Url.Parser.parse routeParser model.url of
