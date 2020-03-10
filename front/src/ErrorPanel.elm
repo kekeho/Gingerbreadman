@@ -2,6 +2,7 @@ module ErrorPanel exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (..)
 import Http
 
 
@@ -51,17 +52,20 @@ update msg model =
 
 -- VIEW
 
-view : List ErrorModel -> Html msg
+view : List ErrorModel -> Html Msg
 view errorList =
     div [ class "errorList" ]
-        ( List.map errorBoxView errorList )
+        ( List.indexedMap Tuple.pair errorList
+            |> List.map errorBoxView
+        )
 
 
-
-errorBoxView : ErrorModel -> Html msg
-errorBoxView error =
-    div [ class "errorBox" ]
-        [ div [ class "title" ]
+errorBoxView : (Int, ErrorModel) -> Html Msg
+errorBoxView (index, error) =
+    div [ class "errorBox row" ]
+        [ div [ class "title col-10" ]
             [ text error.str ]
+        , div [ class "delButton col-2", onClick (DelError index) ]
+            [ text "✕" ]
         ]
     

@@ -208,7 +208,7 @@ view model =
 
         -- Errors
         , div [ class "errorPanel" ]
-                    [ ErrorPanel.view model.error ]
+                    [ Html.map ErrorMsg (ErrorPanel.view model.error) ]
         ]
     }
 
