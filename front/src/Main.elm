@@ -39,7 +39,7 @@ import Common.ErrorPanel
 -- MAIN
 
 
-main : Program () Model Msg
+main : Program () RootModel Msg
 main =
     Browser.application
         { init = init
@@ -55,7 +55,7 @@ main =
 -- MODEL
 
 
-init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
+init : () -> Url.Url -> Nav.Key -> ( RootModel, Cmd Msg )
 init flags url key =
     ( -- Initialize model
     { key = key
@@ -100,16 +100,16 @@ type Msg
     | UploadMsg Upload.Upload.Msg
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
+update : Msg -> RootModel -> ( RootModel, Cmd Msg )
+update msg rootModel =
     case msg of
         LinkClicked urlRequest ->
             case urlRequest of
                 Browser.Internal url ->
-                    ( model, Nav.pushUrl model.key (Url.toString url) )
+                    ( rootModel, Nav.pushUrl rootModel.key (Url.toString url) )
                 
                 Browser.External href ->
-                    ( model, Nav.load href )
+                    ( rootModel, Nav.load href )
         
         UrlChanged url ->
             let
@@ -121,22 +121,22 @@ update msg model =
                         _ ->
                             Cmd.none
             in
-            ( {model | url = url}
+            ( { rootModel | url = url}
             , onLoadCmd)
         
         VisualizerMsg subMsg ->
             let
                 ( model_, cmd ) =
-                    Visualizer.Visualizer.update subMsg model.visualizer
+                    Visualizer.Visualizer.update subMsg rootModel.visualizer
             in                
-            ({ model | visualizer = model_ }, Cmd.map VisualizerMsg cmd)
+            ({ rootModel | visualizer = model_ }, Cmd.map VisualizerMsg cmd)
         
         UploadMsg subMsg ->
             let
                 ( model_, cmd ) =
-                    Upload.Upload.update subMsg model.upload
+                    Upload.Upload.update subMsg rootModel
             in
-            ( { model | upload = model_ }
+            ( model_
             , Cmd.map UploadMsg cmd
             )
 
@@ -144,8 +144,8 @@ update msg model =
 -- VIEW
 
 
-view : Model -> Browser.Document Msg
-view model =
+view : RootModel -> Browser.Document Msg
+view rootModel =
     let
         viewPage view_ model_ msg_ =
             let
@@ -153,25 +153,25 @@ view model =
             in
             { title = "Gingerbreadman | " ++ title
             , body = 
-                [ navbarView model
+                [ navbarView rootModel
                 , div [ class "app" ]
                     ( List.map (Html.map msg_) body )
                 ]
             }
     in
-    case Url.Parser.parse routeParser model.url of
+    case Url.Parser.parse routeParser rootModel.url of
         Just VisualizerPage ->
-            viewPage Visualizer.Visualizer.view model.visualizer VisualizerMsg
+            viewPage Visualizer.Visualizer.view rootModel.visualizer VisualizerMsg
         
         Just (UploadPage) ->
-            viewPage Upload.Upload.view model.upload UploadMsg
+            viewPage Upload.Upload.view rootModel UploadMsg
         
         Nothing ->
             notFoundView
             
 
 
-navbarView : Model -> Html Msg
+navbarView : RootModel -> Html Msg
 navbarView model =
     div [ class "navbar navbar-expand bg-dark navbar-dark" ]
         [ a [ class "navbar-brand", href "/" ]

@@ -10,11 +10,9 @@ import Html.Events exposing (onClick)
 import Http
 import List
 
+import Model exposing (RootModel)
 import Common.ErrorPanel as ErrorPanel
-import Upload.Model exposing (Model)
-
-
-
+import Upload.Model
 
 
 
@@ -34,29 +32,37 @@ type Msg
     | PlaceSearchInput String
     | ErrorMsg ErrorPanel.Msg
 
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
+update : Msg -> RootModel -> ( RootModel, Cmd Msg )
+update msg rootModel =
+    let
+        model : Upload.Model.Model
+        model = rootModel.upload
+
+        modelMap : Upload.Model.Model -> RootModel
+        modelMap m1 =
+            { rootModel | upload = m1}
+    in
     case msg of
         ImageRequested ->
-            ( model, File.Select.files [ "image/*" ] ImageSelected )
+            ( rootModel, File.Select.files [ "image/*" ] ImageSelected )
 
         ImageSelected fstFile files ->
-            ( { model | selectedImages = Just (fstFile :: files) }
+            ( modelMap { model | selectedImages = Just (fstFile :: files) }
             , Cmd.none
             )
 
         Upload ->
             case model.selectedImages of
                 Nothing ->
-                    update (ErrorMsg (ErrorPanel.AddError { error = ErrorPanel.OnlyStr, str = "NO IMAGE"})) model
+                    update (ErrorMsg (ErrorPanel.AddError { error = ErrorPanel.OnlyStr, str = "NO IMAGE"})) rootModel
 
                 Just files ->
                     case model.selectedPlace of
                         Nothing ->
-                            update (ErrorMsg (ErrorPanel.AddError { error = ErrorPanel.OnlyStr, str = "NO SELECTED PLACE"})) model
+                            update (ErrorMsg (ErrorPanel.AddError { error = ErrorPanel.OnlyStr, str = "NO SELECTED PLACE"})) rootModel
                     
                         Just selectedPlace ->
-                            ( model
+                            ( rootModel
                             , Http.post
                                 { url = "/api/db/regist_images/"
                                 , body =
@@ -77,25 +83,26 @@ update msg model =
         Uploaded result ->
             case result of
                 Ok _ ->
-                    ( { model | selectedImages = Nothing }
+                    ( modelMap { model | selectedImages = Nothing }
                     , Cmd.none )
 
                 Err error ->
-                    update (ErrorMsg (ErrorPanel.AddError { error = (ErrorPanel.HttpError error), str = "Failed to upload images"})) model
+                    update (ErrorMsg (ErrorPanel.AddError { error = (ErrorPanel.HttpError error), str = "Failed to upload images"})) rootModel
 
         GotPlaces result ->
             case result of
                 Ok places ->
-                    ( { model | places = Just places, getPlacesError = Nothing, selectedPlace = List.head places, placeSearchFiltered = places }
+                    ( modelMap { model | places = Just places, getPlacesError = Nothing, selectedPlace = List.head places, placeSearchFiltered = places }
                     , Cmd.none
                     )
 
                 Err error ->
                     let
-                        (newModel, cmd) =
-                            update (ErrorMsg (ErrorPanel.AddError { error = (ErrorPanel.HttpError error), str = "Failed to load location tags"})) model
+                        (newRootModel, cmd) =
+                            update (ErrorMsg (ErrorPanel.AddError { error = (ErrorPanel.HttpError error), str = "Failed to load location tags"})) rootModel
+                        newModel = newRootModel.upload
                     in
-                    ( { newModel | places = Nothing, placeSearchFiltered = [] }
+                    ( modelMap { newModel | places = Nothing, placeSearchFiltered = [] }
                     , cmd
                     )
 
@@ -110,13 +117,13 @@ update msg model =
                         Nothing ->
                             Nothing
             in
-            ( { model | selectedPlace = place }, Cmd.none )
+            ( modelMap { model | selectedPlace = place }, Cmd.none )
         
         NewPlaceName name ->
             let
                 newPlace = model.newPlace
             in
-            ( { model | newPlace = { newPlace | name = name }
+            ( modelMap { model | newPlace = { newPlace | name = name }
               }
             , Cmd.none
             )
@@ -131,7 +138,7 @@ update msg model =
                         Nothing ->
                             0.0
             in
-            ( { model | newPlace = { newPlace | latitude = lat } }
+            ( modelMap { model | newPlace = { newPlace | latitude = lat } }
             , Cmd.none
             )
         
@@ -145,7 +152,7 @@ update msg model =
                         Nothing ->
                             0.0
             in
-            ( { model | newPlace = { newPlace | longitude = lon } }
+            ( modelMap { model | newPlace = { newPlace | longitude = lon } }
             , Cmd.none
             )
         
@@ -159,7 +166,7 @@ update msg model =
                         Nothing ->
                             []
             in
-            ( { model | placeSearchFiltered = filteredPlaces, placeSearchInput = keyword }
+            ( modelMap { model | placeSearchFiltered = filteredPlaces, placeSearchInput = keyword }
             , Cmd.none
             )
             
@@ -169,15 +176,19 @@ update msg model =
                 (model_, cmd) =
                     ErrorPanel.update subMsg model.error
             in
-                ( { model | error = model_ }
-                , Cmd.map ErrorMsg cmd)
+            ( modelMap { model | error = model_ }
+            , Cmd.map ErrorMsg cmd)
 
 
 -- VIEW
 
 
-view : Model -> Browser.Document Msg
-view model =
+view : RootModel -> Browser.Document Msg
+view rootModel =
+    let
+        model = rootModel.upload
+    in
+    
     { title = "Upload"
     , body =
         [ div [ class "container" ]
@@ -218,7 +229,7 @@ view model =
     }
 
 
-selectPlacesView : Model -> Html Msg
+selectPlacesView : Upload.Model.Model -> Html Msg
 selectPlacesView model =
     div [ class "col" ]
         [ label [] [ text "Existing Places" ]
@@ -246,7 +257,7 @@ filesCountView maybeFiles =
         )
 
 
-newPlacesView : Model -> Html Msg
+newPlacesView : Upload.Model.Model -> Html Msg
 newPlacesView model =
     div [ class "col" ]
         [ input

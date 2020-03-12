@@ -12,7 +12,7 @@ import Upload.Model
 
 -- MODEL
 
-type alias Model =
+type alias RootModel =
     { key : Nav.Key
     , url : Url.Url
     , route : Route
