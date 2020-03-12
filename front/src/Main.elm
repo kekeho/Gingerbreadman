@@ -80,6 +80,8 @@ init flags url key =
         , selectedPlace = Nothing
         , selectedImages = Nothing
         , newPlace = { name = "", latitude = 0.0, longitude = 0.0 }
+        , placeSearchFiltered = []
+        , placeSearchInput = ""
         , error = []
         }
     }

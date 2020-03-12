@@ -24,6 +24,8 @@ type alias Model =
     , selectedImages : Maybe (List File.File)
     , getPlacesError : Maybe Http.Error
     , uploadResult : Maybe (Result Http.Error ())
+    , placeSearchInput : String
+    , placeSearchFiltered : List Place
     , error : ErrorPanel.Model
     }
 
@@ -42,6 +44,7 @@ type Msg
     | NewPlaceName String
     | NewPlaceLongitude String
     | NewPlaceLatitude String
+    | PlaceSearchInput String
     | ErrorMsg ErrorPanel.Msg
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -96,7 +99,7 @@ update msg model =
         GotPlaces result ->
             case result of
                 Ok places ->
-                    ( { model | places = Just places, getPlacesError = Nothing, selectedPlace = List.head places }
+                    ( { model | places = Just places, getPlacesError = Nothing, selectedPlace = List.head places, placeSearchFiltered = places }
                     , Cmd.none
                     )
 
@@ -105,7 +108,7 @@ update msg model =
                         (newModel, cmd) =
                             update (ErrorMsg (ErrorPanel.AddError { error = (ErrorPanel.HttpError error), str = "Failed to load location tags"})) model
                     in
-                    ( { newModel | places = Nothing }
+                    ( { newModel | places = Nothing, placeSearchFiltered = [] }
                     , cmd
                     )
 
@@ -158,6 +161,20 @@ update msg model =
             ( { model | newPlace = { newPlace | longitude = lon } }
             , Cmd.none
             )
+        
+        PlaceSearchInput keyword ->
+            let
+                filteredPlaces =
+                    case model.places of
+                        Just places ->
+                            List.filter (\p -> String.contains keyword p.name) places
+                        Nothing ->
+                            []
+            in
+            ( { model | placeSearchFiltered = filteredPlaces, placeSearchInput = keyword }
+            , Cmd.none
+            )
+            
         
         ErrorMsg subMsg ->
             let
@@ -217,14 +234,9 @@ selectPlacesView : Model -> Html Msg
 selectPlacesView model =
     div [ class "col" ]
         [ label [] [ text "Existing Places" ]
-        , select [ class "form-control", onChange PlaceSelected ]
-            (case model.places of
-                Just places ->
-                    List.map (\p -> option [ value p.name ] [ text p.name ]) places
-
-                Nothing ->
-                    []
-            )
+        , input [ type_ "text", onChange PlaceSearchInput, placeholder "Search Place", value model.placeSearchInput ] []
+        , select [ class "form-control", Html.Events.onInput PlaceSelected ]
+            (List.map (\p -> option [ value p.name ] [ text p.name ]) model.placeSearchFiltered)
         ]
 
 
