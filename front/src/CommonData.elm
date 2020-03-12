@@ -19,6 +19,12 @@ type alias Place =
     }
 
 
+-- COMMON VIEWS
+
+gmTitleLogo : Html msg
+gmTitleLogo =
+    Html.img [ src "/static/imgs/gm_small_title.png", alt "Gingerbreadman Logo" ] []
+
 
 -- COMMON FUNCTIONS
 

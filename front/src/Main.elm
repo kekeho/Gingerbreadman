@@ -29,6 +29,7 @@ import Url.Builder
 import Url.Parser
 import Url
 
+import CommonData
 import Visualizer
 import Upload
 import ErrorPanel
@@ -166,7 +167,8 @@ view model =
             in
             { title = "Gingerbreadman | " ++ title
             , body = 
-                [ div [ class "app" ]
+                [ navbarView model
+                , div [ class "app" ]
                     ( List.map (Html.map msg_) body )
                 ]
             }
@@ -181,6 +183,18 @@ view model =
         Nothing ->
             notFoundView
             
+
+
+navbarView : Model -> Html Msg
+navbarView model =
+    div [ class "navbar navbar-expand bg-dark navbar-dark" ]
+        [ a [ class "navbar-brand", href "/" ]
+            [ CommonData.gmTitleLogo ]
+        , div [ class "nav navbar-nav" ]
+            [ a [ class "nav-item nav-link active ", href "/upload" ] [ text "Upload" ]
+            ]
+        ]
+
 
 
 notFoundView : Browser.Document Msg
