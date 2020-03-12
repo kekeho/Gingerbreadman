@@ -1,4 +1,4 @@
-module ErrorPanel exposing (..)
+module Common.ErrorPanel exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)

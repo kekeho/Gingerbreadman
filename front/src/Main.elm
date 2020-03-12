@@ -29,10 +29,11 @@ import Url.Builder
 import Url.Parser
 import Url
 
-import CommonData
-import Visualizer
-import Upload
-import ErrorPanel
+import Model exposing (..)
+import Common.Data
+import Visualizer.Visualizer
+import Upload.Upload
+import Common.ErrorPanel
 
 
 -- MAIN
@@ -52,16 +53,6 @@ main =
 
 
 -- MODEL
-
-
-type alias Model =
-    { key : Nav.Key
-    , url : Url.Url
-    , route : Route
-    , errorList : ErrorPanel.Model
-    , visualizer : Visualizer.Model
-    , upload : Upload.Model
-    }
 
 
 init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
@@ -99,19 +90,14 @@ init flags url key =
         ]
     )
 
-type Route
-    = VisualizerPage
-    | UploadPage
-
-
 -- UDPATE
 
 
 type Msg
     = LinkClicked Browser.UrlRequest
     | UrlChanged Url.Url
-    | VisualizerMsg Visualizer.Msg
-    | UploadMsg Upload.Msg
+    | VisualizerMsg Visualizer.Visualizer.Msg
+    | UploadMsg Upload.Upload.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -130,7 +116,7 @@ update msg model =
                 onLoadCmd =
                     case Url.Parser.parse routeParser url of
                         Just UploadPage ->
-                            Cmd.map UploadMsg Upload.getPlaces
+                            Cmd.map UploadMsg Upload.Upload.getPlaces
                         
                         _ ->
                             Cmd.none
@@ -141,14 +127,14 @@ update msg model =
         VisualizerMsg subMsg ->
             let
                 ( model_, cmd ) =
-                    Visualizer.update subMsg model.visualizer
+                    Visualizer.Visualizer.update subMsg model.visualizer
             in                
             ({ model | visualizer = model_ }, Cmd.map VisualizerMsg cmd)
         
         UploadMsg subMsg ->
             let
                 ( model_, cmd ) =
-                    Upload.update subMsg model.upload
+                    Upload.Upload.update subMsg model.upload
             in
             ( { model | upload = model_ }
             , Cmd.map UploadMsg cmd
@@ -175,10 +161,10 @@ view model =
     in
     case Url.Parser.parse routeParser model.url of
         Just VisualizerPage ->
-            viewPage Visualizer.view model.visualizer VisualizerMsg
+            viewPage Visualizer.Visualizer.view model.visualizer VisualizerMsg
         
         Just (UploadPage) ->
-            viewPage Upload.view model.upload UploadMsg
+            viewPage Upload.Upload.view model.upload UploadMsg
         
         Nothing ->
             notFoundView
@@ -189,7 +175,7 @@ navbarView : Model -> Html Msg
 navbarView model =
     div [ class "navbar navbar-expand bg-dark navbar-dark" ]
         [ a [ class "navbar-brand", href "/" ]
-            [ CommonData.gmTitleLogo ]
+            [ Common.Data.gmTitleLogo ]
         , div [ class "nav navbar-nav" ]
             [ a [ class "nav-item nav-link active ", href "/upload" ] [ text "Upload" ]
             ]

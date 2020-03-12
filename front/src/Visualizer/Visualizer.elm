@@ -1,14 +1,10 @@
-module Visualizer exposing (..)
+module Visualizer.Visualizer exposing (..)
 
 import Browser
 import Html exposing (..)
 import Html.Attributes exposing (..)
 
--- MODEL
-
-type alias Model =
-    { test : String
-    }
+import Visualizer.Model exposing (Model)
 
 
 -- UDPATE

@@ -1,4 +1,4 @@
-module CommonData exposing (..)
+module Common.Data exposing (..)
 
 import Json.Decode as D
 import Json.Decode exposing (Decoder)

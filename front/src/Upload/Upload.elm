@@ -1,7 +1,7 @@
-module Upload exposing (..)
+module Upload.Upload exposing (..)
 
 import Browser
-import CommonData exposing (..)
+import Common.Data exposing (..)
 import File
 import File.Select
 import Html exposing (..)
@@ -10,24 +10,11 @@ import Html.Events exposing (onClick)
 import Http
 import List
 
-import ErrorPanel
+import Common.ErrorPanel as ErrorPanel
+import Upload.Model exposing (Model)
 
 
 
--- MODEL
-
-
-type alias Model =
-    { places : Maybe (List Place)
-    , selectedPlace : Maybe Place
-    , newPlace : Place
-    , selectedImages : Maybe (List File.File)
-    , getPlacesError : Maybe Http.Error
-    , uploadResult : Maybe (Result Http.Error ())
-    , placeSearchInput : String
-    , placeSearchFiltered : List Place
-    , error : ErrorPanel.Model
-    }
 
 
 
