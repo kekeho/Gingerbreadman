@@ -164,10 +164,11 @@ update msg model =
         
         PlaceSearchInput keyword ->
             let
+                lowerKeyword = String.toLower keyword
                 filteredPlaces =
                     case model.places of
                         Just places ->
-                            List.filter (\p -> String.contains keyword p.name) places
+                            List.filter (\p -> String.contains lowerKeyword (String.toLower p.name)) places
                         Nothing ->
                             []
             in
