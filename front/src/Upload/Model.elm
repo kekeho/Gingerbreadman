@@ -12,9 +12,6 @@ type alias Model =
     , selectedPlace : Maybe Common.Data.Place
     , newPlace : Common.Data.Place
     , selectedImages : Maybe (List File.File)
-    , getPlacesError : Maybe Http.Error
-    , uploadResult : Maybe (Result Http.Error ())
     , placeSearchInput : String
     , placeSearchFiltered : List Common.Data.Place
-    , error : Common.ErrorPanel.Model
     }

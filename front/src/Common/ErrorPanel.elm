@@ -54,10 +54,12 @@ update msg model =
 
 view : List ErrorModel -> Html Msg
 view errorList =
-    div [ class "errorList" ]
-        ( List.indexedMap Tuple.pair errorList
-            |> List.map errorBoxView
-        )
+    div [ class "errorPanel" ]
+        [ div [ class "errorList" ]
+            ( List.indexedMap Tuple.pair errorList
+                |> List.map errorBoxView
+            )
+        ]
 
 
 errorBoxView : (Int, ErrorModel) -> Html Msg

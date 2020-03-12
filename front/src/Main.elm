@@ -67,14 +67,11 @@ init flags url key =
         }
     , upload = 
         { places = Nothing
-        , getPlacesError = Nothing
-        , uploadResult = Nothing
         , selectedPlace = Nothing
         , selectedImages = Nothing
         , newPlace = { name = "", latitude = 0.0, longitude = 0.0 }
         , placeSearchFiltered = []
         , placeSearchInput = ""
-        , error = []
         }
     }
       -- Command to get all places
@@ -98,6 +95,7 @@ type Msg
     | UrlChanged Url.Url
     | VisualizerMsg Visualizer.Visualizer.Msg
     | UploadMsg Upload.Upload.Msg
+    | ErrorMsg Common.ErrorPanel.Msg
 
 
 update : Msg -> RootModel -> ( RootModel, Cmd Msg )
@@ -139,6 +137,15 @@ update msg rootModel =
             ( model_
             , Cmd.map UploadMsg cmd
             )
+        
+        ErrorMsg subMsg ->
+            let
+                ( model_, cmd ) =
+                    Common.ErrorPanel.update subMsg rootModel.errorList
+            in
+            ( { rootModel | errorList = model_ }
+            , Cmd.map ErrorMsg cmd )
+            
 
 
 -- VIEW
@@ -156,6 +163,8 @@ view rootModel =
                 [ navbarView rootModel
                 , div [ class "app" ]
                     ( List.map (Html.map msg_) body )
+                , Common.ErrorPanel.view rootModel.errorList
+                    |> Html.map ErrorMsg
                 ]
             }
     in

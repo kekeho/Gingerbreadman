@@ -92,7 +92,7 @@ update msg rootModel =
         GotPlaces result ->
             case result of
                 Ok places ->
-                    ( modelMap { model | places = Just places, getPlacesError = Nothing, selectedPlace = List.head places, placeSearchFiltered = places }
+                    ( modelMap { model | places = Just places, selectedPlace = List.head places, placeSearchFiltered = places }
                     , Cmd.none
                     )
 
@@ -102,7 +102,7 @@ update msg rootModel =
                             update (ErrorMsg (ErrorPanel.AddError { error = (ErrorPanel.HttpError error), str = "Failed to load location tags"})) rootModel
                         newModel = newRootModel.upload
                     in
-                    ( modelMap { newModel | places = Nothing, placeSearchFiltered = [] }
+                    ( { newRootModel | upload = { newModel | places = Nothing, placeSearchFiltered = [] } }
                     , cmd
                     )
 
@@ -174,9 +174,9 @@ update msg rootModel =
         ErrorMsg subMsg ->
             let
                 (model_, cmd) =
-                    ErrorPanel.update subMsg model.error
+                    ErrorPanel.update subMsg rootModel.errorList
             in
-            ( modelMap { model | error = model_ }
+            ( { rootModel | errorList = model_ }
             , Cmd.map ErrorMsg cmd)
 
 
@@ -221,10 +221,6 @@ view rootModel =
                     ]
                 ]
             ]
-
-        -- Errors
-        , div [ class "errorPanel" ]
-                    [ Html.map ErrorMsg (ErrorPanel.view model.error) ]
         ]
     }
 
