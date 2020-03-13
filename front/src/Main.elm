@@ -72,6 +72,7 @@ init flags url key =
         , newPlace = { name = "", latitude = 0.0, longitude = 0.0 }
         , placeSearchFiltered = []
         , placeSearchInput = ""
+        , uploadedIndicator = Nothing
         }
     }
       -- Command to get all places

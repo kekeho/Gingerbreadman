@@ -52,17 +52,23 @@ update msg rootModel =
             )
 
         Upload ->
+            let
+                newModel =
+                    { model | uploadedIndicator = Nothing }
+                newRootModel =
+                    { rootModel | upload = newModel}
+            in
             case model.selectedImages of
                 Nothing ->
-                    update (ErrorMsg (ErrorPanel.AddError { error = ErrorPanel.OnlyStr, str = "NO IMAGE"})) rootModel
+                    update (ErrorMsg (ErrorPanel.AddError { error = ErrorPanel.OnlyStr, str = "NO IMAGE"})) newRootModel
 
                 Just files ->
                     case model.selectedPlace of
                         Nothing ->
-                            update (ErrorMsg (ErrorPanel.AddError { error = ErrorPanel.OnlyStr, str = "NO SELECTED PLACE"})) rootModel
+                            update (ErrorMsg (ErrorPanel.AddError { error = ErrorPanel.OnlyStr, str = "NO SELECTED PLACE"})) newRootModel
                     
                         Just selectedPlace ->
-                            ( rootModel
+                            ( newRootModel
                             , Http.post
                                 { url = "/api/db/regist_images/"
                                 , body =
@@ -83,7 +89,7 @@ update msg rootModel =
         Uploaded result ->
             case result of
                 Ok _ ->
-                    ( modelMap { model | selectedImages = Nothing }
+                    ( modelMap { model | selectedImages = Nothing, uploadedIndicator = Just "Uploaded" }
                     , Cmd.none )
 
                 Err error ->
@@ -208,7 +214,7 @@ view rootModel =
                         , newPlacesView model
                         ]
                     , div [ class "form-row" ]
-                        [ div [ class "col" ]
+                        [ div [ class "col-12" ]
                             [ input 
                                 [ class "form-control" 
                                 , type_ "submit"
@@ -217,6 +223,8 @@ view rootModel =
                                 ]
                                 [ ]
                             ]
+                        , div [ class "col" ]
+                            [ uploadedIndicator model ]
                         ]
                     ]
                 ]
@@ -282,7 +290,17 @@ newPlacesView model =
             [ ]
         ]
     
-
+uploadedIndicator : Upload.Model.Model -> Html Msg
+uploadedIndicator model =
+    case model.uploadedIndicator of
+        Just resultStr ->
+            div [ class "uploaded-indicator" ]
+            [ p []
+                [ text resultStr ]
+            ]
+        Nothing ->
+            div [ class "uploaded-indicator"]
+                [ ]
 -- FUNC
 
 

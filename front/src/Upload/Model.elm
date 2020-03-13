@@ -14,4 +14,5 @@ type alias Model =
     , selectedImages : Maybe (List File.File)
     , placeSearchInput : String
     , placeSearchFiltered : List Common.Data.Place
+    , uploadedIndicator : Maybe String
     }
