@@ -22,7 +22,7 @@ from lib import utils
 def main():
     while True:
         analyzer = utils.EncodingAnalzyer(
-            'db-controller', 8888, 'get_unanalyzed_face_encodings/', 'regist_face_encodings/'
+            'nginx', 80, '/api/db/get_unanalyzed_face_encodings/', '/api/db/regist_face_encodings/'
         )
         analyzer.analyze_face_encodings()
         count = analyzer.regist()

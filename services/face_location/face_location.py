@@ -22,7 +22,7 @@ from lib import utils
 def main():
     while True:
         analyzer = utils.LocationAnalzyer(
-            'db-controller', 8888,'/get_unanalyzed_face_location_images/', '/regist_faces/')
+            'nginx', 80,'/api/db/get_unanalyzed_face_location_images/', '/api/db/regist_faces/')
         analyzer.analyze_face_locations()
         count = analyzer.regist()
 

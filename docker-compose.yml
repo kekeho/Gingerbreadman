@@ -40,14 +40,14 @@ services:
   service_face_location:
     build: services/face_location
     depends_on:
-      - db-controller
+      - nginx
     volumes:
       - "./services/face_location:/code"
   
   service_face_encoding:
     build: services/face_encoding
     depends_on:
-      - db-controller
+      - nginx
     volumes:
       - "./services/face_encoding:/code"
 
