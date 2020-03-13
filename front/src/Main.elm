@@ -32,6 +32,7 @@ import Url
 import Model exposing (..)
 import Common.Data
 import Visualizer.Visualizer
+import Visualizer.Controller
 import Upload.Upload
 import Common.ErrorPanel
 
@@ -63,7 +64,10 @@ init flags url key =
     , route = VisualizerPage
     , errorList = [ ]
     , visualizer =
-        { test = "hoge"
+        { controller =
+            { places = []
+            , selectedPlaces = []
+            }
         }
     , upload = 
         { places = Nothing
@@ -117,6 +121,9 @@ update msg rootModel =
                         Just UploadPage ->
                             Cmd.map UploadMsg Upload.Upload.getPlaces
                         
+                        Just VisualizerPage ->
+                            Cmd.map VisualizerMsg Visualizer.Visualizer.onLoad
+                        
                         _ ->
                             Cmd.none
             in
@@ -125,10 +132,10 @@ update msg rootModel =
         
         VisualizerMsg subMsg ->
             let
-                ( model_, cmd ) =
-                    Visualizer.Visualizer.update subMsg rootModel.visualizer
+                ( rootModel_, cmd ) =
+                    Visualizer.Visualizer.update subMsg rootModel
             in                
-            ({ rootModel | visualizer = model_ }, Cmd.map VisualizerMsg cmd)
+            ( rootModel_, Cmd.map VisualizerMsg cmd)
         
         UploadMsg subMsg ->
             let
@@ -171,7 +178,7 @@ view rootModel =
     in
     case Url.Parser.parse routeParser rootModel.url of
         Just VisualizerPage ->
-            viewPage Visualizer.Visualizer.view rootModel.visualizer VisualizerMsg
+            viewPage Visualizer.Visualizer.view rootModel VisualizerMsg
         
         Just (UploadPage) ->
             viewPage Upload.Upload.view rootModel UploadMsg
