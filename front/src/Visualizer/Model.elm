@@ -16,6 +16,7 @@ type alias Model =
 type alias ControllerModel =
     { places : List Place
     , selectedPlaces : List Place
+    , placeSearchKeyword : String
     }
 
 

@@ -76,3 +76,14 @@
     max-height: 40vh;
     overflow-y: scroll;
 }
+
+.controller {
+    width: 100%;
+}
+
+ul.all-places {
+    list-style: none;
+    padding-left: 0;
+    height: 5rem;
+    overflow-y: scroll;
+}

@@ -67,6 +67,7 @@ init flags url key =
         { controller =
             { places = []
             , selectedPlaces = []
+            , placeSearchKeyword = ""
             }
         }
     , upload = 

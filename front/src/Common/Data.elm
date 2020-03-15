@@ -40,6 +40,17 @@ placesDecoder =
     D.list placeDecoder
 
 
+-- IN search
+placesFilter : String -> List Place -> List Place
+placesFilter keyword places =
+    let
+        lowerCaseKeyword = String.toLower keyword
+    in
+    List.map (\p -> { p | name = String.toLower p.name }) places
+        |> List.filter (\p -> String.contains lowerCaseKeyword p.name)
+    
+
+
 -- onchange event
 onChange : (String -> msg) -> Attribute msg
 onChange handler =

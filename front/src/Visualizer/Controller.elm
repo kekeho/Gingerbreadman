@@ -14,6 +14,7 @@ import Common.ErrorPanel
 
 type Msg
     = GotPlace (Result Http.Error (List Place))
+    | PlaceSearchInput String
     | ErrorMsg Common.ErrorPanel.Msg
 
 
@@ -56,6 +57,11 @@ update msg rootModel =
                     , cmd
                     )
 
+        PlaceSearchInput keyword ->
+            ( { rootModel | visualizer = { visualizerModel | controller = { controllerModel | placeSearchKeyword = keyword }}}
+            , Cmd.none
+            )
+        
         ErrorMsg subMsg ->
             let
                 ( errorPanelModel, cmd ) =
@@ -81,17 +87,30 @@ placesView controllerModel  =
     div [ class "places" ] 
         [ div [ class "row" ]
             [ div [ class "col-12" ]
-                [ allPlacesList controllerModel.places ]
+                [ searchView controllerModel
+                , allPlacesList controllerModel
+                ]
             ]
 
         ]
 
 
+searchView : ControllerModel -> Html Msg
+searchView controllerModel =
+    div [ class "search" ]
+        [ input
+            [ type_ "text", onInput PlaceSearchInput, value controllerModel.placeSearchKeyword, placeholder "Search Places" ]
+            []
+            
+        ]
 
-allPlacesList : List Place -> Html Msg
-allPlacesList places =
-    li [ class "all-places" ]
-        ( List.map (\p -> ul [] [text p.name]) places )
+
+allPlacesList : ControllerModel -> Html Msg
+allPlacesList controllerModel =
+    ul [ class "all-places" ]
+        ( placesFilter controllerModel.placeSearchKeyword controllerModel.places
+            |> List.map (\p -> li [] [text p.name])
+        )
 
 
 
