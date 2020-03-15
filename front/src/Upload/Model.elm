@@ -1,11 +1,10 @@
 module Upload.Model exposing (Model)
 
-
-import Http
-import File
-
-import Common.ErrorPanel
 import Common.Data
+import Common.ErrorPanel
+import File
+import Http
+
 
 type alias Model =
     { places : Maybe (List Common.Data.Place)

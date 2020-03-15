@@ -1,15 +1,17 @@
 module Visualizer.Model exposing (..)
 
-import Time
+import Common.Data exposing (Place)
 import Json.Decode as D exposing (Decoder)
 import Json.Decode.Pipeline as P
+import Time
 
-import Common.Data exposing (Place)
+
 
 -- MODELS
 
+
 type alias Model =
-    { controller : ControllerModel 
+    { controller : ControllerModel
     }
 
 
@@ -48,7 +50,6 @@ type alias FaceLocation =
     }
 
 
-
 type Gender
     = NotKnown
     | Male
@@ -75,6 +76,7 @@ type alias Traffic =
 
 
 -- FUNCTIONS
+
 
 sortWithTime : Person -> Person
 sortWithTime person =

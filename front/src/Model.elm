@@ -1,16 +1,16 @@
 module Model exposing (..)
 
-
 import Browser.Navigation as Nav
-import Url
-import Url.Parser
-
-import Visualizer.Model
 import Common.ErrorPanel as ErrorPanel
 import Upload.Model
+import Url
+import Url.Parser
+import Visualizer.Model
+
 
 
 -- MODEL
+
 
 type alias RootModel =
     { key : Nav.Key
@@ -25,4 +25,3 @@ type alias RootModel =
 type Route
     = VisualizerPage
     | UploadPage
-

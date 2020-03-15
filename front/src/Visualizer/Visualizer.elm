@@ -3,13 +3,14 @@ module Visualizer.Visualizer exposing (..)
 import Browser
 import Html exposing (..)
 import Html.Attributes exposing (..)
-
 import Model exposing (RootModel)
-import Visualizer.Model exposing (Model)
 import Visualizer.Controller
+import Visualizer.Model exposing (Model)
+
 
 
 -- UDPATE
+
 
 type Msg
     = ControllerMsg Visualizer.Controller.Msg
@@ -20,14 +21,18 @@ update msg rootModel =
     case msg of
         ControllerMsg subMsg ->
             let
-                ( rootModel_, cmd_) =
+                ( rootModel_, cmd_ ) =
                     Visualizer.Controller.update subMsg rootModel
+
                 cmd =
                     Cmd.map ControllerMsg cmd_
             in
             ( rootModel_, cmd )
 
+
+
 -- VIEW
+
 
 view : RootModel -> Browser.Document Msg
 view rootModel =
@@ -35,14 +40,16 @@ view rootModel =
     , body =
         [ div [ class "container visualizer" ]
             [ div [ class "row" ]
-                [ div [ class "col-7" ] -- Map & Controller
+                [ div [ class "col-7" ]
+                    -- Map & Controller
                     [ div [ class "row" ]
-                        [ -- MAP 
+                        [-- MAP
                         ]
                     , Visualizer.Controller.view rootModel.visualizer
-                        |> Html.map ControllerMsg 
+                        |> Html.map ControllerMsg
                     ]
-                , div [ class "col-5" ] -- People, Traffic...
+                , div [ class "col-5" ]
+                    -- People, Traffic...
                     []
                 ]
             ]
@@ -53,10 +60,11 @@ view rootModel =
 
 -- FUNCTIONS
 
+
 onLoad : Cmd Msg
 onLoad =
     Cmd.batch
-        ( List.map (\(msg, cmd) -> Cmd.map msg cmd) 
-            [ (ControllerMsg, Visualizer.Controller.getPlaces)
+        (List.map (\( msg, cmd ) -> Cmd.map msg cmd)
+            [ ( ControllerMsg, Visualizer.Controller.getPlaces )
             ]
         )

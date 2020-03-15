@@ -20,21 +20,21 @@ module Main exposing (main)
 
 import Browser
 import Browser.Navigation as Nav
+import Common.Data
+import Common.ErrorPanel
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http
 import Json.Decode as D exposing (Decoder)
+import Model exposing (..)
+import Upload.Upload
+import Url
 import Url.Builder
 import Url.Parser
-import Url
-
-import Model exposing (..)
-import Common.Data
-import Visualizer.Visualizer
 import Visualizer.Controller
-import Upload.Upload
-import Common.ErrorPanel
+import Visualizer.Visualizer
+
 
 
 -- MAIN
@@ -59,39 +59,41 @@ main =
 init : () -> Url.Url -> Nav.Key -> ( RootModel, Cmd Msg )
 init flags url key =
     ( -- Initialize model
-    { key = key
-    , url = url
-    , route = VisualizerPage
-    , errorList = [ ]
-    , visualizer =
-        { controller =
-            { places = []
-            , selectedPlaces = []
-            , placeSearchKeyword = ""
+      { key = key
+      , url = url
+      , route = VisualizerPage
+      , errorList = []
+      , visualizer =
+            { controller =
+                { places = []
+                , selectedPlaces = []
+                , placeSearchKeyword = ""
+                }
             }
-        }
-    , upload = 
-        { places = Nothing
-        , selectedPlace = Nothing
-        , selectedImages = Nothing
-        , newPlace = { name = "", latitude = 0.0, longitude = 0.0 }
-        , placeSearchFiltered = []
-        , placeSearchInput = ""
-        , uploadedIndicator = Nothing
-        }
-    }
+      , upload =
+            { places = Nothing
+            , selectedPlace = Nothing
+            , selectedImages = Nothing
+            , newPlace = { name = "", latitude = 0.0, longitude = 0.0 }
+            , placeSearchFiltered = []
+            , placeSearchInput = ""
+            , uploadedIndicator = Nothing
+            }
+      }
       -- Command to get all places
     , Cmd.batch
         [ Nav.pushUrl key (Url.toString url)
+
         -- , Http.get
         --     { url = Url.Builder.absolute [ "visualizer", "get_places_all" ] []
         --     , expect = Http.expectJson Visualizer.Main.GotAllPlaces Visualizer.Main.allPlaceDecoder
         --     }
-
         -- Init OpenLayers Map
         -- , Map.initMap "olmap"
         ]
     )
+
+
 
 -- UDPATE
 
@@ -111,33 +113,34 @@ update msg rootModel =
             case urlRequest of
                 Browser.Internal url ->
                     ( rootModel, Nav.pushUrl rootModel.key (Url.toString url) )
-                
+
                 Browser.External href ->
                     ( rootModel, Nav.load href )
-        
+
         UrlChanged url ->
             let
                 onLoadCmd =
                     case Url.Parser.parse routeParser url of
                         Just UploadPage ->
                             Cmd.map UploadMsg Upload.Upload.getPlaces
-                        
+
                         Just VisualizerPage ->
                             Cmd.map VisualizerMsg Visualizer.Visualizer.onLoad
-                        
+
                         _ ->
                             Cmd.none
             in
-            ( { rootModel | url = url}
-            , onLoadCmd)
-        
+            ( { rootModel | url = url }
+            , onLoadCmd
+            )
+
         VisualizerMsg subMsg ->
             let
                 ( rootModel_, cmd ) =
                     Visualizer.Visualizer.update subMsg rootModel
-            in                
-            ( rootModel_, Cmd.map VisualizerMsg cmd)
-        
+            in
+            ( rootModel_, Cmd.map VisualizerMsg cmd )
+
         UploadMsg subMsg ->
             let
                 ( model_, cmd ) =
@@ -146,15 +149,16 @@ update msg rootModel =
             ( model_
             , Cmd.map UploadMsg cmd
             )
-        
+
         ErrorMsg subMsg ->
             let
                 ( model_, cmd ) =
                     Common.ErrorPanel.update subMsg rootModel.errorList
             in
             ( { rootModel | errorList = model_ }
-            , Cmd.map ErrorMsg cmd )
-            
+            , Cmd.map ErrorMsg cmd
+            )
+
 
 
 -- VIEW
@@ -165,13 +169,14 @@ view rootModel =
     let
         viewPage view_ model_ msg_ =
             let
-                { title, body } = view_ model_
+                { title, body } =
+                    view_ model_
             in
             { title = "Gingerbreadman | " ++ title
-            , body = 
+            , body =
                 [ navbarView rootModel
                 , div [ class "app" ]
-                    ( List.map (Html.map msg_) body )
+                    (List.map (Html.map msg_) body)
                 , Common.ErrorPanel.view rootModel.errorList
                     |> Html.map ErrorMsg
                 ]
@@ -180,13 +185,12 @@ view rootModel =
     case Url.Parser.parse routeParser rootModel.url of
         Just VisualizerPage ->
             viewPage Visualizer.Visualizer.view rootModel VisualizerMsg
-        
-        Just (UploadPage) ->
+
+        Just UploadPage ->
             viewPage Upload.Upload.view rootModel UploadMsg
-        
+
         Nothing ->
             notFoundView
-            
 
 
 navbarView : RootModel -> Html Msg
@@ -200,17 +204,19 @@ navbarView model =
         ]
 
 
-
 notFoundView : Browser.Document Msg
 notFoundView =
     { title = "Gingerbreadman | 404 Error"
     , body =
-        [ div [ ]
+        [ div []
             [ h1 [] [ text "404" ] ]
         ]
     }
 
+
+
 -- FUNCTIONS
+
 
 routeParser : Url.Parser.Parser (Route -> a) a
 routeParser =
@@ -218,4 +224,3 @@ routeParser =
         [ Url.Parser.map VisualizerPage Url.Parser.top
         , Url.Parser.map UploadPage (Url.Parser.s "upload")
         ]
-

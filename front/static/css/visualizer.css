@@ -84,7 +84,7 @@
 ul.all-places {
     list-style: none;
     padding-left: 0;
-    height: 5rem;
+    height: 10rem;
     overflow-y: scroll;
 }
 

@@ -2,6 +2,7 @@ module Upload.Upload exposing (..)
 
 import Browser
 import Common.Data exposing (..)
+import Common.ErrorPanel as ErrorPanel
 import File
 import File.Select
 import Html exposing (..)
@@ -9,9 +10,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Http
 import List
-
 import Model exposing (RootModel)
-import Common.ErrorPanel as ErrorPanel
 import Upload.Model
 
 
@@ -32,15 +31,17 @@ type Msg
     | PlaceSearchInput String
     | ErrorMsg ErrorPanel.Msg
 
+
 update : Msg -> RootModel -> ( RootModel, Cmd Msg )
 update msg rootModel =
     let
         model : Upload.Model.Model
-        model = rootModel.upload
+        model =
+            rootModel.upload
 
         modelMap : Upload.Model.Model -> RootModel
         modelMap m1 =
-            { rootModel | upload = m1}
+            { rootModel | upload = m1 }
     in
     case msg of
         ImageRequested ->
@@ -55,45 +56,45 @@ update msg rootModel =
             let
                 newModel =
                     { model | uploadedIndicator = Nothing }
+
                 newRootModel =
-                    { rootModel | upload = newModel}
+                    { rootModel | upload = newModel }
             in
             case model.selectedImages of
                 Nothing ->
-                    update (ErrorMsg (ErrorPanel.AddError { error = ErrorPanel.OnlyStr, str = "NO IMAGE"})) newRootModel
+                    update (ErrorMsg (ErrorPanel.AddError { error = ErrorPanel.OnlyStr, str = "NO IMAGE" })) newRootModel
 
                 Just files ->
                     case model.selectedPlace of
                         Nothing ->
-                            update (ErrorMsg (ErrorPanel.AddError { error = ErrorPanel.OnlyStr, str = "NO SELECTED PLACE"})) newRootModel
-                    
+                            update (ErrorMsg (ErrorPanel.AddError { error = ErrorPanel.OnlyStr, str = "NO SELECTED PLACE" })) newRootModel
+
                         Just selectedPlace ->
                             ( newRootModel
                             , Http.post
                                 { url = "/api/db/regist_images/"
                                 , body =
-                                    Http.multipartBody 
-                                        (  (Http.stringPart "place_selected" selectedPlace.name)
-                                        :: (Http.stringPart "place_new" model.newPlace.name)
-                                        :: (Http.stringPart "new_latitude" (String.fromFloat model.newPlace.latitude))
-                                        :: (Http.stringPart "new_longitude" (String.fromFloat model.newPlace.longitude))
-                                        :: (List.map (\f -> Http.filePart "images" f) files)
-                                        ++ (List.map (\f -> Http.stringPart "images_mtimes" (msecToStr (File.lastModified f))) files)
+                                    Http.multipartBody
+                                        (Http.stringPart "place_selected" selectedPlace.name
+                                            :: Http.stringPart "place_new" model.newPlace.name
+                                            :: Http.stringPart "new_latitude" (String.fromFloat model.newPlace.latitude)
+                                            :: Http.stringPart "new_longitude" (String.fromFloat model.newPlace.longitude)
+                                            :: List.map (\f -> Http.filePart "images" f) files
+                                            ++ List.map (\f -> Http.stringPart "images_mtimes" (msecToStr (File.lastModified f))) files
                                         )
                                 , expect = Http.expectWhatever Uploaded
                                 }
                             )
 
-
-
         Uploaded result ->
             case result of
                 Ok _ ->
                     ( modelMap { model | selectedImages = Nothing, uploadedIndicator = Just "Uploaded" }
-                    , Cmd.none )
+                    , Cmd.none
+                    )
 
                 Err error ->
-                    update (ErrorMsg (ErrorPanel.AddError { error = (ErrorPanel.HttpError error), str = "Failed to upload images"})) rootModel
+                    update (ErrorMsg (ErrorPanel.AddError { error = ErrorPanel.HttpError error, str = "Failed to upload images" })) rootModel
 
         GotPlaces result ->
             case result of
@@ -104,9 +105,11 @@ update msg rootModel =
 
                 Err error ->
                     let
-                        (newRootModel, cmd) =
-                            update (ErrorMsg (ErrorPanel.AddError { error = (ErrorPanel.HttpError error), str = "Failed to load location tags"})) rootModel
-                        newModel = newRootModel.upload
+                        ( newRootModel, cmd ) =
+                            update (ErrorMsg (ErrorPanel.AddError { error = ErrorPanel.HttpError error, str = "Failed to load location tags" })) rootModel
+
+                        newModel =
+                            newRootModel.upload
                     in
                     ( { newRootModel | upload = { newModel | places = Nothing, placeSearchFiltered = [] } }
                     , cmd
@@ -124,66 +127,79 @@ update msg rootModel =
                             Nothing
             in
             ( modelMap { model | selectedPlace = place }, Cmd.none )
-        
+
         NewPlaceName name ->
             let
-                newPlace = model.newPlace
+                newPlace =
+                    model.newPlace
             in
-            ( modelMap { model | newPlace = { newPlace | name = name }
-              }
+            ( modelMap
+                { model
+                    | newPlace = { newPlace | name = name }
+                }
             , Cmd.none
             )
-        
+
         NewPlaceLatitude latitude ->
             let
-                newPlace = model.newPlace
+                newPlace =
+                    model.newPlace
+
                 lat =
                     case String.toFloat latitude of
                         Just l ->
                             l
+
                         Nothing ->
                             0.0
             in
             ( modelMap { model | newPlace = { newPlace | latitude = lat } }
             , Cmd.none
             )
-        
+
         NewPlaceLongitude longitude ->
             let
-                newPlace = model.newPlace
+                newPlace =
+                    model.newPlace
+
                 lon =
                     case String.toFloat longitude of
                         Just l ->
                             l
+
                         Nothing ->
                             0.0
             in
             ( modelMap { model | newPlace = { newPlace | longitude = lon } }
             , Cmd.none
             )
-        
+
         PlaceSearchInput keyword ->
             let
-                lowerKeyword = String.toLower keyword
+                lowerKeyword =
+                    String.toLower keyword
+
                 filteredPlaces =
                     case model.places of
                         Just places ->
                             List.filter (\p -> String.contains lowerKeyword (String.toLower p.name)) places
+
                         Nothing ->
                             []
             in
             ( modelMap { model | placeSearchFiltered = filteredPlaces, placeSearchInput = keyword }
             , Cmd.none
             )
-            
-        
+
         ErrorMsg subMsg ->
             let
-                (model_, cmd) =
+                ( model_, cmd ) =
                     ErrorPanel.update subMsg rootModel.errorList
             in
             ( { rootModel | errorList = model_ }
-            , Cmd.map ErrorMsg cmd)
+            , Cmd.map ErrorMsg cmd
+            )
+
 
 
 -- VIEW
@@ -192,9 +208,9 @@ update msg rootModel =
 view : RootModel -> Browser.Document Msg
 view rootModel =
     let
-        model = rootModel.upload
+        model =
+            rootModel.upload
     in
-    
     { title = "Upload"
     , body =
         [ div [ class "container" ]
@@ -215,13 +231,13 @@ view rootModel =
                         ]
                     , div [ class "form-row" ]
                         [ div [ class "col-12" ]
-                            [ input 
-                                [ class "form-control" 
+                            [ input
+                                [ class "form-control"
                                 , type_ "submit"
                                 , value "Upload"
                                 , onClick Upload
                                 ]
-                                [ ]
+                                []
                             ]
                         , div [ class "col" ]
                             [ uploadedIndicator model ]
@@ -251,8 +267,13 @@ filesCountView maybeFiles =
                 let
                     count =
                         List.length files
+
                     pluralStr =
-                        if count >= 2 then "s" else ""
+                        if count >= 2 then
+                            "s"
+
+                        else
+                            ""
                 in
                 [ text (String.fromInt count ++ " file" ++ pluralStr) ]
 
@@ -269,9 +290,9 @@ newPlacesView model =
             , class "form-control"
             , placeholder "or create new place tag"
             , onChange NewPlaceName
-            , value model.newPlace.name ]
-            [ ]
-
+            , value model.newPlace.name
+            ]
+            []
         , input
             [ type_ "number"
             , placeholder "latitude"
@@ -279,7 +300,7 @@ newPlacesView model =
             , onChange NewPlaceLatitude
             , value (String.fromFloat model.newPlace.latitude)
             ]
-            [ ]
+            []
         , input
             [ type_ "number"
             , placeholder "longitude"
@@ -287,20 +308,25 @@ newPlacesView model =
             , value (String.fromFloat model.newPlace.longitude)
             , onChange NewPlaceLongitude
             ]
-            [ ]
+            []
         ]
-    
+
+
 uploadedIndicator : Upload.Model.Model -> Html Msg
 uploadedIndicator model =
     case model.uploadedIndicator of
         Just resultStr ->
             div [ class "uploaded-indicator" ]
-            [ p []
-                [ text resultStr ]
-            ]
+                [ p []
+                    [ text resultStr ]
+                ]
+
         Nothing ->
-            div [ class "uploaded-indicator"]
-                [ ]
+            div [ class "uploaded-indicator" ]
+                []
+
+
+
 -- FUNC
 
 

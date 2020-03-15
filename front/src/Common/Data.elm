@@ -1,16 +1,15 @@
 module Common.Data exposing (..)
 
-import Json.Decode as D
-import Json.Decode exposing (Decoder)
-import Time
-
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events as Events exposing (on)
+import Json.Decode as D exposing (Decoder)
+import Time
 
 
 
 -- COMMON MODEL
+
 
 type alias Place =
     { name : String
@@ -19,14 +18,18 @@ type alias Place =
     }
 
 
+
 -- COMMON VIEWS
+
 
 gmTitleLogo : Html msg
 gmTitleLogo =
     Html.img [ src "/static/imgs/gm_small_title.png", alt "Gingerbreadman Logo" ] []
 
 
+
 -- COMMON FUNCTIONS
+
 
 placeDecoder : Decoder Place
 placeDecoder =
@@ -35,24 +38,31 @@ placeDecoder =
         (D.field "latitude" D.float)
         (D.field "longitude" D.float)
 
+
 placesDecoder : Decoder (List Place)
 placesDecoder =
     D.list placeDecoder
 
 
+
 -- IN search
+
+
 placesFilter : String -> List Place -> List Place
 placesFilter keyword places =
     let
-        lowerCaseKeyword = String.toLower keyword
+        lowerCaseKeyword =
+            String.toLower keyword
     in
     List.filter
-        (\p -> String.contains lowerCaseKeyword ( String.toLower p.name ))
+        (\p -> String.contains lowerCaseKeyword (String.toLower p.name))
         places
-    
+
 
 
 -- onchange event
+
+
 onChange : (String -> msg) -> Attribute msg
 onChange handler =
     on "change" (D.map handler Events.targetValue)
