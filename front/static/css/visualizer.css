@@ -87,3 +87,21 @@ ul.all-places {
     height: 5rem;
     overflow-y: scroll;
 }
+
+
+.controller .selected {
+    padding-bottom: 1rem;
+}
+
+
+.controller .selected .selected-place-box {
+    width: min-content;
+    height: min-content;
+    padding: 0.3rem;
+    margin: 0.4rem;
+
+    display: inline-block;
+
+    border-radius: 0.5rem;
+    background-color: rgb(201, 201, 201);
+}

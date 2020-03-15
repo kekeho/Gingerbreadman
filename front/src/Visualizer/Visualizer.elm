@@ -39,10 +39,8 @@ view rootModel =
                     [ div [ class "row" ]
                         [ -- MAP 
                         ]
-                    , div [ class "row" ]
-                        [ Visualizer.Controller.view rootModel.visualizer
-                            |> Html.map ControllerMsg 
-                        ]
+                    , Visualizer.Controller.view rootModel.visualizer
+                        |> Html.map ControllerMsg 
                     ]
                 , div [ class "col-5" ] -- People, Traffic...
                     []

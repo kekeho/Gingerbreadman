@@ -46,8 +46,9 @@ placesFilter keyword places =
     let
         lowerCaseKeyword = String.toLower keyword
     in
-    List.map (\p -> { p | name = String.toLower p.name }) places
-        |> List.filter (\p -> String.contains lowerCaseKeyword p.name)
+    List.filter
+        (\p -> String.contains lowerCaseKeyword ( String.toLower p.name ))
+        places
     
 
 
