@@ -45,7 +45,7 @@ view rootModel =
                     [ div [ class "row" ]
                         [-- MAP
                         ]
-                    , Visualizer.Controller.view rootModel.visualizer
+                    , Visualizer.Controller.view rootModel
                         |> Html.map ControllerMsg
                     ]
                 , div [ class "col-5" ]

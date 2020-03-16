@@ -22,12 +22,14 @@ import Browser
 import Browser.Navigation as Nav
 import Common.Data
 import Common.ErrorPanel
+import Common.Settings
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http
 import Json.Decode as D exposing (Decoder)
 import Model exposing (..)
+import Time
 import Upload.Upload
 import Url
 import Url.Builder
@@ -68,6 +70,10 @@ init flags url key =
                 { places = []
                 , selectedPlaces = []
                 , placeSearchKeyword = ""
+                , dateRange =
+                    { since = Time.millisToPosix 0
+                    , until = Time.millisToPosix 0
+                    }
                 }
             }
       , upload =
@@ -79,10 +85,15 @@ init flags url key =
             , placeSearchInput = ""
             , uploadedIndicator = Nothing
             }
+      , settings =
+            { timezone = Time.utc
+            , timezoneName = Time.Name "UTC"
+            }
       }
       -- Command to get all places
     , Cmd.batch
         [ Nav.pushUrl key (Url.toString url)
+        , Cmd.map SettingsMsg Common.Settings.getTimezoneWithZoneName
 
         -- , Http.get
         --     { url = Url.Builder.absolute [ "visualizer", "get_places_all" ] []
@@ -104,6 +115,7 @@ type Msg
     | VisualizerMsg Visualizer.Visualizer.Msg
     | UploadMsg Upload.Upload.Msg
     | ErrorMsg Common.ErrorPanel.Msg
+    | SettingsMsg Common.Settings.Msg
 
 
 update : Msg -> RootModel -> ( RootModel, Cmd Msg )
@@ -157,6 +169,15 @@ update msg rootModel =
             in
             ( { rootModel | errorList = model_ }
             , Cmd.map ErrorMsg cmd
+            )
+
+        SettingsMsg subMsg ->
+            let
+                ( settingsModel, cmd ) =
+                    Common.Settings.update subMsg rootModel.settings
+            in
+            ( { rootModel | settings = settingsModel }
+            , Cmd.none
             )
 
 

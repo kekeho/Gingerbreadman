@@ -19,6 +19,7 @@ type alias ControllerModel =
     { places : List Place
     , selectedPlaces : List Place
     , placeSearchKeyword : String
+    , dateRange : DateRange
     }
 
 
@@ -71,6 +72,12 @@ type Emotion
 type alias Traffic =
     { places : List Place
     , count : Int
+    }
+
+
+type alias DateRange =
+    { since : Time.Posix
+    , until : Time.Posix
     }
 
 

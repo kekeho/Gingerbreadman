@@ -2,11 +2,15 @@ module Visualizer.Controller exposing (..)
 
 import Common.Data exposing (..)
 import Common.ErrorPanel
+import Common.Settings
+import Debug
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http
+import Iso8601
 import Model exposing (RootModel)
+import Time
 import Visualizer.Model exposing (..)
 
 
@@ -15,6 +19,8 @@ type Msg
     | SelectPlace String
     | DelSelectedPlace String
     | PlaceSearchInput String
+    | GotSinceTime String
+    | GotUntilTime String
     | ErrorMsg Common.ErrorPanel.Msg
 
 
@@ -93,6 +99,64 @@ update msg rootModel =
             , Cmd.none
             )
 
+        GotSinceTime iso8601Str ->
+            let
+                normalized =
+                    iso8601Str ++ ":00"
+
+                dateRange =
+                    controllerModel.dateRange
+            in
+            case Iso8601.toTime normalized |> Debug.log "debug" of
+                Ok localTime ->
+                    ( { rootModel
+                        | visualizer =
+                            { visualizerModel
+                                | controller =
+                                    { controllerModel | dateRange = { dateRange | since = Common.Settings.toUTC rootModel.settings.timezone localTime } }
+                            }
+                      }
+                    , Cmd.none
+                    )
+
+                Err error ->
+                    let
+                        ( newRootModel, cmd ) =
+                            update (ErrorMsg (Common.ErrorPanel.AddError { error = Common.ErrorPanel.OnlyStr, str = "Format of since time is invalid" })) rootModel
+                    in
+                    ( newRootModel
+                    , cmd
+                    )
+
+        GotUntilTime iso8601Str ->
+            let
+                normalized =
+                    iso8601Str ++ ":00"
+
+                dateRange =
+                    controllerModel.dateRange
+            in
+            case Iso8601.toTime normalized |> Debug.log "debug" of
+                Ok localTime ->
+                    ( { rootModel
+                        | visualizer =
+                            { visualizerModel
+                                | controller =
+                                    { controllerModel | dateRange = { dateRange | until = Common.Settings.toUTC rootModel.settings.timezone localTime } }
+                            }
+                      }
+                    , Cmd.none
+                    )
+
+                Err error ->
+                    let
+                        ( newRootModel, cmd ) =
+                            update (ErrorMsg (Common.ErrorPanel.AddError { error = Common.ErrorPanel.OnlyStr, str = "Format of until time is invalid" })) rootModel
+                    in
+                    ( newRootModel
+                    , cmd
+                    )
+
         ErrorMsg subMsg ->
             let
                 ( errorPanelModel, cmd ) =
@@ -103,15 +167,15 @@ update msg rootModel =
             )
 
 
-view : Model -> Html Msg
-view model =
+view : RootModel -> Html Msg
+view rootModel =
     div [ class "row controller" ]
         [ div [ class "col-12" ]
             [ h2 [] [ text "Controller" ] ]
         , div [ class "col-6" ]
-            [ text "date" ]
+            [ dateSelectorView rootModel ]
         , div [ class "col-6" ]
-            [ placesView model.controller ]
+            [ placesView rootModel.visualizer.controller ]
         ]
 
 
@@ -170,3 +234,40 @@ getPlaces =
         , timeout = Nothing
         , tracker = Nothing
         }
+
+
+dateSelectorView : RootModel -> Html Msg
+dateSelectorView rootModel =
+    let
+        controllerModel =
+            rootModel.visualizer.controller
+
+        hereTimeZone =
+            rootModel.settings.timezone
+    in
+    div [ class "date-selector form" ]
+        [ div [ class "form-group" ]
+            [ label [] [ text "since" ]
+            , input
+                [ type_ "datetime-local"
+                , value (Common.Settings.localDropSecsStr hereTimeZone controllerModel.dateRange.since)
+                , onChange GotSinceTime
+                ]
+                []
+            ]
+        , div [ class "form-group" ]
+            [ label [] [ text "until" ]
+            , input
+                [ type_ "datetime-local"
+                , value (Common.Settings.localDropSecsStr hereTimeZone controllerModel.dateRange.until)
+                , onChange GotUntilTime
+                ]
+                []
+            ]
+        , div [ class "timezone-info" ]
+            [ text
+                ("timezone: "
+                    ++ Common.Settings.timezoneNameString rootModel.settings.timezoneName
+                )
+            ]
+        ]

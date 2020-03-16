@@ -105,3 +105,8 @@ ul.all-places {
     border-radius: 0.5rem;
     background-color: rgb(201, 201, 201);
 }
+
+
+.controller .date-selector.form input {
+    height: 1.5rem;
+}
