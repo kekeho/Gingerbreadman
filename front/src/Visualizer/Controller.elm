@@ -23,7 +23,7 @@ type Msg
     | GotSinceTime String
     | GotUntilTime String
     | Analyze
-    | Analyzed (Result Http.Error (List Common.Data.Person))
+    | Analyzed (Result Http.Error (List Visualizer.Model.Person))
     | ErrorMsg Common.ErrorPanel.Msg
 
 
@@ -329,7 +329,7 @@ analyze rootModel =
                     [ Http.header "Accept" "application/json"
                     ]
                 , url = path query
-                , expect = Http.expectJson Analyzed Common.Data.peopleDecoder
+                , expect = Http.expectJson Analyzed Visualizer.Model.peopleDecoder
                 , body = Http.emptyBody
                 , timeout = Nothing
                 , tracker = Nothing

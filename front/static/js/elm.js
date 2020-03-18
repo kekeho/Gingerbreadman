@@ -4896,6 +4896,52 @@ function _Browser_load(url)
 
 
 
+function _Time_now(millisToPosix)
+{
+	return _Scheduler_binding(function(callback)
+	{
+		callback(_Scheduler_succeed(millisToPosix(Date.now())));
+	});
+}
+
+var _Time_setInterval = F2(function(interval, task)
+{
+	return _Scheduler_binding(function(callback)
+	{
+		var id = setInterval(function() { _Scheduler_rawSpawn(task); }, interval);
+		return function() { clearInterval(id); };
+	});
+});
+
+function _Time_here()
+{
+	return _Scheduler_binding(function(callback)
+	{
+		callback(_Scheduler_succeed(
+			A2($elm$time$Time$customZone, -(new Date().getTimezoneOffset()), _List_Nil)
+		));
+	});
+}
+
+
+function _Time_getZoneName()
+{
+	return _Scheduler_binding(function(callback)
+	{
+		try
+		{
+			var name = $elm$time$Time$Name(Intl.DateTimeFormat().resolvedOptions().timeZone);
+		}
+		catch (e)
+		{
+			var name = $elm$time$Time$Offset(new Date().getTimezoneOffset());
+		}
+		callback(_Scheduler_succeed(name));
+	});
+}
+
+
+
 // SEND REQUEST
 
 var _Http_toTask = F3(function(router, toTask, request)
@@ -5263,6 +5309,136 @@ function _File_toUrl(blob)
 	});
 }
 
+
+
+
+
+// STRINGS
+
+
+var _Parser_isSubString = F5(function(smallString, offset, row, col, bigString)
+{
+	var smallLength = smallString.length;
+	var isGood = offset + smallLength <= bigString.length;
+
+	for (var i = 0; isGood && i < smallLength; )
+	{
+		var code = bigString.charCodeAt(offset);
+		isGood =
+			smallString[i++] === bigString[offset++]
+			&& (
+				code === 0x000A /* \n */
+					? ( row++, col=1 )
+					: ( col++, (code & 0xF800) === 0xD800 ? smallString[i++] === bigString[offset++] : 1 )
+			)
+	}
+
+	return _Utils_Tuple3(isGood ? offset : -1, row, col);
+});
+
+
+
+// CHARS
+
+
+var _Parser_isSubChar = F3(function(predicate, offset, string)
+{
+	return (
+		string.length <= offset
+			? -1
+			:
+		(string.charCodeAt(offset) & 0xF800) === 0xD800
+			? (predicate(_Utils_chr(string.substr(offset, 2))) ? offset + 2 : -1)
+			:
+		(predicate(_Utils_chr(string[offset]))
+			? ((string[offset] === '\n') ? -2 : (offset + 1))
+			: -1
+		)
+	);
+});
+
+
+var _Parser_isAsciiCode = F3(function(code, offset, string)
+{
+	return string.charCodeAt(offset) === code;
+});
+
+
+
+// NUMBERS
+
+
+var _Parser_chompBase10 = F2(function(offset, string)
+{
+	for (; offset < string.length; offset++)
+	{
+		var code = string.charCodeAt(offset);
+		if (code < 0x30 || 0x39 < code)
+		{
+			return offset;
+		}
+	}
+	return offset;
+});
+
+
+var _Parser_consumeBase = F3(function(base, offset, string)
+{
+	for (var total = 0; offset < string.length; offset++)
+	{
+		var digit = string.charCodeAt(offset) - 0x30;
+		if (digit < 0 || base <= digit) break;
+		total = base * total + digit;
+	}
+	return _Utils_Tuple2(offset, total);
+});
+
+
+var _Parser_consumeBase16 = F2(function(offset, string)
+{
+	for (var total = 0; offset < string.length; offset++)
+	{
+		var code = string.charCodeAt(offset);
+		if (0x30 <= code && code <= 0x39)
+		{
+			total = 16 * total + code - 0x30;
+		}
+		else if (0x41 <= code && code <= 0x46)
+		{
+			total = 16 * total + code - 55;
+		}
+		else if (0x61 <= code && code <= 0x66)
+		{
+			total = 16 * total + code - 87;
+		}
+		else
+		{
+			break;
+		}
+	}
+	return _Utils_Tuple2(offset, total);
+});
+
+
+
+// FIND STRING
+
+
+var _Parser_findSubString = F5(function(smallString, offset, row, col, bigString)
+{
+	var newOffset = bigString.indexOf(smallString, offset);
+	var target = newOffset < 0 ? bigString.length : newOffset + smallString.length;
+
+	while (offset < target)
+	{
+		var code = bigString.charCodeAt(offset++);
+		code === 0x000A /* \n */
+			? ( col=1, row++ )
+			: ( col++, (code & 0xF800) === 0xD800 && offset++ )
+	}
+
+	return _Utils_Tuple3(newOffset, row, col);
+});
 var $author$project$Main$LinkClicked = function (a) {
 	return {$: 'LinkClicked', a: a};
 };
@@ -10867,7 +11043,38 @@ var $elm$core$Basics$never = function (_v0) {
 	}
 };
 var $elm$browser$Browser$application = _Browser_application;
-var $author$project$Main$VisualizerPage = {$: 'VisualizerPage'};
+var $elm$time$Time$Name = function (a) {
+	return {$: 'Name', a: a};
+};
+var $author$project$Main$SettingsMsg = function (a) {
+	return {$: 'SettingsMsg', a: a};
+};
+var $author$project$Model$VisualizerPage = {$: 'VisualizerPage'};
+var $author$project$Common$Settings$GotTimezone = function (a) {
+	return {$: 'GotTimezone', a: a};
+};
+var $elm$time$Time$Offset = function (a) {
+	return {$: 'Offset', a: a};
+};
+var $elm$time$Time$Zone = F2(
+	function (a, b) {
+		return {$: 'Zone', a: a, b: b};
+	});
+var $elm$time$Time$customZone = $elm$time$Time$Zone;
+var $elm$time$Time$here = _Time_here(_Utils_Tuple0);
+var $author$project$Common$Settings$getTimeZone = A2($elm$core$Task$perform, $author$project$Common$Settings$GotTimezone, $elm$time$Time$here);
+var $author$project$Common$Settings$GotTimezoneName = function (a) {
+	return {$: 'GotTimezoneName', a: a};
+};
+var $elm$time$Time$getZoneName = _Time_getZoneName(_Utils_Tuple0);
+var $author$project$Common$Settings$getTimeZoneName = A2($elm$core$Task$perform, $author$project$Common$Settings$GotTimezoneName, $elm$time$Time$getZoneName);
+var $author$project$Common$Settings$getTimezoneWithZoneName = $elm$core$Platform$Cmd$batch(
+	_List_fromArray(
+		[$author$project$Common$Settings$getTimeZoneName, $author$project$Common$Settings$getTimeZone]));
+var $elm$time$Time$Posix = function (a) {
+	return {$: 'Posix', a: a};
+};
+var $elm$time$Time$millisToPosix = $elm$time$Time$Posix;
 var $elm$browser$Browser$Navigation$pushUrl = _Browser_pushUrl;
 var $elm$url$Url$addPort = F2(
 	function (maybePort, starter) {
@@ -10913,15 +11120,40 @@ var $elm$url$Url$toString = function (url) {
 					_Utils_ap(http, url.host)),
 				url.path)));
 };
+var $elm$time$Time$utc = A2($elm$time$Time$Zone, 0, _List_Nil);
 var $author$project$Main$init = F3(
 	function (flags, url, key) {
 		return _Utils_Tuple2(
 			{
+				errorList: _List_Nil,
 				key: key,
-				route: $author$project$Main$VisualizerPage,
-				upload: {getPlacesError: $elm$core$Maybe$Nothing, places: $elm$core$Maybe$Nothing, uploadResult: $elm$core$Maybe$Nothing},
+				route: $author$project$Model$VisualizerPage,
+				settings: {
+					timezone: $elm$time$Time$utc,
+					timezoneName: $elm$time$Time$Name('UTC')
+				},
+				upload: {
+					newPlace: {latitude: 0.0, longitude: 0.0, name: ''},
+					placeSearchFiltered: _List_Nil,
+					placeSearchInput: '',
+					places: $elm$core$Maybe$Nothing,
+					selectedImages: $elm$core$Maybe$Nothing,
+					selectedPlace: $elm$core$Maybe$Nothing,
+					uploadedIndicator: $elm$core$Maybe$Nothing
+				},
 				url: url,
-				visualizer: {test: 'hoge'}
+				visualizer: {
+					controller: {
+						dateRange: {
+							since: $elm$time$Time$millisToPosix(0),
+							until: $elm$time$Time$millisToPosix(0)
+						},
+						placeSearchKeyword: '',
+						places: _List_Nil,
+						selectedPlaces: _List_Nil
+					},
+					people: _List_Nil
+				}
 			},
 			$elm$core$Platform$Cmd$batch(
 				_List_fromArray(
@@ -10929,18 +11161,22 @@ var $author$project$Main$init = F3(
 						A2(
 						$elm$browser$Browser$Navigation$pushUrl,
 						key,
-						$elm$url$Url$toString(url))
+						$elm$url$Url$toString(url)),
+						A2($elm$core$Platform$Cmd$map, $author$project$Main$SettingsMsg, $author$project$Common$Settings$getTimezoneWithZoneName)
 					])));
 	});
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
+var $author$project$Main$ErrorMsg = function (a) {
+	return {$: 'ErrorMsg', a: a};
+};
 var $author$project$Main$UploadMsg = function (a) {
 	return {$: 'UploadMsg', a: a};
 };
 var $author$project$Main$VisualizerMsg = function (a) {
 	return {$: 'VisualizerMsg', a: a};
 };
-var $author$project$Upload$GotPlaces = function (a) {
+var $author$project$Upload$Upload$GotPlaces = function (a) {
 	return {$: 'GotPlaces', a: a};
 };
 var $elm$http$Http$BadStatus_ = F2(
@@ -11042,17 +11278,17 @@ var $elm$http$Http$Header = F2(
 		return {$: 'Header', a: a, b: b};
 	});
 var $elm$http$Http$header = $elm$http$Http$Header;
-var $author$project$CommonData$Place = F3(
+var $author$project$Common$Data$Place = F3(
 	function (name, latitude, longitude) {
 		return {latitude: latitude, longitude: longitude, name: name};
 	});
-var $author$project$CommonData$placeDecoder = A4(
+var $author$project$Common$Data$placeDecoder = A4(
 	$elm$json$Json$Decode$map3,
-	$author$project$CommonData$Place,
+	$author$project$Common$Data$Place,
 	A2($elm$json$Json$Decode$field, 'name', $elm$json$Json$Decode$string),
 	A2($elm$json$Json$Decode$field, 'latitude', $elm$json$Json$Decode$float),
 	A2($elm$json$Json$Decode$field, 'longitude', $elm$json$Json$Decode$float));
-var $author$project$CommonData$placesDecoder = $elm$json$Json$Decode$list($author$project$CommonData$placeDecoder);
+var $author$project$Common$Data$placesDecoder = $elm$json$Json$Decode$list($author$project$Common$Data$placeDecoder);
 var $elm$http$Http$Request = function (a) {
 	return {$: 'Request', a: a};
 };
@@ -11203,10 +11439,10 @@ var $elm$http$Http$request = function (r) {
 		$elm$http$Http$Request(
 			{allowCookiesFromOtherDomains: false, body: r.body, expect: r.expect, headers: r.headers, method: r.method, timeout: r.timeout, tracker: r.tracker, url: r.url}));
 };
-var $author$project$Upload$getPlaces = $elm$http$Http$request(
+var $author$project$Upload$Upload$getPlaces = $elm$http$Http$request(
 	{
 		body: $elm$http$Http$emptyBody,
-		expect: A2($elm$http$Http$expectJson, $author$project$Upload$GotPlaces, $author$project$CommonData$placesDecoder),
+		expect: A2($elm$http$Http$expectJson, $author$project$Upload$Upload$GotPlaces, $author$project$Common$Data$placesDecoder),
 		headers: _List_fromArray(
 			[
 				A2($elm$http$Http$header, 'Accept', 'application/json')
@@ -11217,6 +11453,37 @@ var $author$project$Upload$getPlaces = $elm$http$Http$request(
 		url: '/api/db/get_places_all/'
 	});
 var $elm$browser$Browser$Navigation$load = _Browser_load;
+var $author$project$Visualizer$Visualizer$ControllerMsg = function (a) {
+	return {$: 'ControllerMsg', a: a};
+};
+var $author$project$Visualizer$Controller$GotPlace = function (a) {
+	return {$: 'GotPlace', a: a};
+};
+var $author$project$Visualizer$Controller$getPlaces = $elm$http$Http$request(
+	{
+		body: $elm$http$Http$emptyBody,
+		expect: A2($elm$http$Http$expectJson, $author$project$Visualizer$Controller$GotPlace, $author$project$Common$Data$placesDecoder),
+		headers: _List_fromArray(
+			[
+				A2($elm$http$Http$header, 'Accept', 'application/json')
+			]),
+		method: 'GET',
+		timeout: $elm$core$Maybe$Nothing,
+		tracker: $elm$core$Maybe$Nothing,
+		url: '/api/db/get_places_all/'
+	});
+var $author$project$Visualizer$Visualizer$onLoad = $elm$core$Platform$Cmd$batch(
+	A2(
+		$elm$core$List$map,
+		function (_v0) {
+			var msg = _v0.a;
+			var cmd = _v0.b;
+			return A2($elm$core$Platform$Cmd$map, msg, cmd);
+		},
+		_List_fromArray(
+			[
+				_Utils_Tuple2($author$project$Visualizer$Visualizer$ControllerMsg, $author$project$Visualizer$Controller$getPlaces)
+			])));
 var $elm$url$Url$Parser$State = F5(
 	function (visited, unvisited, params, frag, value) {
 		return {frag: frag, params: params, unvisited: unvisited, value: value, visited: visited};
@@ -11336,7 +11603,7 @@ var $elm$url$Url$Parser$parse = F2(
 					url.fragment,
 					$elm$core$Basics$identity)));
 	});
-var $author$project$Main$UploadPage = {$: 'UploadPage'};
+var $author$project$Model$UploadPage = {$: 'UploadPage'};
 var $elm$url$Url$Parser$Parser = function (a) {
 	return {$: 'Parser', a: a};
 };
@@ -11418,17 +11685,87 @@ var $elm$url$Url$Parser$top = $elm$url$Url$Parser$Parser(
 var $author$project$Main$routeParser = $elm$url$Url$Parser$oneOf(
 	_List_fromArray(
 		[
-			A2($elm$url$Url$Parser$map, $author$project$Main$VisualizerPage, $elm$url$Url$Parser$top),
+			A2($elm$url$Url$Parser$map, $author$project$Model$VisualizerPage, $elm$url$Url$Parser$top),
 			A2(
 			$elm$url$Url$Parser$map,
-			$author$project$Main$UploadPage,
+			$author$project$Model$UploadPage,
 			$elm$url$Url$Parser$s('upload'))
 		]));
-var $author$project$Upload$ImageSelected = F2(
+var $elm$core$List$filter = F2(
+	function (isGood, list) {
+		return A3(
+			$elm$core$List$foldr,
+			F2(
+				function (x, xs) {
+					return isGood(x) ? A2($elm$core$List$cons, x, xs) : xs;
+				}),
+			_List_Nil,
+			list);
+	});
+var $elm$core$Tuple$pair = F2(
+	function (a, b) {
+		return _Utils_Tuple2(a, b);
+	});
+var $author$project$Common$ErrorPanel$update = F2(
+	function (msg, model) {
+		if (msg.$ === 'AddError') {
+			var error = msg.a;
+			return _Utils_Tuple2(
+				A2($elm$core$List$cons, error, model),
+				$elm$core$Platform$Cmd$none);
+		} else {
+			var index = msg.a;
+			var newList = A2(
+				$elm$core$List$map,
+				function (_v2) {
+					var idx = _v2.a;
+					var err = _v2.b;
+					return err;
+				},
+				A2(
+					$elm$core$List$filter,
+					function (_v1) {
+						var idx = _v1.a;
+						var err = _v1.b;
+						return !_Utils_eq(idx, index);
+					},
+					A2($elm$core$List$indexedMap, $elm$core$Tuple$pair, model)));
+			return _Utils_Tuple2(newList, $elm$core$Platform$Cmd$none);
+		}
+	});
+var $author$project$Common$Settings$update = F2(
+	function (msg, model) {
+		if (msg.$ === 'GotTimezoneName') {
+			var zonename = msg.a;
+			return _Utils_Tuple2(
+				_Utils_update(
+					model,
+					{timezoneName: zonename}),
+				$elm$core$Platform$Cmd$none);
+		} else {
+			var timezone = msg.a;
+			return _Utils_Tuple2(
+				_Utils_update(
+					model,
+					{timezone: timezone}),
+				$elm$core$Platform$Cmd$none);
+		}
+	});
+var $author$project$Common$ErrorPanel$AddError = function (a) {
+	return {$: 'AddError', a: a};
+};
+var $author$project$Upload$Upload$ErrorMsg = function (a) {
+	return {$: 'ErrorMsg', a: a};
+};
+var $author$project$Common$ErrorPanel$HttpError = function (a) {
+	return {$: 'HttpError', a: a};
+};
+var $author$project$Upload$Upload$ImageSelected = F2(
 	function (a, b) {
 		return {$: 'ImageSelected', a: a, b: b};
 	});
-var $author$project$Upload$Uploaded = function (a) {
+var $author$project$Common$ErrorPanel$OnlyStr = {$: 'OnlyStr'};
+var $author$project$Upload$Upload$Uploaded = function (a) {
 	return {$: 'Uploaded', a: a};
 };
 var $elm$http$Http$expectBytesResponse = F2(
@@ -11449,10 +11786,6 @@ var $elm$http$Http$expectWhatever = function (toMsg) {
 			}));
 };
 var $elm$http$Http$filePart = _Http_pair;
-var $elm$time$Time$Posix = function (a) {
-	return {$: 'Posix', a: a};
-};
-var $elm$time$Time$millisToPosix = $elm$time$Time$Posix;
 var $elm$file$File$Select$files = F2(
 	function (mimes, toMsg) {
 		return A2(
@@ -11464,6 +11797,24 @@ var $elm$file$File$Select$files = F2(
 			},
 			_File_uploadOneOrMore(mimes));
 	});
+var $elm$core$List$head = function (list) {
+	if (list.b) {
+		var x = list.a;
+		var xs = list.b;
+		return $elm$core$Maybe$Just(x);
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
+var $elm$file$File$lastModified = _File_lastModified;
+var $elm$time$Time$posixToMillis = function (_v0) {
+	var millis = _v0.a;
+	return millis;
+};
+var $author$project$Common$Data$msecToStr = function (time) {
+	return $elm$core$String$fromInt(
+		$elm$time$Time$posixToMillis(time));
+};
 var $elm$http$Http$multipartBody = function (parts) {
 	return A2(
 		_Http_pair,
@@ -11474,129 +11825,2141 @@ var $elm$http$Http$post = function (r) {
 	return $elm$http$Http$request(
 		{body: r.body, expect: r.expect, headers: _List_Nil, method: 'POST', timeout: $elm$core$Maybe$Nothing, tracker: $elm$core$Maybe$Nothing, url: r.url});
 };
-var $author$project$Upload$update = F2(
-	function (msg, model) {
-		switch (msg.$) {
-			case 'ImageRequested':
-				return _Utils_Tuple2(
-					model,
-					A2(
-						$elm$file$File$Select$files,
-						_List_fromArray(
-							['image/*']),
-						$author$project$Upload$ImageSelected));
-			case 'ImageSelected':
-				var fstFile = msg.a;
-				var files = msg.b;
-				return _Utils_Tuple2(
-					model,
-					$elm$http$Http$post(
-						{
-							body: $elm$http$Http$multipartBody(
-								A2(
-									$elm$core$List$map,
-									function (f) {
-										return A2($elm$http$Http$filePart, 'images[]', f);
-									},
-									A2($elm$core$List$cons, fstFile, files))),
-							expect: $elm$http$Http$expectWhatever($author$project$Upload$Uploaded),
-							url: '/api/upload/'
-						}));
-			case 'Uploaded':
-				var result = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
+var $elm$http$Http$stringPart = _Http_pair;
+var $elm$core$String$toFloat = _String_toFloat;
+var $elm$core$String$toLower = _String_toLower;
+var $author$project$Upload$Upload$update = F2(
+	function (msg, rootModel) {
+		update:
+		while (true) {
+			var modelMap = function (m1) {
+				return _Utils_update(
+					rootModel,
+					{upload: m1});
+			};
+			var model = rootModel.upload;
+			switch (msg.$) {
+				case 'ImageRequested':
+					return _Utils_Tuple2(
+						rootModel,
+						A2(
+							$elm$file$File$Select$files,
+							_List_fromArray(
+								['image/*']),
+							$author$project$Upload$Upload$ImageSelected));
+				case 'ImageSelected':
+					var fstFile = msg.a;
+					var files = msg.b;
+					return _Utils_Tuple2(
+						modelMap(
+							_Utils_update(
+								model,
+								{
+									selectedImages: $elm$core$Maybe$Just(
+										A2($elm$core$List$cons, fstFile, files))
+								})),
+						$elm$core$Platform$Cmd$none);
+				case 'Upload':
+					var newModel = _Utils_update(
 						model,
-						{
-							uploadResult: $elm$core$Maybe$Just(result)
-						}),
-					$elm$core$Platform$Cmd$none);
+						{uploadedIndicator: $elm$core$Maybe$Nothing});
+					var newRootModel = _Utils_update(
+						rootModel,
+						{upload: newModel});
+					var _v1 = model.selectedImages;
+					if (_v1.$ === 'Nothing') {
+						var $temp$msg = $author$project$Upload$Upload$ErrorMsg(
+							$author$project$Common$ErrorPanel$AddError(
+								{error: $author$project$Common$ErrorPanel$OnlyStr, str: 'NO IMAGE'})),
+							$temp$rootModel = newRootModel;
+						msg = $temp$msg;
+						rootModel = $temp$rootModel;
+						continue update;
+					} else {
+						var files = _v1.a;
+						var _v2 = model.selectedPlace;
+						if (_v2.$ === 'Nothing') {
+							var $temp$msg = $author$project$Upload$Upload$ErrorMsg(
+								$author$project$Common$ErrorPanel$AddError(
+									{error: $author$project$Common$ErrorPanel$OnlyStr, str: 'NO SELECTED PLACE'})),
+								$temp$rootModel = newRootModel;
+							msg = $temp$msg;
+							rootModel = $temp$rootModel;
+							continue update;
+						} else {
+							var selectedPlace = _v2.a;
+							return _Utils_Tuple2(
+								newRootModel,
+								$elm$http$Http$post(
+									{
+										body: $elm$http$Http$multipartBody(
+											A2(
+												$elm$core$List$cons,
+												A2($elm$http$Http$stringPart, 'place_selected', selectedPlace.name),
+												A2(
+													$elm$core$List$cons,
+													A2($elm$http$Http$stringPart, 'place_new', model.newPlace.name),
+													A2(
+														$elm$core$List$cons,
+														A2(
+															$elm$http$Http$stringPart,
+															'new_latitude',
+															$elm$core$String$fromFloat(model.newPlace.latitude)),
+														A2(
+															$elm$core$List$cons,
+															A2(
+																$elm$http$Http$stringPart,
+																'new_longitude',
+																$elm$core$String$fromFloat(model.newPlace.longitude)),
+															_Utils_ap(
+																A2(
+																	$elm$core$List$map,
+																	function (f) {
+																		return A2($elm$http$Http$filePart, 'images', f);
+																	},
+																	files),
+																A2(
+																	$elm$core$List$map,
+																	function (f) {
+																		return A2(
+																			$elm$http$Http$stringPart,
+																			'images_mtimes',
+																			$author$project$Common$Data$msecToStr(
+																				$elm$file$File$lastModified(f)));
+																	},
+																	files))))))),
+										expect: $elm$http$Http$expectWhatever($author$project$Upload$Upload$Uploaded),
+										url: '/api/db/regist_images/'
+									}));
+						}
+					}
+				case 'Uploaded':
+					var result = msg.a;
+					if (result.$ === 'Ok') {
+						return _Utils_Tuple2(
+							modelMap(
+								_Utils_update(
+									model,
+									{
+										selectedImages: $elm$core$Maybe$Nothing,
+										uploadedIndicator: $elm$core$Maybe$Just('Uploaded')
+									})),
+							$elm$core$Platform$Cmd$none);
+					} else {
+						var error = result.a;
+						var $temp$msg = $author$project$Upload$Upload$ErrorMsg(
+							$author$project$Common$ErrorPanel$AddError(
+								{
+									error: $author$project$Common$ErrorPanel$HttpError(error),
+									str: 'Failed to upload images'
+								})),
+							$temp$rootModel = rootModel;
+						msg = $temp$msg;
+						rootModel = $temp$rootModel;
+						continue update;
+					}
+				case 'GotPlaces':
+					var result = msg.a;
+					if (result.$ === 'Ok') {
+						var places = result.a;
+						return _Utils_Tuple2(
+							modelMap(
+								_Utils_update(
+									model,
+									{
+										placeSearchFiltered: places,
+										places: $elm$core$Maybe$Just(places),
+										selectedPlace: $elm$core$List$head(places)
+									})),
+							$elm$core$Platform$Cmd$none);
+					} else {
+						var error = result.a;
+						var _v5 = A2(
+							$author$project$Upload$Upload$update,
+							$author$project$Upload$Upload$ErrorMsg(
+								$author$project$Common$ErrorPanel$AddError(
+									{
+										error: $author$project$Common$ErrorPanel$HttpError(error),
+										str: 'Failed to load location tags'
+									})),
+							rootModel);
+						var newRootModel = _v5.a;
+						var cmd = _v5.b;
+						var newModel = newRootModel.upload;
+						return _Utils_Tuple2(
+							_Utils_update(
+								newRootModel,
+								{
+									upload: _Utils_update(
+										newModel,
+										{placeSearchFiltered: _List_Nil, places: $elm$core$Maybe$Nothing})
+								}),
+							cmd);
+					}
+				case 'PlaceSelected':
+					var placeString = msg.a;
+					var place = function () {
+						var _v6 = model.places;
+						if (_v6.$ === 'Just') {
+							var places = _v6.a;
+							return $elm$core$List$head(
+								A2(
+									$elm$core$List$filter,
+									function (p) {
+										return _Utils_eq(p.name, placeString);
+									},
+									places));
+						} else {
+							return $elm$core$Maybe$Nothing;
+						}
+					}();
+					return _Utils_Tuple2(
+						modelMap(
+							_Utils_update(
+								model,
+								{selectedPlace: place})),
+						$elm$core$Platform$Cmd$none);
+				case 'NewPlaceName':
+					var name = msg.a;
+					var newPlace = model.newPlace;
+					return _Utils_Tuple2(
+						modelMap(
+							_Utils_update(
+								model,
+								{
+									newPlace: _Utils_update(
+										newPlace,
+										{name: name})
+								})),
+						$elm$core$Platform$Cmd$none);
+				case 'NewPlaceLatitude':
+					var latitude = msg.a;
+					var newPlace = model.newPlace;
+					var lat = function () {
+						var _v7 = $elm$core$String$toFloat(latitude);
+						if (_v7.$ === 'Just') {
+							var l = _v7.a;
+							return l;
+						} else {
+							return 0.0;
+						}
+					}();
+					return _Utils_Tuple2(
+						modelMap(
+							_Utils_update(
+								model,
+								{
+									newPlace: _Utils_update(
+										newPlace,
+										{latitude: lat})
+								})),
+						$elm$core$Platform$Cmd$none);
+				case 'NewPlaceLongitude':
+					var longitude = msg.a;
+					var newPlace = model.newPlace;
+					var lon = function () {
+						var _v8 = $elm$core$String$toFloat(longitude);
+						if (_v8.$ === 'Just') {
+							var l = _v8.a;
+							return l;
+						} else {
+							return 0.0;
+						}
+					}();
+					return _Utils_Tuple2(
+						modelMap(
+							_Utils_update(
+								model,
+								{
+									newPlace: _Utils_update(
+										newPlace,
+										{longitude: lon})
+								})),
+						$elm$core$Platform$Cmd$none);
+				case 'PlaceSearchInput':
+					var keyword = msg.a;
+					var lowerKeyword = $elm$core$String$toLower(keyword);
+					var filteredPlaces = function () {
+						var _v9 = model.places;
+						if (_v9.$ === 'Just') {
+							var places = _v9.a;
+							return A2(
+								$elm$core$List$filter,
+								function (p) {
+									return A2(
+										$elm$core$String$contains,
+										lowerKeyword,
+										$elm$core$String$toLower(p.name));
+								},
+								places);
+						} else {
+							return _List_Nil;
+						}
+					}();
+					return _Utils_Tuple2(
+						modelMap(
+							_Utils_update(
+								model,
+								{placeSearchFiltered: filteredPlaces, placeSearchInput: keyword})),
+						$elm$core$Platform$Cmd$none);
+				default:
+					var subMsg = msg.a;
+					var _v10 = A2($author$project$Common$ErrorPanel$update, subMsg, rootModel.errorList);
+					var model_ = _v10.a;
+					var cmd = _v10.b;
+					return _Utils_Tuple2(
+						_Utils_update(
+							rootModel,
+							{errorList: model_}),
+						A2($elm$core$Platform$Cmd$map, $author$project$Upload$Upload$ErrorMsg, cmd));
+			}
+		}
+	});
+var $author$project$Visualizer$Controller$ErrorMsg = function (a) {
+	return {$: 'ErrorMsg', a: a};
+};
+var $author$project$Visualizer$Controller$Analyzed = function (a) {
+	return {$: 'Analyzed', a: a};
+};
+var $elm$url$Url$Builder$toQueryPair = function (_v0) {
+	var key = _v0.a;
+	var value = _v0.b;
+	return key + ('=' + value);
+};
+var $elm$url$Url$Builder$toQuery = function (parameters) {
+	if (!parameters.b) {
+		return '';
+	} else {
+		return '?' + A2(
+			$elm$core$String$join,
+			'&',
+			A2($elm$core$List$map, $elm$url$Url$Builder$toQueryPair, parameters));
+	}
+};
+var $elm$url$Url$Builder$absolute = F2(
+	function (pathSegments, parameters) {
+		return '/' + (A2($elm$core$String$join, '/', pathSegments) + $elm$url$Url$Builder$toQuery(parameters));
+	});
+var $rtfeldman$elm_iso8601_date_strings$Iso8601$fromMonth = function (month) {
+	switch (month.$) {
+		case 'Jan':
+			return 1;
+		case 'Feb':
+			return 2;
+		case 'Mar':
+			return 3;
+		case 'Apr':
+			return 4;
+		case 'May':
+			return 5;
+		case 'Jun':
+			return 6;
+		case 'Jul':
+			return 7;
+		case 'Aug':
+			return 8;
+		case 'Sep':
+			return 9;
+		case 'Oct':
+			return 10;
+		case 'Nov':
+			return 11;
+		default:
+			return 12;
+	}
+};
+var $elm$time$Time$flooredDiv = F2(
+	function (numerator, denominator) {
+		return $elm$core$Basics$floor(numerator / denominator);
+	});
+var $elm$time$Time$toAdjustedMinutesHelp = F3(
+	function (defaultOffset, posixMinutes, eras) {
+		toAdjustedMinutesHelp:
+		while (true) {
+			if (!eras.b) {
+				return posixMinutes + defaultOffset;
+			} else {
+				var era = eras.a;
+				var olderEras = eras.b;
+				if (_Utils_cmp(era.start, posixMinutes) < 0) {
+					return posixMinutes + era.offset;
+				} else {
+					var $temp$defaultOffset = defaultOffset,
+						$temp$posixMinutes = posixMinutes,
+						$temp$eras = olderEras;
+					defaultOffset = $temp$defaultOffset;
+					posixMinutes = $temp$posixMinutes;
+					eras = $temp$eras;
+					continue toAdjustedMinutesHelp;
+				}
+			}
+		}
+	});
+var $elm$time$Time$toAdjustedMinutes = F2(
+	function (_v0, time) {
+		var defaultOffset = _v0.a;
+		var eras = _v0.b;
+		return A3(
+			$elm$time$Time$toAdjustedMinutesHelp,
+			defaultOffset,
+			A2(
+				$elm$time$Time$flooredDiv,
+				$elm$time$Time$posixToMillis(time),
+				60000),
+			eras);
+	});
+var $elm$time$Time$toCivil = function (minutes) {
+	var rawDay = A2($elm$time$Time$flooredDiv, minutes, 60 * 24) + 719468;
+	var era = (((rawDay >= 0) ? rawDay : (rawDay - 146096)) / 146097) | 0;
+	var dayOfEra = rawDay - (era * 146097);
+	var yearOfEra = ((((dayOfEra - ((dayOfEra / 1460) | 0)) + ((dayOfEra / 36524) | 0)) - ((dayOfEra / 146096) | 0)) / 365) | 0;
+	var dayOfYear = dayOfEra - (((365 * yearOfEra) + ((yearOfEra / 4) | 0)) - ((yearOfEra / 100) | 0));
+	var mp = (((5 * dayOfYear) + 2) / 153) | 0;
+	var month = mp + ((mp < 10) ? 3 : (-9));
+	var year = yearOfEra + (era * 400);
+	return {
+		day: (dayOfYear - ((((153 * mp) + 2) / 5) | 0)) + 1,
+		month: month,
+		year: year + ((month <= 2) ? 1 : 0)
+	};
+};
+var $elm$time$Time$toDay = F2(
+	function (zone, time) {
+		return $elm$time$Time$toCivil(
+			A2($elm$time$Time$toAdjustedMinutes, zone, time)).day;
+	});
+var $elm$core$Basics$modBy = _Basics_modBy;
+var $elm$time$Time$toHour = F2(
+	function (zone, time) {
+		return A2(
+			$elm$core$Basics$modBy,
+			24,
+			A2(
+				$elm$time$Time$flooredDiv,
+				A2($elm$time$Time$toAdjustedMinutes, zone, time),
+				60));
+	});
+var $elm$time$Time$toMillis = F2(
+	function (_v0, time) {
+		return A2(
+			$elm$core$Basics$modBy,
+			1000,
+			$elm$time$Time$posixToMillis(time));
+	});
+var $elm$time$Time$toMinute = F2(
+	function (zone, time) {
+		return A2(
+			$elm$core$Basics$modBy,
+			60,
+			A2($elm$time$Time$toAdjustedMinutes, zone, time));
+	});
+var $elm$time$Time$Apr = {$: 'Apr'};
+var $elm$time$Time$Aug = {$: 'Aug'};
+var $elm$time$Time$Dec = {$: 'Dec'};
+var $elm$time$Time$Feb = {$: 'Feb'};
+var $elm$time$Time$Jan = {$: 'Jan'};
+var $elm$time$Time$Jul = {$: 'Jul'};
+var $elm$time$Time$Jun = {$: 'Jun'};
+var $elm$time$Time$Mar = {$: 'Mar'};
+var $elm$time$Time$May = {$: 'May'};
+var $elm$time$Time$Nov = {$: 'Nov'};
+var $elm$time$Time$Oct = {$: 'Oct'};
+var $elm$time$Time$Sep = {$: 'Sep'};
+var $elm$time$Time$toMonth = F2(
+	function (zone, time) {
+		var _v0 = $elm$time$Time$toCivil(
+			A2($elm$time$Time$toAdjustedMinutes, zone, time)).month;
+		switch (_v0) {
+			case 1:
+				return $elm$time$Time$Jan;
+			case 2:
+				return $elm$time$Time$Feb;
+			case 3:
+				return $elm$time$Time$Mar;
+			case 4:
+				return $elm$time$Time$Apr;
+			case 5:
+				return $elm$time$Time$May;
+			case 6:
+				return $elm$time$Time$Jun;
+			case 7:
+				return $elm$time$Time$Jul;
+			case 8:
+				return $elm$time$Time$Aug;
+			case 9:
+				return $elm$time$Time$Sep;
+			case 10:
+				return $elm$time$Time$Oct;
+			case 11:
+				return $elm$time$Time$Nov;
 			default:
+				return $elm$time$Time$Dec;
+		}
+	});
+var $elm$core$String$cons = _String_cons;
+var $elm$core$String$fromChar = function (_char) {
+	return A2($elm$core$String$cons, _char, '');
+};
+var $elm$core$Bitwise$shiftRightBy = _Bitwise_shiftRightBy;
+var $elm$core$String$repeatHelp = F3(
+	function (n, chunk, result) {
+		return (n <= 0) ? result : A3(
+			$elm$core$String$repeatHelp,
+			n >> 1,
+			_Utils_ap(chunk, chunk),
+			(!(n & 1)) ? result : _Utils_ap(result, chunk));
+	});
+var $elm$core$String$repeat = F2(
+	function (n, chunk) {
+		return A3($elm$core$String$repeatHelp, n, chunk, '');
+	});
+var $elm$core$String$padLeft = F3(
+	function (n, _char, string) {
+		return _Utils_ap(
+			A2(
+				$elm$core$String$repeat,
+				n - $elm$core$String$length(string),
+				$elm$core$String$fromChar(_char)),
+			string);
+	});
+var $rtfeldman$elm_iso8601_date_strings$Iso8601$toPaddedString = F2(
+	function (digits, time) {
+		return A3(
+			$elm$core$String$padLeft,
+			digits,
+			_Utils_chr('0'),
+			$elm$core$String$fromInt(time));
+	});
+var $elm$time$Time$toSecond = F2(
+	function (_v0, time) {
+		return A2(
+			$elm$core$Basics$modBy,
+			60,
+			A2(
+				$elm$time$Time$flooredDiv,
+				$elm$time$Time$posixToMillis(time),
+				1000));
+	});
+var $elm$time$Time$toYear = F2(
+	function (zone, time) {
+		return $elm$time$Time$toCivil(
+			A2($elm$time$Time$toAdjustedMinutes, zone, time)).year;
+	});
+var $rtfeldman$elm_iso8601_date_strings$Iso8601$fromTime = function (time) {
+	return A2(
+		$rtfeldman$elm_iso8601_date_strings$Iso8601$toPaddedString,
+		4,
+		A2($elm$time$Time$toYear, $elm$time$Time$utc, time)) + ('-' + (A2(
+		$rtfeldman$elm_iso8601_date_strings$Iso8601$toPaddedString,
+		2,
+		$rtfeldman$elm_iso8601_date_strings$Iso8601$fromMonth(
+			A2($elm$time$Time$toMonth, $elm$time$Time$utc, time))) + ('-' + (A2(
+		$rtfeldman$elm_iso8601_date_strings$Iso8601$toPaddedString,
+		2,
+		A2($elm$time$Time$toDay, $elm$time$Time$utc, time)) + ('T' + (A2(
+		$rtfeldman$elm_iso8601_date_strings$Iso8601$toPaddedString,
+		2,
+		A2($elm$time$Time$toHour, $elm$time$Time$utc, time)) + (':' + (A2(
+		$rtfeldman$elm_iso8601_date_strings$Iso8601$toPaddedString,
+		2,
+		A2($elm$time$Time$toMinute, $elm$time$Time$utc, time)) + (':' + (A2(
+		$rtfeldman$elm_iso8601_date_strings$Iso8601$toPaddedString,
+		2,
+		A2($elm$time$Time$toSecond, $elm$time$Time$utc, time)) + ('.' + (A2(
+		$rtfeldman$elm_iso8601_date_strings$Iso8601$toPaddedString,
+		3,
+		A2($elm$time$Time$toMillis, $elm$time$Time$utc, time)) + 'Z'))))))))))));
+};
+var $author$project$Common$Settings$joinStrings = function (stringList) {
+	var _v0 = $elm$core$List$head(stringList);
+	if (_v0.$ === 'Nothing') {
+		return '';
+	} else {
+		var string = _v0.a;
+		return _Utils_ap(
+			string,
+			$author$project$Common$Settings$joinStrings(
+				A2($elm$core$List$drop, 1, stringList)));
+	}
+};
+var $elm$core$List$takeReverse = F3(
+	function (n, list, kept) {
+		takeReverse:
+		while (true) {
+			if (n <= 0) {
+				return kept;
+			} else {
+				if (!list.b) {
+					return kept;
+				} else {
+					var x = list.a;
+					var xs = list.b;
+					var $temp$n = n - 1,
+						$temp$list = xs,
+						$temp$kept = A2($elm$core$List$cons, x, kept);
+					n = $temp$n;
+					list = $temp$list;
+					kept = $temp$kept;
+					continue takeReverse;
+				}
+			}
+		}
+	});
+var $elm$core$List$takeTailRec = F2(
+	function (n, list) {
+		return $elm$core$List$reverse(
+			A3($elm$core$List$takeReverse, n, list, _List_Nil));
+	});
+var $elm$core$List$takeFast = F3(
+	function (ctr, n, list) {
+		if (n <= 0) {
+			return _List_Nil;
+		} else {
+			var _v0 = _Utils_Tuple2(n, list);
+			_v0$1:
+			while (true) {
+				_v0$5:
+				while (true) {
+					if (!_v0.b.b) {
+						return list;
+					} else {
+						if (_v0.b.b.b) {
+							switch (_v0.a) {
+								case 1:
+									break _v0$1;
+								case 2:
+									var _v2 = _v0.b;
+									var x = _v2.a;
+									var _v3 = _v2.b;
+									var y = _v3.a;
+									return _List_fromArray(
+										[x, y]);
+								case 3:
+									if (_v0.b.b.b.b) {
+										var _v4 = _v0.b;
+										var x = _v4.a;
+										var _v5 = _v4.b;
+										var y = _v5.a;
+										var _v6 = _v5.b;
+										var z = _v6.a;
+										return _List_fromArray(
+											[x, y, z]);
+									} else {
+										break _v0$5;
+									}
+								default:
+									if (_v0.b.b.b.b && _v0.b.b.b.b.b) {
+										var _v7 = _v0.b;
+										var x = _v7.a;
+										var _v8 = _v7.b;
+										var y = _v8.a;
+										var _v9 = _v8.b;
+										var z = _v9.a;
+										var _v10 = _v9.b;
+										var w = _v10.a;
+										var tl = _v10.b;
+										return (ctr > 1000) ? A2(
+											$elm$core$List$cons,
+											x,
+											A2(
+												$elm$core$List$cons,
+												y,
+												A2(
+													$elm$core$List$cons,
+													z,
+													A2(
+														$elm$core$List$cons,
+														w,
+														A2($elm$core$List$takeTailRec, n - 4, tl))))) : A2(
+											$elm$core$List$cons,
+											x,
+											A2(
+												$elm$core$List$cons,
+												y,
+												A2(
+													$elm$core$List$cons,
+													z,
+													A2(
+														$elm$core$List$cons,
+														w,
+														A3($elm$core$List$takeFast, ctr + 1, n - 4, tl)))));
+									} else {
+										break _v0$5;
+									}
+							}
+						} else {
+							if (_v0.a === 1) {
+								break _v0$1;
+							} else {
+								break _v0$5;
+							}
+						}
+					}
+				}
+				return list;
+			}
+			var _v1 = _v0.b;
+			var x = _v1.a;
+			return _List_fromArray(
+				[x]);
+		}
+	});
+var $elm$core$List$take = F2(
+	function (n, list) {
+		return A3($elm$core$List$takeFast, 0, n, list);
+	});
+var $author$project$Common$Settings$dropSecsStr = function (time) {
+	return $author$project$Common$Settings$joinStrings(
+		A2(
+			$elm$core$List$intersperse,
+			':',
+			A2(
+				$elm$core$List$take,
+				2,
+				A2(
+					$elm$core$String$split,
+					':',
+					$rtfeldman$elm_iso8601_date_strings$Iso8601$fromTime(time)))));
+};
+var $elm$url$Url$Builder$QueryParameter = F2(
+	function (a, b) {
+		return {$: 'QueryParameter', a: a, b: b};
+	});
+var $elm$url$Url$percentEncode = _Url_percentEncode;
+var $elm$url$Url$Builder$string = F2(
+	function (key, value) {
+		return A2(
+			$elm$url$Url$Builder$QueryParameter,
+			$elm$url$Url$percentEncode(key),
+			$elm$url$Url$percentEncode(value));
+	});
+var $author$project$Visualizer$Controller$groupingQuery = function (controllerModel) {
+	var timeQuery = _List_fromArray(
+		[
+			A2(
+			$elm$url$Url$Builder$string,
+			'datetime-from',
+			$author$project$Common$Settings$dropSecsStr(controllerModel.dateRange.since)),
+			A2(
+			$elm$url$Url$Builder$string,
+			'datetime-to',
+			$author$project$Common$Settings$dropSecsStr(controllerModel.dateRange.until))
+		]);
+	return $elm$core$List$isEmpty(controllerModel.selectedPlaces) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
+		_Utils_ap(
+			timeQuery,
+			A2(
+				$elm$core$List$map,
+				function (p) {
+					return A2($elm$url$Url$Builder$string, 'places', p.name);
+				},
+				controllerModel.selectedPlaces)));
+};
+var $author$project$Visualizer$Model$Face = F8(
+	function (id, imageId, imageUrl, faceImageB64, faceLocation, faceEncoding, place, datetime) {
+		return {datetime: datetime, faceEncoding: faceEncoding, faceImageB64: faceImageB64, faceLocation: faceLocation, id: id, imageId: imageId, imageUrl: imageUrl, place: place};
+	});
+var $author$project$Common$Data$datetimeDecoder = A2($elm$json$Json$Decode$map, $elm$time$Time$millisToPosix, $elm$json$Json$Decode$int);
+var $author$project$Visualizer$Model$FaceLocation = F4(
+	function (x, y, w, h) {
+		return {h: h, w: w, x: x, y: y};
+	});
+var $elm$json$Json$Decode$index = _Json_decodeIndex;
+var $elm$json$Json$Decode$map4 = _Json_map4;
+var $author$project$Visualizer$Model$faceLocationDecoder = A5(
+	$elm$json$Json$Decode$map4,
+	$author$project$Visualizer$Model$FaceLocation,
+	A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$int),
+	A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$int),
+	A2($elm$json$Json$Decode$index, 2, $elm$json$Json$Decode$int),
+	A2($elm$json$Json$Decode$index, 3, $elm$json$Json$Decode$int));
+var $NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$custom = $elm$json$Json$Decode$map2($elm$core$Basics$apR);
+var $NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required = F3(
+	function (key, valDecoder, decoder) {
+		return A2(
+			$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$custom,
+			A2($elm$json$Json$Decode$field, key, valDecoder),
+			decoder);
+	});
+var $author$project$Visualizer$Model$faceDecoder = A3(
+	$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
+	'posix_millisec',
+	$author$project$Common$Data$datetimeDecoder,
+	A3(
+		$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
+		'place',
+		$author$project$Common$Data$placeDecoder,
+		A3(
+			$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
+			'face_encoding',
+			$elm$json$Json$Decode$list($elm$json$Json$Decode$float),
+			A3(
+				$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
+				'face_location',
+				$author$project$Visualizer$Model$faceLocationDecoder,
+				A3(
+					$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
+					'face_image',
+					$elm$json$Json$Decode$string,
+					A3(
+						$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
+						'image_url',
+						$elm$json$Json$Decode$string,
+						A3(
+							$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
+							'image_id',
+							$elm$json$Json$Decode$string,
+							A3(
+								$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
+								'id',
+								$elm$json$Json$Decode$string,
+								$elm$json$Json$Decode$succeed($author$project$Visualizer$Model$Face)))))))));
+var $author$project$Visualizer$Model$personDecoder = $elm$json$Json$Decode$list($author$project$Visualizer$Model$faceDecoder);
+var $author$project$Visualizer$Model$peopleDecoder = A2(
+	$elm$json$Json$Decode$field,
+	'grouped_faces',
+	$elm$json$Json$Decode$list($author$project$Visualizer$Model$personDecoder));
+var $author$project$Visualizer$Controller$analyze = function (rootModel) {
+	var path = $elm$url$Url$Builder$absolute(
+		_List_fromArray(
+			['api', 'analyze', 'grouping']));
+	var errorList = rootModel.errorList;
+	var controllerModel = rootModel.visualizer.controller;
+	var _v0 = $author$project$Visualizer$Controller$groupingQuery(controllerModel);
+	if (_v0.$ === 'Nothing') {
+		return _Utils_Tuple2(
+			_Utils_update(
+				rootModel,
+				{
+					errorList: A2(
+						$elm$core$List$cons,
+						{error: $author$project$Common$ErrorPanel$OnlyStr, str: 'Please select places'},
+						errorList)
+				}),
+			$elm$core$Platform$Cmd$none);
+	} else {
+		var query = _v0.a;
+		return _Utils_Tuple2(
+			rootModel,
+			$elm$http$Http$request(
+				{
+					body: $elm$http$Http$emptyBody,
+					expect: A2($elm$http$Http$expectJson, $author$project$Visualizer$Controller$Analyzed, $author$project$Visualizer$Model$peopleDecoder),
+					headers: _List_fromArray(
+						[
+							A2($elm$http$Http$header, 'Accept', 'application/json')
+						]),
+					method: 'GET',
+					timeout: $elm$core$Maybe$Nothing,
+					tracker: $elm$core$Maybe$Nothing,
+					url: path(query)
+				}));
+	}
+};
+var $elm$core$Debug$log = _Debug_log;
+var $elm$core$List$any = F2(
+	function (isOkay, list) {
+		any:
+		while (true) {
+			if (!list.b) {
+				return false;
+			} else {
+				var x = list.a;
+				var xs = list.b;
+				if (isOkay(x)) {
+					return true;
+				} else {
+					var $temp$isOkay = isOkay,
+						$temp$list = xs;
+					isOkay = $temp$isOkay;
+					list = $temp$list;
+					continue any;
+				}
+			}
+		}
+	});
+var $elm$core$List$member = F2(
+	function (x, xs) {
+		return A2(
+			$elm$core$List$any,
+			function (a) {
+				return _Utils_eq(a, x);
+			},
+			xs);
+	});
+var $elm$parser$Parser$Advanced$Bad = F2(
+	function (a, b) {
+		return {$: 'Bad', a: a, b: b};
+	});
+var $elm$parser$Parser$Advanced$Good = F3(
+	function (a, b, c) {
+		return {$: 'Good', a: a, b: b, c: c};
+	});
+var $elm$parser$Parser$Advanced$Parser = function (a) {
+	return {$: 'Parser', a: a};
+};
+var $elm$parser$Parser$Advanced$andThen = F2(
+	function (callback, _v0) {
+		var parseA = _v0.a;
+		return $elm$parser$Parser$Advanced$Parser(
+			function (s0) {
+				var _v1 = parseA(s0);
+				if (_v1.$ === 'Bad') {
+					var p = _v1.a;
+					var x = _v1.b;
+					return A2($elm$parser$Parser$Advanced$Bad, p, x);
+				} else {
+					var p1 = _v1.a;
+					var a = _v1.b;
+					var s1 = _v1.c;
+					var _v2 = callback(a);
+					var parseB = _v2.a;
+					var _v3 = parseB(s1);
+					if (_v3.$ === 'Bad') {
+						var p2 = _v3.a;
+						var x = _v3.b;
+						return A2($elm$parser$Parser$Advanced$Bad, p1 || p2, x);
+					} else {
+						var p2 = _v3.a;
+						var b = _v3.b;
+						var s2 = _v3.c;
+						return A3($elm$parser$Parser$Advanced$Good, p1 || p2, b, s2);
+					}
+				}
+			});
+	});
+var $elm$parser$Parser$andThen = $elm$parser$Parser$Advanced$andThen;
+var $elm$parser$Parser$ExpectingEnd = {$: 'ExpectingEnd'};
+var $elm$parser$Parser$Advanced$AddRight = F2(
+	function (a, b) {
+		return {$: 'AddRight', a: a, b: b};
+	});
+var $elm$parser$Parser$Advanced$DeadEnd = F4(
+	function (row, col, problem, contextStack) {
+		return {col: col, contextStack: contextStack, problem: problem, row: row};
+	});
+var $elm$parser$Parser$Advanced$Empty = {$: 'Empty'};
+var $elm$parser$Parser$Advanced$fromState = F2(
+	function (s, x) {
+		return A2(
+			$elm$parser$Parser$Advanced$AddRight,
+			$elm$parser$Parser$Advanced$Empty,
+			A4($elm$parser$Parser$Advanced$DeadEnd, s.row, s.col, x, s.context));
+	});
+var $elm$parser$Parser$Advanced$end = function (x) {
+	return $elm$parser$Parser$Advanced$Parser(
+		function (s) {
+			return _Utils_eq(
+				$elm$core$String$length(s.src),
+				s.offset) ? A3($elm$parser$Parser$Advanced$Good, false, _Utils_Tuple0, s) : A2(
+				$elm$parser$Parser$Advanced$Bad,
+				false,
+				A2($elm$parser$Parser$Advanced$fromState, s, x));
+		});
+};
+var $elm$parser$Parser$end = $elm$parser$Parser$Advanced$end($elm$parser$Parser$ExpectingEnd);
+var $elm$parser$Parser$Advanced$isSubChar = _Parser_isSubChar;
+var $elm$parser$Parser$Advanced$chompWhileHelp = F5(
+	function (isGood, offset, row, col, s0) {
+		chompWhileHelp:
+		while (true) {
+			var newOffset = A3($elm$parser$Parser$Advanced$isSubChar, isGood, offset, s0.src);
+			if (_Utils_eq(newOffset, -1)) {
+				return A3(
+					$elm$parser$Parser$Advanced$Good,
+					_Utils_cmp(s0.offset, offset) < 0,
+					_Utils_Tuple0,
+					{col: col, context: s0.context, indent: s0.indent, offset: offset, row: row, src: s0.src});
+			} else {
+				if (_Utils_eq(newOffset, -2)) {
+					var $temp$isGood = isGood,
+						$temp$offset = offset + 1,
+						$temp$row = row + 1,
+						$temp$col = 1,
+						$temp$s0 = s0;
+					isGood = $temp$isGood;
+					offset = $temp$offset;
+					row = $temp$row;
+					col = $temp$col;
+					s0 = $temp$s0;
+					continue chompWhileHelp;
+				} else {
+					var $temp$isGood = isGood,
+						$temp$offset = newOffset,
+						$temp$row = row,
+						$temp$col = col + 1,
+						$temp$s0 = s0;
+					isGood = $temp$isGood;
+					offset = $temp$offset;
+					row = $temp$row;
+					col = $temp$col;
+					s0 = $temp$s0;
+					continue chompWhileHelp;
+				}
+			}
+		}
+	});
+var $elm$parser$Parser$Advanced$chompWhile = function (isGood) {
+	return $elm$parser$Parser$Advanced$Parser(
+		function (s) {
+			return A5($elm$parser$Parser$Advanced$chompWhileHelp, isGood, s.offset, s.row, s.col, s);
+		});
+};
+var $elm$parser$Parser$chompWhile = $elm$parser$Parser$Advanced$chompWhile;
+var $elm$parser$Parser$Advanced$mapChompedString = F2(
+	function (func, _v0) {
+		var parse = _v0.a;
+		return $elm$parser$Parser$Advanced$Parser(
+			function (s0) {
+				var _v1 = parse(s0);
+				if (_v1.$ === 'Bad') {
+					var p = _v1.a;
+					var x = _v1.b;
+					return A2($elm$parser$Parser$Advanced$Bad, p, x);
+				} else {
+					var p = _v1.a;
+					var a = _v1.b;
+					var s1 = _v1.c;
+					return A3(
+						$elm$parser$Parser$Advanced$Good,
+						p,
+						A2(
+							func,
+							A3($elm$core$String$slice, s0.offset, s1.offset, s0.src),
+							a),
+						s1);
+				}
+			});
+	});
+var $elm$parser$Parser$Advanced$getChompedString = function (parser) {
+	return A2($elm$parser$Parser$Advanced$mapChompedString, $elm$core$Basics$always, parser);
+};
+var $elm$parser$Parser$getChompedString = $elm$parser$Parser$Advanced$getChompedString;
+var $elm$parser$Parser$Problem = function (a) {
+	return {$: 'Problem', a: a};
+};
+var $elm$parser$Parser$Advanced$problem = function (x) {
+	return $elm$parser$Parser$Advanced$Parser(
+		function (s) {
+			return A2(
+				$elm$parser$Parser$Advanced$Bad,
+				false,
+				A2($elm$parser$Parser$Advanced$fromState, s, x));
+		});
+};
+var $elm$parser$Parser$problem = function (msg) {
+	return $elm$parser$Parser$Advanced$problem(
+		$elm$parser$Parser$Problem(msg));
+};
+var $elm$core$Basics$round = _Basics_round;
+var $elm$parser$Parser$Advanced$succeed = function (a) {
+	return $elm$parser$Parser$Advanced$Parser(
+		function (s) {
+			return A3($elm$parser$Parser$Advanced$Good, false, a, s);
+		});
+};
+var $elm$parser$Parser$succeed = $elm$parser$Parser$Advanced$succeed;
+var $rtfeldman$elm_iso8601_date_strings$Iso8601$fractionsOfASecondInMs = A2(
+	$elm$parser$Parser$andThen,
+	function (str) {
+		if ($elm$core$String$length(str) <= 9) {
+			var _v0 = $elm$core$String$toFloat('0.' + str);
+			if (_v0.$ === 'Just') {
+				var floatVal = _v0.a;
+				return $elm$parser$Parser$succeed(
+					$elm$core$Basics$round(floatVal * 1000));
+			} else {
+				return $elm$parser$Parser$problem('Invalid float: \"' + (str + '\"'));
+			}
+		} else {
+			return $elm$parser$Parser$problem(
+				'Expected at most 9 digits, but got ' + $elm$core$String$fromInt(
+					$elm$core$String$length(str)));
+		}
+	},
+	$elm$parser$Parser$getChompedString(
+		$elm$parser$Parser$chompWhile($elm$core$Char$isDigit)));
+var $rtfeldman$elm_iso8601_date_strings$Iso8601$fromParts = F6(
+	function (monthYearDayMs, hour, minute, second, ms, utcOffsetMinutes) {
+		return $elm$time$Time$millisToPosix((((monthYearDayMs + (((hour * 60) * 60) * 1000)) + (((minute - utcOffsetMinutes) * 60) * 1000)) + (second * 1000)) + ms);
+	});
+var $elm$parser$Parser$Advanced$map2 = F3(
+	function (func, _v0, _v1) {
+		var parseA = _v0.a;
+		var parseB = _v1.a;
+		return $elm$parser$Parser$Advanced$Parser(
+			function (s0) {
+				var _v2 = parseA(s0);
+				if (_v2.$ === 'Bad') {
+					var p = _v2.a;
+					var x = _v2.b;
+					return A2($elm$parser$Parser$Advanced$Bad, p, x);
+				} else {
+					var p1 = _v2.a;
+					var a = _v2.b;
+					var s1 = _v2.c;
+					var _v3 = parseB(s1);
+					if (_v3.$ === 'Bad') {
+						var p2 = _v3.a;
+						var x = _v3.b;
+						return A2($elm$parser$Parser$Advanced$Bad, p1 || p2, x);
+					} else {
+						var p2 = _v3.a;
+						var b = _v3.b;
+						var s2 = _v3.c;
+						return A3(
+							$elm$parser$Parser$Advanced$Good,
+							p1 || p2,
+							A2(func, a, b),
+							s2);
+					}
+				}
+			});
+	});
+var $elm$parser$Parser$Advanced$ignorer = F2(
+	function (keepParser, ignoreParser) {
+		return A3($elm$parser$Parser$Advanced$map2, $elm$core$Basics$always, keepParser, ignoreParser);
+	});
+var $elm$parser$Parser$ignorer = $elm$parser$Parser$Advanced$ignorer;
+var $elm$parser$Parser$Advanced$keeper = F2(
+	function (parseFunc, parseArg) {
+		return A3($elm$parser$Parser$Advanced$map2, $elm$core$Basics$apL, parseFunc, parseArg);
+	});
+var $elm$parser$Parser$keeper = $elm$parser$Parser$Advanced$keeper;
+var $elm$parser$Parser$Advanced$Append = F2(
+	function (a, b) {
+		return {$: 'Append', a: a, b: b};
+	});
+var $elm$parser$Parser$Advanced$oneOfHelp = F3(
+	function (s0, bag, parsers) {
+		oneOfHelp:
+		while (true) {
+			if (!parsers.b) {
+				return A2($elm$parser$Parser$Advanced$Bad, false, bag);
+			} else {
+				var parse = parsers.a.a;
+				var remainingParsers = parsers.b;
+				var _v1 = parse(s0);
+				if (_v1.$ === 'Good') {
+					var step = _v1;
+					return step;
+				} else {
+					var step = _v1;
+					var p = step.a;
+					var x = step.b;
+					if (p) {
+						return step;
+					} else {
+						var $temp$s0 = s0,
+							$temp$bag = A2($elm$parser$Parser$Advanced$Append, bag, x),
+							$temp$parsers = remainingParsers;
+						s0 = $temp$s0;
+						bag = $temp$bag;
+						parsers = $temp$parsers;
+						continue oneOfHelp;
+					}
+				}
+			}
+		}
+	});
+var $elm$parser$Parser$Advanced$oneOf = function (parsers) {
+	return $elm$parser$Parser$Advanced$Parser(
+		function (s) {
+			return A3($elm$parser$Parser$Advanced$oneOfHelp, s, $elm$parser$Parser$Advanced$Empty, parsers);
+		});
+};
+var $elm$parser$Parser$oneOf = $elm$parser$Parser$Advanced$oneOf;
+var $elm$parser$Parser$Done = function (a) {
+	return {$: 'Done', a: a};
+};
+var $elm$parser$Parser$Loop = function (a) {
+	return {$: 'Loop', a: a};
+};
+var $elm$core$String$append = _String_append;
+var $elm$parser$Parser$UnexpectedChar = {$: 'UnexpectedChar'};
+var $elm$parser$Parser$Advanced$chompIf = F2(
+	function (isGood, expecting) {
+		return $elm$parser$Parser$Advanced$Parser(
+			function (s) {
+				var newOffset = A3($elm$parser$Parser$Advanced$isSubChar, isGood, s.offset, s.src);
+				return _Utils_eq(newOffset, -1) ? A2(
+					$elm$parser$Parser$Advanced$Bad,
+					false,
+					A2($elm$parser$Parser$Advanced$fromState, s, expecting)) : (_Utils_eq(newOffset, -2) ? A3(
+					$elm$parser$Parser$Advanced$Good,
+					true,
+					_Utils_Tuple0,
+					{col: 1, context: s.context, indent: s.indent, offset: s.offset + 1, row: s.row + 1, src: s.src}) : A3(
+					$elm$parser$Parser$Advanced$Good,
+					true,
+					_Utils_Tuple0,
+					{col: s.col + 1, context: s.context, indent: s.indent, offset: newOffset, row: s.row, src: s.src}));
+			});
+	});
+var $elm$parser$Parser$chompIf = function (isGood) {
+	return A2($elm$parser$Parser$Advanced$chompIf, isGood, $elm$parser$Parser$UnexpectedChar);
+};
+var $elm$parser$Parser$Advanced$loopHelp = F4(
+	function (p, state, callback, s0) {
+		loopHelp:
+		while (true) {
+			var _v0 = callback(state);
+			var parse = _v0.a;
+			var _v1 = parse(s0);
+			if (_v1.$ === 'Good') {
+				var p1 = _v1.a;
+				var step = _v1.b;
+				var s1 = _v1.c;
+				if (step.$ === 'Loop') {
+					var newState = step.a;
+					var $temp$p = p || p1,
+						$temp$state = newState,
+						$temp$callback = callback,
+						$temp$s0 = s1;
+					p = $temp$p;
+					state = $temp$state;
+					callback = $temp$callback;
+					s0 = $temp$s0;
+					continue loopHelp;
+				} else {
+					var result = step.a;
+					return A3($elm$parser$Parser$Advanced$Good, p || p1, result, s1);
+				}
+			} else {
+				var p1 = _v1.a;
+				var x = _v1.b;
+				return A2($elm$parser$Parser$Advanced$Bad, p || p1, x);
+			}
+		}
+	});
+var $elm$parser$Parser$Advanced$loop = F2(
+	function (state, callback) {
+		return $elm$parser$Parser$Advanced$Parser(
+			function (s) {
+				return A4($elm$parser$Parser$Advanced$loopHelp, false, state, callback, s);
+			});
+	});
+var $elm$parser$Parser$Advanced$map = F2(
+	function (func, _v0) {
+		var parse = _v0.a;
+		return $elm$parser$Parser$Advanced$Parser(
+			function (s0) {
+				var _v1 = parse(s0);
+				if (_v1.$ === 'Good') {
+					var p = _v1.a;
+					var a = _v1.b;
+					var s1 = _v1.c;
+					return A3(
+						$elm$parser$Parser$Advanced$Good,
+						p,
+						func(a),
+						s1);
+				} else {
+					var p = _v1.a;
+					var x = _v1.b;
+					return A2($elm$parser$Parser$Advanced$Bad, p, x);
+				}
+			});
+	});
+var $elm$parser$Parser$map = $elm$parser$Parser$Advanced$map;
+var $elm$parser$Parser$Advanced$Done = function (a) {
+	return {$: 'Done', a: a};
+};
+var $elm$parser$Parser$Advanced$Loop = function (a) {
+	return {$: 'Loop', a: a};
+};
+var $elm$parser$Parser$toAdvancedStep = function (step) {
+	if (step.$ === 'Loop') {
+		var s = step.a;
+		return $elm$parser$Parser$Advanced$Loop(s);
+	} else {
+		var a = step.a;
+		return $elm$parser$Parser$Advanced$Done(a);
+	}
+};
+var $elm$parser$Parser$loop = F2(
+	function (state, callback) {
+		return A2(
+			$elm$parser$Parser$Advanced$loop,
+			state,
+			function (s) {
+				return A2(
+					$elm$parser$Parser$map,
+					$elm$parser$Parser$toAdvancedStep,
+					callback(s));
+			});
+	});
+var $rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt = function (quantity) {
+	var helper = function (str) {
+		if (_Utils_eq(
+			$elm$core$String$length(str),
+			quantity)) {
+			var _v0 = $elm$core$String$toInt(str);
+			if (_v0.$ === 'Just') {
+				var intVal = _v0.a;
+				return A2(
+					$elm$parser$Parser$map,
+					$elm$parser$Parser$Done,
+					$elm$parser$Parser$succeed(intVal));
+			} else {
+				return $elm$parser$Parser$problem('Invalid integer: \"' + (str + '\"'));
+			}
+		} else {
+			return A2(
+				$elm$parser$Parser$map,
+				function (nextChar) {
+					return $elm$parser$Parser$Loop(
+						A2($elm$core$String$append, str, nextChar));
+				},
+				$elm$parser$Parser$getChompedString(
+					$elm$parser$Parser$chompIf($elm$core$Char$isDigit)));
+		}
+	};
+	return A2($elm$parser$Parser$loop, '', helper);
+};
+var $elm$parser$Parser$ExpectingSymbol = function (a) {
+	return {$: 'ExpectingSymbol', a: a};
+};
+var $elm$parser$Parser$Advanced$Token = F2(
+	function (a, b) {
+		return {$: 'Token', a: a, b: b};
+	});
+var $elm$parser$Parser$Advanced$isSubString = _Parser_isSubString;
+var $elm$parser$Parser$Advanced$token = function (_v0) {
+	var str = _v0.a;
+	var expecting = _v0.b;
+	var progress = !$elm$core$String$isEmpty(str);
+	return $elm$parser$Parser$Advanced$Parser(
+		function (s) {
+			var _v1 = A5($elm$parser$Parser$Advanced$isSubString, str, s.offset, s.row, s.col, s.src);
+			var newOffset = _v1.a;
+			var newRow = _v1.b;
+			var newCol = _v1.c;
+			return _Utils_eq(newOffset, -1) ? A2(
+				$elm$parser$Parser$Advanced$Bad,
+				false,
+				A2($elm$parser$Parser$Advanced$fromState, s, expecting)) : A3(
+				$elm$parser$Parser$Advanced$Good,
+				progress,
+				_Utils_Tuple0,
+				{col: newCol, context: s.context, indent: s.indent, offset: newOffset, row: newRow, src: s.src});
+		});
+};
+var $elm$parser$Parser$Advanced$symbol = $elm$parser$Parser$Advanced$token;
+var $elm$parser$Parser$symbol = function (str) {
+	return $elm$parser$Parser$Advanced$symbol(
+		A2(
+			$elm$parser$Parser$Advanced$Token,
+			str,
+			$elm$parser$Parser$ExpectingSymbol(str)));
+};
+var $rtfeldman$elm_iso8601_date_strings$Iso8601$epochYear = 1970;
+var $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay = function (day) {
+	return $elm$parser$Parser$problem(
+		'Invalid day: ' + $elm$core$String$fromInt(day));
+};
+var $rtfeldman$elm_iso8601_date_strings$Iso8601$isLeapYear = function (year) {
+	return (!A2($elm$core$Basics$modBy, 4, year)) && ((!(!A2($elm$core$Basics$modBy, 100, year))) || (!A2($elm$core$Basics$modBy, 400, year)));
+};
+var $rtfeldman$elm_iso8601_date_strings$Iso8601$leapYearsBefore = function (y1) {
+	var y = y1 - 1;
+	return (((y / 4) | 0) - ((y / 100) | 0)) + ((y / 400) | 0);
+};
+var $rtfeldman$elm_iso8601_date_strings$Iso8601$msPerDay = 86400000;
+var $rtfeldman$elm_iso8601_date_strings$Iso8601$msPerYear = 31536000000;
+var $rtfeldman$elm_iso8601_date_strings$Iso8601$yearMonthDay = function (_v0) {
+	var year = _v0.a;
+	var month = _v0.b;
+	var dayInMonth = _v0.c;
+	if (dayInMonth < 0) {
+		return $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay(dayInMonth);
+	} else {
+		var succeedWith = function (extraMs) {
+			var yearMs = $rtfeldman$elm_iso8601_date_strings$Iso8601$msPerYear * (year - $rtfeldman$elm_iso8601_date_strings$Iso8601$epochYear);
+			var days = ((month < 3) || (!$rtfeldman$elm_iso8601_date_strings$Iso8601$isLeapYear(year))) ? (dayInMonth - 1) : dayInMonth;
+			var dayMs = $rtfeldman$elm_iso8601_date_strings$Iso8601$msPerDay * (days + ($rtfeldman$elm_iso8601_date_strings$Iso8601$leapYearsBefore(year) - $rtfeldman$elm_iso8601_date_strings$Iso8601$leapYearsBefore($rtfeldman$elm_iso8601_date_strings$Iso8601$epochYear)));
+			return $elm$parser$Parser$succeed((extraMs + yearMs) + dayMs);
+		};
+		switch (month) {
+			case 1:
+				return (dayInMonth > 31) ? $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay(dayInMonth) : succeedWith(0);
+			case 2:
+				return ((dayInMonth > 29) || ((dayInMonth === 29) && (!$rtfeldman$elm_iso8601_date_strings$Iso8601$isLeapYear(year)))) ? $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay(dayInMonth) : succeedWith(2678400000);
+			case 3:
+				return (dayInMonth > 31) ? $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay(dayInMonth) : succeedWith(5097600000);
+			case 4:
+				return (dayInMonth > 30) ? $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay(dayInMonth) : succeedWith(7776000000);
+			case 5:
+				return (dayInMonth > 31) ? $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay(dayInMonth) : succeedWith(10368000000);
+			case 6:
+				return (dayInMonth > 30) ? $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay(dayInMonth) : succeedWith(13046400000);
+			case 7:
+				return (dayInMonth > 31) ? $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay(dayInMonth) : succeedWith(15638400000);
+			case 8:
+				return (dayInMonth > 31) ? $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay(dayInMonth) : succeedWith(18316800000);
+			case 9:
+				return (dayInMonth > 30) ? $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay(dayInMonth) : succeedWith(20995200000);
+			case 10:
+				return (dayInMonth > 31) ? $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay(dayInMonth) : succeedWith(23587200000);
+			case 11:
+				return (dayInMonth > 30) ? $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay(dayInMonth) : succeedWith(26265600000);
+			case 12:
+				return (dayInMonth > 31) ? $rtfeldman$elm_iso8601_date_strings$Iso8601$invalidDay(dayInMonth) : succeedWith(28857600000);
+			default:
+				return $elm$parser$Parser$problem(
+					'Invalid month: \"' + ($elm$core$String$fromInt(month) + '\"'));
+		}
+	}
+};
+var $rtfeldman$elm_iso8601_date_strings$Iso8601$monthYearDayInMs = A2(
+	$elm$parser$Parser$andThen,
+	$rtfeldman$elm_iso8601_date_strings$Iso8601$yearMonthDay,
+	A2(
+		$elm$parser$Parser$keeper,
+		A2(
+			$elm$parser$Parser$keeper,
+			A2(
+				$elm$parser$Parser$keeper,
+				$elm$parser$Parser$succeed(
+					F3(
+						function (year, month, day) {
+							return _Utils_Tuple3(year, month, day);
+						})),
+				$rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt(4)),
+			$elm$parser$Parser$oneOf(
+				_List_fromArray(
+					[
+						A2(
+						$elm$parser$Parser$keeper,
+						A2(
+							$elm$parser$Parser$ignorer,
+							$elm$parser$Parser$succeed($elm$core$Basics$identity),
+							$elm$parser$Parser$symbol('-')),
+						$rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt(2)),
+						$rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt(2)
+					]))),
+		$elm$parser$Parser$oneOf(
+			_List_fromArray(
+				[
+					A2(
+					$elm$parser$Parser$keeper,
+					A2(
+						$elm$parser$Parser$ignorer,
+						$elm$parser$Parser$succeed($elm$core$Basics$identity),
+						$elm$parser$Parser$symbol('-')),
+					$rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt(2)),
+					$rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt(2)
+				]))));
+var $rtfeldman$elm_iso8601_date_strings$Iso8601$utcOffsetInMinutes = function () {
+	var utcOffsetMinutesFromParts = F3(
+		function (multiplier, hours, minutes) {
+			return (multiplier * (hours * 60)) + minutes;
+		});
+	return A2(
+		$elm$parser$Parser$keeper,
+		$elm$parser$Parser$succeed($elm$core$Basics$identity),
+		$elm$parser$Parser$oneOf(
+			_List_fromArray(
+				[
+					A2(
+					$elm$parser$Parser$map,
+					function (_v0) {
+						return 0;
+					},
+					$elm$parser$Parser$symbol('Z')),
+					A2(
+					$elm$parser$Parser$keeper,
+					A2(
+						$elm$parser$Parser$keeper,
+						A2(
+							$elm$parser$Parser$keeper,
+							$elm$parser$Parser$succeed(utcOffsetMinutesFromParts),
+							$elm$parser$Parser$oneOf(
+								_List_fromArray(
+									[
+										A2(
+										$elm$parser$Parser$map,
+										function (_v1) {
+											return 1;
+										},
+										$elm$parser$Parser$symbol('+')),
+										A2(
+										$elm$parser$Parser$map,
+										function (_v2) {
+											return -1;
+										},
+										$elm$parser$Parser$symbol('-'))
+									]))),
+						$rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt(2)),
+					$elm$parser$Parser$oneOf(
+						_List_fromArray(
+							[
+								A2(
+								$elm$parser$Parser$keeper,
+								A2(
+									$elm$parser$Parser$ignorer,
+									$elm$parser$Parser$succeed($elm$core$Basics$identity),
+									$elm$parser$Parser$symbol(':')),
+								$rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt(2)),
+								$rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt(2),
+								$elm$parser$Parser$succeed(0)
+							]))),
+					A2(
+					$elm$parser$Parser$ignorer,
+					$elm$parser$Parser$succeed(0),
+					$elm$parser$Parser$end)
+				])));
+}();
+var $rtfeldman$elm_iso8601_date_strings$Iso8601$iso8601 = A2(
+	$elm$parser$Parser$andThen,
+	function (datePart) {
+		return $elm$parser$Parser$oneOf(
+			_List_fromArray(
+				[
+					A2(
+					$elm$parser$Parser$keeper,
+					A2(
+						$elm$parser$Parser$keeper,
+						A2(
+							$elm$parser$Parser$keeper,
+							A2(
+								$elm$parser$Parser$keeper,
+								A2(
+									$elm$parser$Parser$keeper,
+									A2(
+										$elm$parser$Parser$ignorer,
+										$elm$parser$Parser$succeed(
+											$rtfeldman$elm_iso8601_date_strings$Iso8601$fromParts(datePart)),
+										$elm$parser$Parser$symbol('T')),
+									$rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt(2)),
+								$elm$parser$Parser$oneOf(
+									_List_fromArray(
+										[
+											A2(
+											$elm$parser$Parser$keeper,
+											A2(
+												$elm$parser$Parser$ignorer,
+												$elm$parser$Parser$succeed($elm$core$Basics$identity),
+												$elm$parser$Parser$symbol(':')),
+											$rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt(2)),
+											$rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt(2)
+										]))),
+							$elm$parser$Parser$oneOf(
+								_List_fromArray(
+									[
+										A2(
+										$elm$parser$Parser$keeper,
+										A2(
+											$elm$parser$Parser$ignorer,
+											$elm$parser$Parser$succeed($elm$core$Basics$identity),
+											$elm$parser$Parser$symbol(':')),
+										$rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt(2)),
+										$rtfeldman$elm_iso8601_date_strings$Iso8601$paddedInt(2)
+									]))),
+						$elm$parser$Parser$oneOf(
+							_List_fromArray(
+								[
+									A2(
+									$elm$parser$Parser$keeper,
+									A2(
+										$elm$parser$Parser$ignorer,
+										$elm$parser$Parser$succeed($elm$core$Basics$identity),
+										$elm$parser$Parser$symbol('.')),
+									$rtfeldman$elm_iso8601_date_strings$Iso8601$fractionsOfASecondInMs),
+									$elm$parser$Parser$succeed(0)
+								]))),
+					A2($elm$parser$Parser$ignorer, $rtfeldman$elm_iso8601_date_strings$Iso8601$utcOffsetInMinutes, $elm$parser$Parser$end)),
+					A2(
+					$elm$parser$Parser$ignorer,
+					$elm$parser$Parser$succeed(
+						A6($rtfeldman$elm_iso8601_date_strings$Iso8601$fromParts, datePart, 0, 0, 0, 0, 0)),
+					$elm$parser$Parser$end)
+				]));
+	},
+	$rtfeldman$elm_iso8601_date_strings$Iso8601$monthYearDayInMs);
+var $elm$parser$Parser$DeadEnd = F3(
+	function (row, col, problem) {
+		return {col: col, problem: problem, row: row};
+	});
+var $elm$parser$Parser$problemToDeadEnd = function (p) {
+	return A3($elm$parser$Parser$DeadEnd, p.row, p.col, p.problem);
+};
+var $elm$parser$Parser$Advanced$bagToList = F2(
+	function (bag, list) {
+		bagToList:
+		while (true) {
+			switch (bag.$) {
+				case 'Empty':
+					return list;
+				case 'AddRight':
+					var bag1 = bag.a;
+					var x = bag.b;
+					var $temp$bag = bag1,
+						$temp$list = A2($elm$core$List$cons, x, list);
+					bag = $temp$bag;
+					list = $temp$list;
+					continue bagToList;
+				default:
+					var bag1 = bag.a;
+					var bag2 = bag.b;
+					var $temp$bag = bag1,
+						$temp$list = A2($elm$parser$Parser$Advanced$bagToList, bag2, list);
+					bag = $temp$bag;
+					list = $temp$list;
+					continue bagToList;
+			}
+		}
+	});
+var $elm$parser$Parser$Advanced$run = F2(
+	function (_v0, src) {
+		var parse = _v0.a;
+		var _v1 = parse(
+			{col: 1, context: _List_Nil, indent: 1, offset: 0, row: 1, src: src});
+		if (_v1.$ === 'Good') {
+			var value = _v1.b;
+			return $elm$core$Result$Ok(value);
+		} else {
+			var bag = _v1.b;
+			return $elm$core$Result$Err(
+				A2($elm$parser$Parser$Advanced$bagToList, bag, _List_Nil));
+		}
+	});
+var $elm$parser$Parser$run = F2(
+	function (parser, source) {
+		var _v0 = A2($elm$parser$Parser$Advanced$run, parser, source);
+		if (_v0.$ === 'Ok') {
+			var a = _v0.a;
+			return $elm$core$Result$Ok(a);
+		} else {
+			var problems = _v0.a;
+			return $elm$core$Result$Err(
+				A2($elm$core$List$map, $elm$parser$Parser$problemToDeadEnd, problems));
+		}
+	});
+var $rtfeldman$elm_iso8601_date_strings$Iso8601$toTime = function (str) {
+	return A2($elm$parser$Parser$run, $rtfeldman$elm_iso8601_date_strings$Iso8601$iso8601, str);
+};
+var $justinmimbs$date$Date$toRataDie = function (_v0) {
+	var rd = _v0.a;
+	return rd;
+};
+var $justinmimbs$time_extra$Time$Extra$dateToMillis = function (date) {
+	var daysSinceEpoch = $justinmimbs$date$Date$toRataDie(date) - 719163;
+	return daysSinceEpoch * 86400000;
+};
+var $justinmimbs$date$Date$RD = function (a) {
+	return {$: 'RD', a: a};
+};
+var $elm$core$Basics$clamp = F3(
+	function (low, high, number) {
+		return (_Utils_cmp(number, low) < 0) ? low : ((_Utils_cmp(number, high) > 0) ? high : number);
+	});
+var $justinmimbs$date$Date$isLeapYear = function (y) {
+	return ((!A2($elm$core$Basics$modBy, 4, y)) && (!(!A2($elm$core$Basics$modBy, 100, y)))) || (!A2($elm$core$Basics$modBy, 400, y));
+};
+var $justinmimbs$date$Date$daysBeforeMonth = F2(
+	function (y, m) {
+		var leapDays = $justinmimbs$date$Date$isLeapYear(y) ? 1 : 0;
+		switch (m.$) {
+			case 'Jan':
+				return 0;
+			case 'Feb':
+				return 31;
+			case 'Mar':
+				return 59 + leapDays;
+			case 'Apr':
+				return 90 + leapDays;
+			case 'May':
+				return 120 + leapDays;
+			case 'Jun':
+				return 151 + leapDays;
+			case 'Jul':
+				return 181 + leapDays;
+			case 'Aug':
+				return 212 + leapDays;
+			case 'Sep':
+				return 243 + leapDays;
+			case 'Oct':
+				return 273 + leapDays;
+			case 'Nov':
+				return 304 + leapDays;
+			default:
+				return 334 + leapDays;
+		}
+	});
+var $justinmimbs$date$Date$floorDiv = F2(
+	function (a, b) {
+		return $elm$core$Basics$floor(a / b);
+	});
+var $justinmimbs$date$Date$daysBeforeYear = function (y1) {
+	var y = y1 - 1;
+	var leapYears = (A2($justinmimbs$date$Date$floorDiv, y, 4) - A2($justinmimbs$date$Date$floorDiv, y, 100)) + A2($justinmimbs$date$Date$floorDiv, y, 400);
+	return (365 * y) + leapYears;
+};
+var $justinmimbs$date$Date$daysInMonth = F2(
+	function (y, m) {
+		switch (m.$) {
+			case 'Jan':
+				return 31;
+			case 'Feb':
+				return $justinmimbs$date$Date$isLeapYear(y) ? 29 : 28;
+			case 'Mar':
+				return 31;
+			case 'Apr':
+				return 30;
+			case 'May':
+				return 31;
+			case 'Jun':
+				return 30;
+			case 'Jul':
+				return 31;
+			case 'Aug':
+				return 31;
+			case 'Sep':
+				return 30;
+			case 'Oct':
+				return 31;
+			case 'Nov':
+				return 30;
+			default:
+				return 31;
+		}
+	});
+var $justinmimbs$date$Date$fromCalendarDate = F3(
+	function (y, m, d) {
+		return $justinmimbs$date$Date$RD(
+			($justinmimbs$date$Date$daysBeforeYear(y) + A2($justinmimbs$date$Date$daysBeforeMonth, y, m)) + A3(
+				$elm$core$Basics$clamp,
+				1,
+				A2($justinmimbs$date$Date$daysInMonth, y, m),
+				d));
+	});
+var $justinmimbs$date$Date$fromPosix = F2(
+	function (zone, posix) {
+		return A3(
+			$justinmimbs$date$Date$fromCalendarDate,
+			A2($elm$time$Time$toYear, zone, posix),
+			A2($elm$time$Time$toMonth, zone, posix),
+			A2($elm$time$Time$toDay, zone, posix));
+	});
+var $justinmimbs$time_extra$Time$Extra$timeFromClock = F4(
+	function (hour, minute, second, millisecond) {
+		return (((hour * 3600000) + (minute * 60000)) + (second * 1000)) + millisecond;
+	});
+var $justinmimbs$time_extra$Time$Extra$timeFromPosix = F2(
+	function (zone, posix) {
+		return A4(
+			$justinmimbs$time_extra$Time$Extra$timeFromClock,
+			A2($elm$time$Time$toHour, zone, posix),
+			A2($elm$time$Time$toMinute, zone, posix),
+			A2($elm$time$Time$toSecond, zone, posix),
+			A2($elm$time$Time$toMillis, zone, posix));
+	});
+var $justinmimbs$time_extra$Time$Extra$toOffset = F2(
+	function (zone, posix) {
+		var millis = $elm$time$Time$posixToMillis(posix);
+		var localMillis = $justinmimbs$time_extra$Time$Extra$dateToMillis(
+			A2($justinmimbs$date$Date$fromPosix, zone, posix)) + A2($justinmimbs$time_extra$Time$Extra$timeFromPosix, zone, posix);
+		return ((localMillis - millis) / 60000) | 0;
+	});
+var $author$project$Common$Settings$toUTC = F2(
+	function (hereZone, localTime) {
+		var offset = A2($justinmimbs$time_extra$Time$Extra$toOffset, hereZone, localTime);
+		return $elm$time$Time$millisToPosix(
+			function (t) {
+				return t - ((offset * 60) * 1000);
+			}(
+				$elm$time$Time$posixToMillis(localTime)));
+	});
+var $author$project$Visualizer$Controller$update = F2(
+	function (msg, rootModel) {
+		var visualizerModel = rootModel.visualizer;
+		var errorList = rootModel.errorList;
+		var controllerModel = visualizerModel.controller;
+		switch (msg.$) {
+			case 'GotPlace':
 				var result = msg.a;
 				if (result.$ === 'Ok') {
 					var places = result.a;
 					return _Utils_Tuple2(
 						_Utils_update(
-							model,
+							rootModel,
 							{
-								getPlacesError: $elm$core$Maybe$Nothing,
-								places: $elm$core$Maybe$Just(places)
+								visualizer: _Utils_update(
+									visualizerModel,
+									{
+										controller: _Utils_update(
+											controllerModel,
+											{places: places})
+									})
 							}),
 						$elm$core$Platform$Cmd$none);
 				} else {
 					var error = result.a;
+					var _v2 = A2(
+						$author$project$Visualizer$Controller$update,
+						$author$project$Visualizer$Controller$ErrorMsg(
+							$author$project$Common$ErrorPanel$AddError(
+								{
+									error: $author$project$Common$ErrorPanel$HttpError(error),
+									str: 'Failed to load location tags'
+								})),
+						rootModel);
+					var newRootModel = _v2.a;
+					var cmd = _v2.b;
+					var newVisualizierModel = newRootModel.visualizer;
+					var newControllerModel = newVisualizierModel.controller;
 					return _Utils_Tuple2(
 						_Utils_update(
-							model,
+							newRootModel,
 							{
-								getPlacesError: $elm$core$Maybe$Just(error),
-								places: $elm$core$Maybe$Nothing
+								visualizer: _Utils_update(
+									newVisualizierModel,
+									{
+										controller: _Utils_update(
+											newControllerModel,
+											{places: _List_Nil})
+									})
+							}),
+						cmd);
+				}
+			case 'SelectPlace':
+				var placeName = msg.a;
+				var maybePlace = $elm$core$List$head(
+					A2(
+						$elm$core$List$filter,
+						function (p) {
+							return _Utils_eq(p.name, placeName);
+						},
+						controllerModel.places));
+				if (maybePlace.$ === 'Just') {
+					var place = maybePlace.a;
+					return A2($elm$core$List$member, place, controllerModel.selectedPlaces) ? _Utils_Tuple2(rootModel, $elm$core$Platform$Cmd$none) : _Utils_Tuple2(
+						_Utils_update(
+							rootModel,
+							{
+								visualizer: _Utils_update(
+									visualizerModel,
+									{
+										controller: _Utils_update(
+											controllerModel,
+											{
+												selectedPlaces: _Utils_ap(
+													controllerModel.selectedPlaces,
+													_List_fromArray(
+														[place]))
+											})
+									})
+							}),
+						$elm$core$Platform$Cmd$none);
+				} else {
+					return _Utils_Tuple2(rootModel, $elm$core$Platform$Cmd$none);
+				}
+			case 'DelSelectedPlace':
+				var placeName = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						rootModel,
+						{
+							visualizer: _Utils_update(
+								visualizerModel,
+								{
+									controller: _Utils_update(
+										controllerModel,
+										{
+											selectedPlaces: A2(
+												$elm$core$List$filter,
+												function (p) {
+													return !_Utils_eq(p.name, placeName);
+												},
+												controllerModel.selectedPlaces)
+										})
+								})
+						}),
+					$elm$core$Platform$Cmd$none);
+			case 'PlaceSearchInput':
+				var keyword = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						rootModel,
+						{
+							visualizer: _Utils_update(
+								visualizerModel,
+								{
+									controller: _Utils_update(
+										controllerModel,
+										{placeSearchKeyword: keyword})
+								})
+						}),
+					$elm$core$Platform$Cmd$none);
+			case 'GotSinceTime':
+				var iso8601Str = msg.a;
+				var normalized = iso8601Str + ':00';
+				var dateRange = controllerModel.dateRange;
+				var _v4 = A2(
+					$elm$core$Debug$log,
+					'debug',
+					$rtfeldman$elm_iso8601_date_strings$Iso8601$toTime(normalized));
+				if (_v4.$ === 'Ok') {
+					var localTime = _v4.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							rootModel,
+							{
+								visualizer: _Utils_update(
+									visualizerModel,
+									{
+										controller: _Utils_update(
+											controllerModel,
+											{
+												dateRange: _Utils_update(
+													dateRange,
+													{
+														since: A2($author$project$Common$Settings$toUTC, rootModel.settings.timezone, localTime)
+													})
+											})
+									})
+							}),
+						$elm$core$Platform$Cmd$none);
+				} else {
+					var error = _v4.a;
+					var _v5 = A2(
+						$author$project$Visualizer$Controller$update,
+						$author$project$Visualizer$Controller$ErrorMsg(
+							$author$project$Common$ErrorPanel$AddError(
+								{error: $author$project$Common$ErrorPanel$OnlyStr, str: 'Format of since time is invalid'})),
+						rootModel);
+					var newRootModel = _v5.a;
+					var cmd = _v5.b;
+					return _Utils_Tuple2(newRootModel, cmd);
+				}
+			case 'GotUntilTime':
+				var iso8601Str = msg.a;
+				var normalized = iso8601Str + ':00';
+				var dateRange = controllerModel.dateRange;
+				var _v6 = A2(
+					$elm$core$Debug$log,
+					'debug',
+					$rtfeldman$elm_iso8601_date_strings$Iso8601$toTime(normalized));
+				if (_v6.$ === 'Ok') {
+					var localTime = _v6.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							rootModel,
+							{
+								visualizer: _Utils_update(
+									visualizerModel,
+									{
+										controller: _Utils_update(
+											controllerModel,
+											{
+												dateRange: _Utils_update(
+													dateRange,
+													{
+														until: A2($author$project$Common$Settings$toUTC, rootModel.settings.timezone, localTime)
+													})
+											})
+									})
+							}),
+						$elm$core$Platform$Cmd$none);
+				} else {
+					var error = _v6.a;
+					var _v7 = A2(
+						$author$project$Visualizer$Controller$update,
+						$author$project$Visualizer$Controller$ErrorMsg(
+							$author$project$Common$ErrorPanel$AddError(
+								{error: $author$project$Common$ErrorPanel$OnlyStr, str: 'Format of until time is invalid'})),
+						rootModel);
+					var newRootModel = _v7.a;
+					var cmd = _v7.b;
+					return _Utils_Tuple2(newRootModel, cmd);
+				}
+			case 'Analyze':
+				return $author$project$Visualizer$Controller$analyze(rootModel);
+			case 'Analyzed':
+				var result = msg.a;
+				if (result.$ === 'Err') {
+					var error = result.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							rootModel,
+							{
+								errorList: A2(
+									$elm$core$List$cons,
+									{
+										error: $author$project$Common$ErrorPanel$HttpError(error),
+										str: 'Analyzing Failed'
+									},
+									errorList)
+							}),
+						$elm$core$Platform$Cmd$none);
+				} else {
+					var people = result.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							rootModel,
+							{
+								visualizer: _Utils_update(
+									visualizerModel,
+									{people: people})
 							}),
 						$elm$core$Platform$Cmd$none);
 				}
+			default:
+				var subMsg = msg.a;
+				var _v9 = A2($author$project$Common$ErrorPanel$update, subMsg, rootModel.errorList);
+				var errorPanelModel = _v9.a;
+				var cmd = _v9.b;
+				return _Utils_Tuple2(
+					_Utils_update(
+						rootModel,
+						{errorList: errorPanelModel}),
+					A2($elm$core$Platform$Cmd$map, $author$project$Visualizer$Controller$ErrorMsg, cmd));
 		}
 	});
-var $author$project$Visualizer$update = F2(
-	function (msg, model) {
-		return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+var $author$project$Visualizer$Visualizer$update = F2(
+	function (msg, rootModel) {
+		var subMsg = msg.a;
+		var _v1 = A2($author$project$Visualizer$Controller$update, subMsg, rootModel);
+		var rootModel_ = _v1.a;
+		var cmd_ = _v1.b;
+		var cmd = A2($elm$core$Platform$Cmd$map, $author$project$Visualizer$Visualizer$ControllerMsg, cmd_);
+		return _Utils_Tuple2(rootModel_, cmd);
 	});
 var $author$project$Main$update = F2(
-	function (msg, model) {
+	function (msg, rootModel) {
 		switch (msg.$) {
 			case 'LinkClicked':
 				var urlRequest = msg.a;
 				if (urlRequest.$ === 'Internal') {
 					var url = urlRequest.a;
 					return _Utils_Tuple2(
-						model,
+						rootModel,
 						A2(
 							$elm$browser$Browser$Navigation$pushUrl,
-							model.key,
+							rootModel.key,
 							$elm$url$Url$toString(url)));
 				} else {
 					var href = urlRequest.a;
 					return _Utils_Tuple2(
-						model,
+						rootModel,
 						$elm$browser$Browser$Navigation$load(href));
 				}
 			case 'UrlChanged':
 				var url = msg.a;
 				var onLoadCmd = function () {
 					var _v2 = A2($elm$url$Url$Parser$parse, $author$project$Main$routeParser, url);
-					if ((_v2.$ === 'Just') && (_v2.a.$ === 'UploadPage')) {
-						var _v3 = _v2.a;
-						return A2($elm$core$Platform$Cmd$map, $author$project$Main$UploadMsg, $author$project$Upload$getPlaces);
+					if (_v2.$ === 'Just') {
+						if (_v2.a.$ === 'UploadPage') {
+							var _v3 = _v2.a;
+							return A2($elm$core$Platform$Cmd$map, $author$project$Main$UploadMsg, $author$project$Upload$Upload$getPlaces);
+						} else {
+							var _v4 = _v2.a;
+							return A2($elm$core$Platform$Cmd$map, $author$project$Main$VisualizerMsg, $author$project$Visualizer$Visualizer$onLoad);
+						}
 					} else {
 						return $elm$core$Platform$Cmd$none;
 					}
 				}();
 				return _Utils_Tuple2(
 					_Utils_update(
-						model,
+						rootModel,
 						{url: url}),
 					onLoadCmd);
 			case 'VisualizerMsg':
 				var subMsg = msg.a;
-				var _v4 = A2($author$project$Visualizer$update, subMsg, model.visualizer);
-				var model_ = _v4.a;
-				var cmd = _v4.b;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{visualizer: model_}),
-					A2($elm$core$Platform$Cmd$map, $author$project$Main$VisualizerMsg, cmd));
-			default:
-				var subMsg = msg.a;
-				var _v5 = A2($author$project$Upload$update, subMsg, model.upload);
-				var model_ = _v5.a;
+				var _v5 = A2($author$project$Visualizer$Visualizer$update, subMsg, rootModel);
+				var rootModel_ = _v5.a;
 				var cmd = _v5.b;
 				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{upload: model_}),
+					rootModel_,
+					A2($elm$core$Platform$Cmd$map, $author$project$Main$VisualizerMsg, cmd));
+			case 'UploadMsg':
+				var subMsg = msg.a;
+				var _v6 = A2($author$project$Upload$Upload$update, subMsg, rootModel);
+				var model_ = _v6.a;
+				var cmd = _v6.b;
+				return _Utils_Tuple2(
+					model_,
 					A2($elm$core$Platform$Cmd$map, $author$project$Main$UploadMsg, cmd));
+			case 'ErrorMsg':
+				var subMsg = msg.a;
+				var _v7 = A2($author$project$Common$ErrorPanel$update, subMsg, rootModel.errorList);
+				var model_ = _v7.a;
+				var cmd = _v7.b;
+				return _Utils_Tuple2(
+					_Utils_update(
+						rootModel,
+						{errorList: model_}),
+					A2($elm$core$Platform$Cmd$map, $author$project$Main$ErrorMsg, cmd));
+			default:
+				var subMsg = msg.a;
+				var _v8 = A2($author$project$Common$Settings$update, subMsg, rootModel.settings);
+				var settingsModel = _v8.a;
+				var cmd = _v8.b;
+				return _Utils_Tuple2(
+					_Utils_update(
+						rootModel,
+						{settings: settingsModel}),
+					$elm$core$Platform$Cmd$none);
 		}
 	});
+var $elm$html$Html$Attributes$alt = $elm$html$Html$Attributes$stringProperty('alt');
+var $elm$html$Html$img = _VirtualDom_node('img');
+var $elm$html$Html$Attributes$src = function (url) {
+	return A2(
+		$elm$html$Html$Attributes$stringProperty,
+		'src',
+		_VirtualDom_noJavaScriptOrHtmlUri(url));
+};
+var $author$project$Common$Data$gmTitleLogo = A2(
+	$elm$html$Html$img,
+	_List_fromArray(
+		[
+			$elm$html$Html$Attributes$src('/static/imgs/gm_small_title.png'),
+			$elm$html$Html$Attributes$alt('Gingerbreadman Logo')
+		]),
+	_List_Nil);
+var $author$project$Main$navbarView = function (model) {
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('navbar navbar-expand bg-dark navbar-dark')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$a,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('navbar-brand'),
+						$elm$html$Html$Attributes$href('/')
+					]),
+				_List_fromArray(
+					[$author$project$Common$Data$gmTitleLogo])),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('nav navbar-nav')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$a,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('nav-item nav-link active '),
+								$elm$html$Html$Attributes$href('/upload')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Upload')
+							]))
+					]))
+			]));
+};
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
 var $author$project$Main$notFoundView = {
 	body: _List_fromArray(
@@ -11617,9 +13980,243 @@ var $author$project$Main$notFoundView = {
 		]),
 	title: 'Gingerbreadman | 404 Error'
 };
-var $author$project$Upload$ImageRequested = {$: 'ImageRequested'};
+var $author$project$Common$ErrorPanel$DelError = function (a) {
+	return {$: 'DelError', a: a};
+};
+var $author$project$Common$ErrorPanel$errorBoxView = function (_v0) {
+	var index = _v0.a;
+	var error = _v0.b;
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('errorBox row')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('title col-10')
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text(error.str)
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('delButton col-2'),
+						$elm$html$Html$Events$onClick(
+						$author$project$Common$ErrorPanel$DelError(index))
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('✕')
+					]))
+			]));
+};
+var $author$project$Common$ErrorPanel$view = function (errorList) {
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('errorPanel')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('errorList')
+					]),
+				A2(
+					$elm$core$List$map,
+					$author$project$Common$ErrorPanel$errorBoxView,
+					A2($elm$core$List$indexedMap, $elm$core$Tuple$pair, errorList)))
+			]));
+};
+var $author$project$Upload$Upload$ImageRequested = {$: 'ImageRequested'};
+var $author$project$Upload$Upload$Upload = {$: 'Upload'};
+var $author$project$Upload$Upload$filesCountView = function (maybeFiles) {
+	return A2(
+		$elm$html$Html$p,
+		_List_Nil,
+		function () {
+			if (maybeFiles.$ === 'Just') {
+				var files = maybeFiles.a;
+				var count = $elm$core$List$length(files);
+				var pluralStr = (count >= 2) ? 's' : '';
+				return _List_fromArray(
+					[
+						$elm$html$Html$text(
+						$elm$core$String$fromInt(count) + (' file' + pluralStr))
+					]);
+			} else {
+				return _List_Nil;
+			}
+		}());
+};
 var $elm$html$Html$h2 = _VirtualDom_node('h2');
-var $author$project$Upload$view = function (model) {
+var $author$project$Upload$Upload$NewPlaceLatitude = function (a) {
+	return {$: 'NewPlaceLatitude', a: a};
+};
+var $author$project$Upload$Upload$NewPlaceLongitude = function (a) {
+	return {$: 'NewPlaceLongitude', a: a};
+};
+var $author$project$Upload$Upload$NewPlaceName = function (a) {
+	return {$: 'NewPlaceName', a: a};
+};
+var $author$project$Common$Data$onChange = function (handler) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'change',
+		A2($elm$json$Json$Decode$map, handler, $elm$html$Html$Events$targetValue));
+};
+var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
+var $elm$html$Html$Attributes$step = function (n) {
+	return A2($elm$html$Html$Attributes$stringProperty, 'step', n);
+};
+var $author$project$Upload$Upload$newPlacesView = function (model) {
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('col')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$input,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$type_('text'),
+						$elm$html$Html$Attributes$class('form-control'),
+						$elm$html$Html$Attributes$placeholder('or create new place tag'),
+						$author$project$Common$Data$onChange($author$project$Upload$Upload$NewPlaceName),
+						$elm$html$Html$Attributes$value(model.newPlace.name)
+					]),
+				_List_Nil),
+				A2(
+				$elm$html$Html$input,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$type_('number'),
+						$elm$html$Html$Attributes$placeholder('latitude'),
+						$elm$html$Html$Attributes$step('0.0000001'),
+						$author$project$Common$Data$onChange($author$project$Upload$Upload$NewPlaceLatitude),
+						$elm$html$Html$Attributes$value(
+						$elm$core$String$fromFloat(model.newPlace.latitude))
+					]),
+				_List_Nil),
+				A2(
+				$elm$html$Html$input,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$type_('number'),
+						$elm$html$Html$Attributes$placeholder('longitude'),
+						$elm$html$Html$Attributes$step('0.0000001'),
+						$elm$html$Html$Attributes$value(
+						$elm$core$String$fromFloat(model.newPlace.longitude)),
+						$author$project$Common$Data$onChange($author$project$Upload$Upload$NewPlaceLongitude)
+					]),
+				_List_Nil)
+			]));
+};
+var $author$project$Upload$Upload$PlaceSearchInput = function (a) {
+	return {$: 'PlaceSearchInput', a: a};
+};
+var $author$project$Upload$Upload$PlaceSelected = function (a) {
+	return {$: 'PlaceSelected', a: a};
+};
+var $elm$html$Html$label = _VirtualDom_node('label');
+var $elm$html$Html$option = _VirtualDom_node('option');
+var $elm$html$Html$select = _VirtualDom_node('select');
+var $author$project$Upload$Upload$selectPlacesView = function (model) {
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('col')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$label,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Existing Places')
+					])),
+				A2(
+				$elm$html$Html$input,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$type_('text'),
+						$author$project$Common$Data$onChange($author$project$Upload$Upload$PlaceSearchInput),
+						$elm$html$Html$Attributes$placeholder('Search Place'),
+						$elm$html$Html$Attributes$value(model.placeSearchInput)
+					]),
+				_List_Nil),
+				A2(
+				$elm$html$Html$select,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('form-control'),
+						$elm$html$Html$Events$onInput($author$project$Upload$Upload$PlaceSelected)
+					]),
+				A2(
+					$elm$core$List$map,
+					function (p) {
+						return A2(
+							$elm$html$Html$option,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$value(p.name)
+								]),
+							_List_fromArray(
+								[
+									$elm$html$Html$text(p.name)
+								]));
+					},
+					model.placeSearchFiltered))
+			]));
+};
+var $author$project$Upload$Upload$uploadedIndicator = function (model) {
+	var _v0 = model.uploadedIndicator;
+	if (_v0.$ === 'Just') {
+		var resultStr = _v0.a;
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('uploaded-indicator')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$p,
+					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$text(resultStr)
+						]))
+				]));
+	} else {
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('uploaded-indicator')
+				]),
+			_List_Nil);
+	}
+};
+var $author$project$Upload$Upload$view = function (rootModel) {
+	var model = rootModel.upload;
 	return {
 		body: _List_fromArray(
 			[
@@ -11677,12 +14274,13 @@ var $author$project$Upload$view = function (model) {
 														$elm$html$Html$button,
 														_List_fromArray(
 															[
-																$elm$html$Html$Events$onClick($author$project$Upload$ImageRequested)
+																$elm$html$Html$Events$onClick($author$project$Upload$Upload$ImageRequested)
 															]),
 														_List_fromArray(
 															[
 																$elm$html$Html$text('Select Images')
-															]))
+															])),
+														$author$project$Upload$Upload$filesCountView(model.selectedImages)
 													]))
 											])),
 										A2(
@@ -11709,13 +14307,46 @@ var $author$project$Upload$view = function (model) {
 																$elm$html$Html$text('Select place tag')
 															]))
 													])),
+												$author$project$Upload$Upload$selectPlacesView(model),
+												$author$project$Upload$Upload$newPlacesView(model)
+											])),
+										A2(
+										$elm$html$Html$div,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('form-row')
+											]),
+										_List_fromArray(
+											[
+												A2(
+												$elm$html$Html$div,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$class('col-12')
+													]),
+												_List_fromArray(
+													[
+														A2(
+														$elm$html$Html$input,
+														_List_fromArray(
+															[
+																$elm$html$Html$Attributes$class('form-control'),
+																$elm$html$Html$Attributes$type_('submit'),
+																$elm$html$Html$Attributes$value('Upload'),
+																$elm$html$Html$Events$onClick($author$project$Upload$Upload$Upload)
+															]),
+														_List_Nil)
+													])),
 												A2(
 												$elm$html$Html$div,
 												_List_fromArray(
 													[
 														$elm$html$Html$Attributes$class('col')
 													]),
-												_List_Nil)
+												_List_fromArray(
+													[
+														$author$project$Upload$Upload$uploadedIndicator(model)
+													]))
 											]))
 									]))
 							]))
@@ -11724,7 +14355,298 @@ var $author$project$Upload$view = function (model) {
 		title: 'Upload'
 	};
 };
-var $author$project$Visualizer$view = function (model) {
+var $author$project$Visualizer$Controller$Analyze = {$: 'Analyze'};
+var $author$project$Visualizer$Controller$GotSinceTime = function (a) {
+	return {$: 'GotSinceTime', a: a};
+};
+var $author$project$Visualizer$Controller$GotUntilTime = function (a) {
+	return {$: 'GotUntilTime', a: a};
+};
+var $author$project$Common$Settings$localDropSecsStr = F2(
+	function (hereZone, utcTime) {
+		var offset = A2($justinmimbs$time_extra$Time$Extra$toOffset, hereZone, utcTime);
+		return $author$project$Common$Settings$dropSecsStr(
+			$elm$time$Time$millisToPosix(
+				function (t) {
+					return t + ((offset * 60) * 1000);
+				}(
+					$elm$time$Time$posixToMillis(utcTime))));
+	});
+var $author$project$Common$Settings$timezoneNameString = function (zonename) {
+	if (zonename.$ === 'Name') {
+		var name = zonename.a;
+		return name;
+	} else {
+		var offset = zonename.a;
+		return 'UTC ' + ($elm$core$String$fromInt((offset / 60) | 0) + 'H');
+	}
+};
+var $author$project$Visualizer$Controller$dateSelectorView = function (rootModel) {
+	var hereTimeZone = rootModel.settings.timezone;
+	var controllerModel = rootModel.visualizer.controller;
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('date-selector form')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('form-group')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$label,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('since')
+							])),
+						A2(
+						$elm$html$Html$input,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$type_('datetime-local'),
+								$elm$html$Html$Attributes$value(
+								A2($author$project$Common$Settings$localDropSecsStr, hereTimeZone, controllerModel.dateRange.since)),
+								$author$project$Common$Data$onChange($author$project$Visualizer$Controller$GotSinceTime)
+							]),
+						_List_Nil)
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('form-group')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$label,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('until')
+							])),
+						A2(
+						$elm$html$Html$input,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$type_('datetime-local'),
+								$elm$html$Html$Attributes$value(
+								A2($author$project$Common$Settings$localDropSecsStr, hereTimeZone, controllerModel.dateRange.until)),
+								$author$project$Common$Data$onChange($author$project$Visualizer$Controller$GotUntilTime)
+							]),
+						_List_Nil)
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('timezone-info')
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text(
+						'timezone: ' + $author$project$Common$Settings$timezoneNameString(rootModel.settings.timezoneName))
+					]))
+			]));
+};
+var $author$project$Visualizer$Controller$SelectPlace = function (a) {
+	return {$: 'SelectPlace', a: a};
+};
+var $author$project$Common$Data$placesFilter = F2(
+	function (keyword, places) {
+		var lowerCaseKeyword = $elm$core$String$toLower(keyword);
+		return A2(
+			$elm$core$List$filter,
+			function (p) {
+				return A2(
+					$elm$core$String$contains,
+					lowerCaseKeyword,
+					$elm$core$String$toLower(p.name));
+			},
+			places);
+	});
+var $author$project$Visualizer$Controller$allPlacesList = function (controllerModel) {
+	return A2(
+		$elm$html$Html$ul,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('all-places')
+			]),
+		A2(
+			$elm$core$List$map,
+			function (p) {
+				return A2(
+					$elm$html$Html$li,
+					_List_fromArray(
+						[
+							$elm$html$Html$Events$onClick(
+							$author$project$Visualizer$Controller$SelectPlace(p.name))
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text(p.name)
+						]));
+			},
+			A2($author$project$Common$Data$placesFilter, controllerModel.placeSearchKeyword, controllerModel.places)));
+};
+var $author$project$Visualizer$Controller$PlaceSearchInput = function (a) {
+	return {$: 'PlaceSearchInput', a: a};
+};
+var $author$project$Visualizer$Controller$searchView = function (controllerModel) {
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('search')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$input,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$type_('text'),
+						$elm$html$Html$Events$onInput($author$project$Visualizer$Controller$PlaceSearchInput),
+						$elm$html$Html$Attributes$value(controllerModel.placeSearchKeyword),
+						$elm$html$Html$Attributes$placeholder('Search Places')
+					]),
+				_List_Nil)
+			]));
+};
+var $author$project$Visualizer$Controller$DelSelectedPlace = function (a) {
+	return {$: 'DelSelectedPlace', a: a};
+};
+var $author$project$Visualizer$Controller$selectedPlaceBox = function (place) {
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('selected-place-box'),
+				$elm$html$Html$Events$onClick(
+				$author$project$Visualizer$Controller$DelSelectedPlace(place.name))
+			]),
+		_List_fromArray(
+			[
+				$elm$html$Html$text(place.name)
+			]));
+};
+var $author$project$Visualizer$Controller$selectedPlacesView = function (controllerModel) {
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('selected')
+			]),
+		A2($elm$core$List$map, $author$project$Visualizer$Controller$selectedPlaceBox, controllerModel.selectedPlaces));
+};
+var $author$project$Visualizer$Controller$placesView = function (controllerModel) {
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('places')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('row')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('col-12')
+							]),
+						_List_fromArray(
+							[
+								$author$project$Visualizer$Controller$selectedPlacesView(controllerModel),
+								$author$project$Visualizer$Controller$searchView(controllerModel),
+								$author$project$Visualizer$Controller$allPlacesList(controllerModel)
+							]))
+					]))
+			]));
+};
+var $author$project$Visualizer$Controller$view = function (rootModel) {
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('row controller')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('col-12')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$h2,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Controller')
+							]))
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('col-6')
+					]),
+				_List_fromArray(
+					[
+						$author$project$Visualizer$Controller$dateSelectorView(rootModel)
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('col-6')
+					]),
+				_List_fromArray(
+					[
+						$author$project$Visualizer$Controller$placesView(rootModel.visualizer.controller)
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('col-12')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$button,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('btn btn-dark'),
+								$elm$html$Html$Events$onClick($author$project$Visualizer$Controller$Analyze)
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Analyze')
+							]))
+					]))
+			]));
+};
+var $author$project$Visualizer$Visualizer$view = function (rootModel) {
 	return {
 		body: _List_fromArray(
 			[
@@ -11732,38 +14654,87 @@ var $author$project$Visualizer$view = function (model) {
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('container maincontainer')
+						$elm$html$Html$Attributes$class('container visualizer')
 					]),
 				_List_fromArray(
 					[
-						$elm$html$Html$text('visualizer')
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('row')
+							]),
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('col-7')
+									]),
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$div,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('row')
+											]),
+										_List_Nil),
+										A2(
+										$elm$html$Html$map,
+										$author$project$Visualizer$Visualizer$ControllerMsg,
+										$author$project$Visualizer$Controller$view(rootModel))
+									])),
+								A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('col-5')
+									]),
+								_List_Nil)
+							]))
 					]))
 			]),
-		title: 'Gingerbreadman | Visualizer'
+		title: 'Visualizer'
 	};
 };
-var $author$project$Main$view = function (model) {
+var $author$project$Main$view = function (rootModel) {
 	var viewPage = F3(
 		function (view_, model_, msg_) {
 			var _v3 = view_(model_);
 			var title = _v3.title;
 			var body = _v3.body;
 			return {
-				body: A2(
-					$elm$core$List$map,
-					$elm$html$Html$map(msg_),
-					body),
+				body: _List_fromArray(
+					[
+						$author$project$Main$navbarView(rootModel),
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('app')
+							]),
+						A2(
+							$elm$core$List$map,
+							$elm$html$Html$map(msg_),
+							body)),
+						A2(
+						$elm$html$Html$map,
+						$author$project$Main$ErrorMsg,
+						$author$project$Common$ErrorPanel$view(rootModel.errorList))
+					]),
 				title: 'Gingerbreadman | ' + title
 			};
 		});
-	var _v0 = A2($elm$url$Url$Parser$parse, $author$project$Main$routeParser, model.url);
+	var _v0 = A2($elm$url$Url$Parser$parse, $author$project$Main$routeParser, rootModel.url);
 	if (_v0.$ === 'Just') {
 		if (_v0.a.$ === 'VisualizerPage') {
 			var _v1 = _v0.a;
-			return A3(viewPage, $author$project$Visualizer$view, model.visualizer, $author$project$Main$VisualizerMsg);
+			return A3(viewPage, $author$project$Visualizer$Visualizer$view, rootModel, $author$project$Main$VisualizerMsg);
 		} else {
 			var _v2 = _v0.a;
-			return A3(viewPage, $author$project$Upload$view, model.upload, $author$project$Main$UploadMsg);
+			return A3(viewPage, $author$project$Upload$Upload$view, rootModel, $author$project$Main$UploadMsg);
 		}
 	} else {
 		return $author$project$Main$notFoundView;
@@ -11781,4 +14752,4 @@ var $author$project$Main$main = $elm$browser$Browser$application(
 		view: $author$project$Main$view
 	});
 _Platform_export({'Main':{'init':$author$project$Main$main(
-	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"},"CommonData.Place":{"args":[],"type":"{ name : String.String, latitude : Basics.Float, longitude : Basics.Float }"}},"unions":{"Main.Msg":{"args":[],"tags":{"LinkClicked":["Browser.UrlRequest"],"UrlChanged":["Url.Url"],"VisualizerMsg":["Visualizer.Msg"],"UploadMsg":["Upload.Msg"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Upload.Msg":{"args":[],"tags":{"ImageRequested":[],"ImageSelected":["File.File","List.List File.File"],"Uploaded":["Result.Result Http.Error ()"],"GotPlaces":["Result.Result Http.Error (List.List CommonData.Place)"]}},"Visualizer.Msg":{"args":[],"tags":{"Hoge":[],"Fuga":[]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"File.File":{"args":[],"tags":{"File":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"List.List":{"args":["a"],"tags":{}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}}}}})}});}(this));
+	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"},"Common.ErrorPanel.ErrorModel":{"args":[],"type":"{ error : Common.ErrorPanel.Error, str : String.String }"},"Common.Data.Place":{"args":[],"type":"{ name : String.String, latitude : Basics.Float, longitude : Basics.Float }"},"Time.Era":{"args":[],"type":"{ start : Basics.Int, offset : Basics.Int }"},"Visualizer.Model.Face":{"args":[],"type":"{ id : String.String, imageId : String.String, imageUrl : String.String, faceImageB64 : String.String, faceLocation : Visualizer.Model.FaceLocation, faceEncoding : List.List Basics.Float, place : Common.Data.Place, datetime : Time.Posix }"},"Visualizer.Model.FaceLocation":{"args":[],"type":"{ x : Basics.Int, y : Basics.Int, w : Basics.Int, h : Basics.Int }"},"Visualizer.Model.Person":{"args":[],"type":"List.List Visualizer.Model.Face"}},"unions":{"Main.Msg":{"args":[],"tags":{"LinkClicked":["Browser.UrlRequest"],"UrlChanged":["Url.Url"],"VisualizerMsg":["Visualizer.Visualizer.Msg"],"UploadMsg":["Upload.Upload.Msg"],"ErrorMsg":["Common.ErrorPanel.Msg"],"SettingsMsg":["Common.Settings.Msg"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Common.ErrorPanel.Msg":{"args":[],"tags":{"AddError":["Common.ErrorPanel.ErrorModel"],"DelError":["Basics.Int"]}},"Common.Settings.Msg":{"args":[],"tags":{"GotTimezoneName":["Time.ZoneName"],"GotTimezone":["Time.Zone"]}},"Upload.Upload.Msg":{"args":[],"tags":{"ImageRequested":[],"ImageSelected":["File.File","List.List File.File"],"Upload":[],"Uploaded":["Result.Result Http.Error ()"],"GotPlaces":["Result.Result Http.Error (List.List Common.Data.Place)"],"PlaceSelected":["String.String"],"NewPlaceName":["String.String"],"NewPlaceLongitude":["String.String"],"NewPlaceLatitude":["String.String"],"PlaceSearchInput":["String.String"],"ErrorMsg":["Common.ErrorPanel.Msg"]}},"Visualizer.Visualizer.Msg":{"args":[],"tags":{"ControllerMsg":["Visualizer.Controller.Msg"]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Common.ErrorPanel.Error":{"args":[],"tags":{"HttpError":["Http.Error"],"OnlyStr":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"File.File":{"args":[],"tags":{"File":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"List.List":{"args":["a"],"tags":{}},"Visualizer.Controller.Msg":{"args":[],"tags":{"GotPlace":["Result.Result Http.Error (List.List Common.Data.Place)"],"SelectPlace":["String.String"],"DelSelectedPlace":["String.String"],"PlaceSearchInput":["String.String"],"GotSinceTime":["String.String"],"GotUntilTime":["String.String"],"Analyze":[],"Analyzed":["Result.Result Http.Error (List.List Visualizer.Model.Person)"],"ErrorMsg":["Common.ErrorPanel.Msg"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Time.Zone":{"args":[],"tags":{"Zone":["Basics.Int","List.List Time.Era"]}},"Time.ZoneName":{"args":[],"tags":{"Name":["String.String"],"Offset":["Basics.Int"]}},"Time.Posix":{"args":[],"tags":{"Posix":["Basics.Int"]}}}}})}});}(this));

@@ -1,6 +1,6 @@
 module Visualizer.Model exposing (..)
 
-import Common.Data exposing (Person, Place)
+import Common.Data exposing (Place, placeDecoder, datetimeDecoder)
 import Json.Decode as D exposing (Decoder)
 import Json.Decode.Pipeline as P
 import Time
@@ -22,6 +22,10 @@ type alias ControllerModel =
     , placeSearchKeyword : String
     , dateRange : DateRange
     }
+
+
+type alias Person =
+    List Face
 
 
 type alias Face =
@@ -100,24 +104,6 @@ sortWithTime person =
 
 -- JSON DECODERS
 
-
-faceLocationDecoder : Decoder FaceLocation
-faceLocationDecoder =
-    D.map4 FaceLocation
-        (D.index 0 D.int)
-        (D.index 1 D.int)
-        (D.index 2 D.int)
-        (D.index 3 D.int)
-
-
-placeDecoder : Decoder Place
-placeDecoder =
-    D.map3 Place
-        (D.field "name" D.string)
-        (D.field "latitude" D.float)
-        (D.field "longitude" D.float)
-
-
 peopleDecoder : Decoder (List Person)
 peopleDecoder =
     D.field "grouped_faces" (D.list personDecoder)
@@ -141,15 +127,10 @@ faceDecoder =
         |> P.required "posix_millisec" datetimeDecoder
 
 
-allPlaceDecoder : Decoder (List Place)
-allPlaceDecoder =
-    D.map3 Place
-        (D.field "name" D.string)
-        (D.field "latitude" D.float)
-        (D.field "longitude" D.float)
-        |> D.list
-
-
-datetimeDecoder : Decoder Time.Posix
-datetimeDecoder =
-    D.map Time.millisToPosix D.int
+faceLocationDecoder : Decoder FaceLocation
+faceLocationDecoder =
+    D.map4 FaceLocation
+        (D.index 0 D.int)
+        (D.index 1 D.int)
+        (D.index 2 D.int)
+        (D.index 3 D.int)

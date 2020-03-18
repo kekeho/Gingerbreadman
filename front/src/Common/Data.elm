@@ -19,31 +19,6 @@ type alias Place =
     }
 
 
-type alias Person =
-    List Face
-
-
-type alias Face =
-    { id : String
-    , imageId : String
-    , imageUrl : String
-    , faceImageB64 : String
-    , faceLocation : FaceLocation
-    , faceEncoding : List Float
-    , place : Place
-    , datetime : Time.Posix
-    }
-
-
-type alias FaceLocation =
-    { x : Int
-    , y : Int
-    , w : Int
-    , h : Int
-    }
-
-
-
 -- COMMON VIEWS
 
 
@@ -67,39 +42,6 @@ placeDecoder =
 placesDecoder : Decoder (List Place)
 placesDecoder =
     D.list placeDecoder
-
-
-peopleDecoder : Decoder (List Person)
-peopleDecoder =
-    D.field "grouped_faces" (D.list personDecoder)
-
-
-personDecoder : Decoder Person
-personDecoder =
-    D.list faceDecoder
-
-
-faceDecoder : Decoder Face
-faceDecoder =
-    D.succeed Face
-        |> P.required "id" D.string
-        |> P.required "image_id" D.string
-        |> P.required "image_url" D.string
-        |> P.required "face_image" D.string
-        |> P.required "face_location" faceLocationDecoder
-        |> P.required "face_encoding" (D.list D.float)
-        |> P.required "place" placeDecoder
-        |> P.required "posix_millisec" datetimeDecoder
-
-
-faceLocationDecoder : Decoder FaceLocation
-faceLocationDecoder =
-    D.map4 FaceLocation
-        (D.index 0 D.int)
-        (D.index 1 D.int)
-        (D.index 2 D.int)
-        (D.index 3 D.int)
-
 
 datetimeDecoder : Decoder Time.Posix
 datetimeDecoder =
