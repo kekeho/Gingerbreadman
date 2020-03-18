@@ -26,6 +26,8 @@ import requests
 import json
 import random
 import base64
+from io import BytesIO
+from PIL import Image
 
 def grouping(request):
     allowed_methods = ['GET']
@@ -60,37 +62,55 @@ def grouping(request):
     headers = {'Content-Type': 'application/json'}
     grouped_faces = requests.post('http://service_face_grouping:8000/cluster/', json.dumps(faces_info), headers=headers).json()
     grouped_faces = list(grouped_faces.values())
+    
+    if len(grouped_faces) == 0:
+        return JsonResponse({'grouped_faces': []}, safe=False)
+    
     # Get images as base64
     # base_url = 'http://db-controller:8888'
-    return_dict = dict()
+    return_list = []
     for group_id, person in enumerate(grouped_faces):
-        return_group_dict = dict()
-        return_group_dict['faces'] = []
+        return_group_list = []
         for i, face_ in enumerate(person['faces']):
             # image_url = urllib.parse.urljoin(base_url, face['image_url'])
-            face = controller_models.Face.get(face_['id'])
-            face_img = face_model.image.image
+            face = controller_models.Face.objects.get(id=face_['id'])
+            face_img = face.image.image
 
-            face_dict = serializers.serialize(face)
+            face_dict = dict()
+            face_dict['id'] = face.id
+            face_dict['image_id'] = face.image.id
+            face_dict['image_url'] = face.image.image.url
+            face_dict['face_location'] = [
+                face.face_location_x, face.face_location_y,
+                face.face_location_w, face.face_location_h
+            ]
+            face_dict['face_encoding'] = json.loads(face.face_encoding)
+            face_dict['place'] = {
+                'name': face.image.place.name,
+                'latitude': face.image.place.latitude,
+                'longitude': face.image.place.longitude
+            }
+            face_dict['posix_millisec'] = int(face.image.datetime.timestamp() * 1e3)
 
-            with BytesIO() as onmemory_file:
-                top, right, bottom, left = (face.face_location_x, face.face_location_y, face.face_location.w, face.face_location.h)
-                croped = face_img.crop((left, top, right, bottom))
-                croped.save(onmemory_file, 'jpeg')
-                b64 = base64.b64encode(onmemory_file.getvalue())
-                b64 = b'data:image/jpeg;base64,' + b64  # HTML img src
-                # grouped_faces[group_id]['faces'][i]['face_image'] = str(b64)[2:-1]
-                face_dict['face_image'] = str(b64)[2:-1]
-            return_group_dict['faces'].add(face_dict)
-
-        return_dict[group_id] = return_group_dict
+            print(face_dict)  # TODO: DEBUG
             
+            with BytesIO() as img_fp:
+                image = Image.open(face.image.image.file)
+                image = image.convert('RGB')
 
-    
-    # Set person color (random)
-    for group_id, _ in enumerate(grouped_faces):
-        return_dict[group_id]['person_color'] = tuple(map(lambda ab:random.randint(*ab), [(128, 255)] * 3))
+                with BytesIO() as onmemory_file:
+                    top, right, bottom, left = (face.face_location_x, face.face_location_y, face.face_location_w, face.face_location_h)
+                    croped = image.crop((left, top, right, bottom))
+                    croped.save(onmemory_file, 'jpeg')
+                    b64 = base64.b64encode(onmemory_file.getvalue())
+                    b64 = b'data:image/jpeg;base64,' + b64  # HTML img src
+                    # grouped_faces[group_id]['faces'][i]['face_image'] = str(b64)[2:-1]
+                    face_dict['face_image'] = str(b64)[2:-1]
+            return_group_list.append(face_dict)
 
-    context = {'grouped_faces': return_dict}
+        return_list.append(return_group_list)
+
+    print(return_list)  # TODO: Debug
+    context = {'grouped_faces': return_list}
     return JsonResponse(context, safe=False)
 

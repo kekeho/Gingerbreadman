@@ -29,6 +29,9 @@ app = flask.Flask(__name__)
 def clustering():
     faces_json = request.json
     face_encodings = np.array([x['face_encoding'] for x in faces_json], dtype='float32')
+    if len(face_encodings) == 0:
+        print('Nothing to grouping')
+        return flask.jsonify(dict())
 
      # 128d -> 2d
     # compressor = TSNE(n_components=2)
@@ -46,6 +49,8 @@ def clustering():
             grouped[int(group_index)]['faces'].append(faces_json[i])
         except KeyError:
             grouped[int(group_index)] = {'faces': [faces_json[i]]}
+    
+    print(grouped)
     
     return flask.jsonify(grouped)
 
