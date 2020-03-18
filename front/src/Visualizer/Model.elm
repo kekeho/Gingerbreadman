@@ -1,6 +1,6 @@
 module Visualizer.Model exposing (..)
 
-import Common.Data exposing (Place)
+import Common.Data exposing (Person, Place)
 import Json.Decode as D exposing (Decoder)
 import Json.Decode.Pipeline as P
 import Time
@@ -12,6 +12,7 @@ import Time
 
 type alias Model =
     { controller : ControllerModel
+    , people : List Person
     }
 
 
@@ -21,10 +22,6 @@ type alias ControllerModel =
     , placeSearchKeyword : String
     , dateRange : DateRange
     }
-
-
-type alias Person =
-    List Face
 
 
 type alias Face =

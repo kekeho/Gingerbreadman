@@ -75,6 +75,7 @@ init flags url key =
                     , until = Time.millisToPosix 0
                     }
                 }
+            , people = []
             }
       , upload =
             { places = Nothing

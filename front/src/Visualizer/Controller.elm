@@ -11,6 +11,7 @@ import Http
 import Iso8601
 import Model exposing (RootModel)
 import Time
+import Url.Builder
 import Visualizer.Model exposing (..)
 
 
@@ -21,6 +22,8 @@ type Msg
     | PlaceSearchInput String
     | GotSinceTime String
     | GotUntilTime String
+    | Analyze
+    | Analyzed (Result Http.Error (List Common.Data.Person))
     | ErrorMsg Common.ErrorPanel.Msg
 
 
@@ -32,6 +35,9 @@ update msg rootModel =
 
         controllerModel =
             visualizerModel.controller
+
+        errorList =
+            rootModel.errorList
     in
     case msg of
         GotPlace result ->
@@ -157,6 +163,21 @@ update msg rootModel =
                     , cmd
                     )
 
+        Analyze ->
+            analyze rootModel
+
+        Analyzed result ->
+            case result of
+                Err error ->
+                    ( { rootModel | errorList = { error = Common.ErrorPanel.HttpError error, str = "Analyzing Failed" } :: errorList }
+                    , Cmd.none
+                    )
+
+                Ok people ->
+                    ( { rootModel | visualizer = { visualizerModel | people = people } }
+                    , Cmd.none
+                    )
+
         ErrorMsg subMsg ->
             let
                 ( errorPanelModel, cmd ) =
@@ -176,6 +197,11 @@ view rootModel =
             [ dateSelectorView rootModel ]
         , div [ class "col-6" ]
             [ placesView rootModel.visualizer.controller ]
+        , div [ class "col-12" ]
+            [ button
+                [ class "btn btn-dark", onClick Analyze ]
+                [ text "Analyze" ]
+            ]
         ]
 
 
@@ -221,21 +247,6 @@ allPlacesList controllerModel =
         )
 
 
-getPlaces : Cmd Msg
-getPlaces =
-    Http.request
-        { method = "GET"
-        , headers =
-            [ Http.header "Accept" "application/json"
-            ]
-        , url = "/api/db/get_places_all/"
-        , expect = Http.expectJson GotPlace placesDecoder
-        , body = Http.emptyBody
-        , timeout = Nothing
-        , tracker = Nothing
-        }
-
-
 dateSelectorView : RootModel -> Html Msg
 dateSelectorView rootModel =
     let
@@ -271,3 +282,74 @@ dateSelectorView rootModel =
                 )
             ]
         ]
+
+
+
+-- CMD
+
+
+getPlaces : Cmd Msg
+getPlaces =
+    Http.request
+        { method = "GET"
+        , headers =
+            [ Http.header "Accept" "application/json"
+            ]
+        , url = "/api/db/get_places_all/"
+        , expect = Http.expectJson GotPlace placesDecoder
+        , body = Http.emptyBody
+        , timeout = Nothing
+        , tracker = Nothing
+        }
+
+
+analyze : RootModel -> ( RootModel, Cmd Msg )
+analyze rootModel =
+    let
+        errorList =
+            rootModel.errorList
+
+        controllerModel =
+            rootModel.visualizer.controller
+
+        path =
+            Url.Builder.absolute [ "api", "analyze", "grouping" ]
+    in
+    case groupingQuery controllerModel of
+        Nothing ->
+            ( { rootModel | errorList = { error = Common.ErrorPanel.OnlyStr, str = "Please select places" } :: errorList }
+            , Cmd.none
+            )
+
+        Just query ->
+            ( rootModel
+            , Http.request
+                { method = "GET"
+                , headers =
+                    [ Http.header "Accept" "application/json"
+                    ]
+                , url = path query
+                , expect = Http.expectJson Analyzed Common.Data.peopleDecoder
+                , body = Http.emptyBody
+                , timeout = Nothing
+                , tracker = Nothing
+                }
+            )
+
+
+groupingQuery : ControllerModel -> Maybe (List Url.Builder.QueryParameter)
+groupingQuery controllerModel =
+    let
+        timeQuery =
+            [ Url.Builder.string "datetime-from" (Common.Settings.dropSecsStr controllerModel.dateRange.since)
+            , Url.Builder.string "datetime-to" (Common.Settings.dropSecsStr controllerModel.dateRange.until)
+            ]
+    in
+    if List.isEmpty controllerModel.selectedPlaces then
+        Nothing
+
+    else
+        Just
+            (timeQuery
+                ++ List.map (\p -> Url.Builder.string "places" p.name) controllerModel.selectedPlaces
+            )
