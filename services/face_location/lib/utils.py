@@ -39,7 +39,7 @@ def get_image(url: str) -> Image.Image:
 
 
 def get_images_with_url(urls: List[str]) -> List[np.ndarray]:
-    images = [np.asarray(get_image(url)) for url in urls]
+    images = [np.asarray(get_image(url))[:,:,:3] for url in urls]  # trim RGB
     return images
 
 
