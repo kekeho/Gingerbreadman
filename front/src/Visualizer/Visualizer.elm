@@ -5,6 +5,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Model exposing (RootModel)
 import Visualizer.Controller
+import Visualizer.People
 import Visualizer.Model exposing (Model)
 
 
@@ -14,6 +15,7 @@ import Visualizer.Model exposing (Model)
 
 type Msg
     = ControllerMsg Visualizer.Controller.Msg
+    | PeopleMsg Visualizer.People.Msg
 
 
 update : Msg -> RootModel -> ( RootModel, Cmd Msg )
@@ -28,6 +30,14 @@ update msg rootModel =
                     Cmd.map ControllerMsg cmd_
             in
             ( rootModel_, cmd )
+        
+        PeopleMsg subMsg ->
+            let
+                ( rootModel_, cmd_ ) =
+                    Visualizer.People.update subMsg rootModel
+                cmd = Cmd.map PeopleMsg cmd_    
+            in
+            ( rootModel_, cmd )
 
 
 
@@ -38,7 +48,7 @@ view : RootModel -> Browser.Document Msg
 view rootModel =
     { title = "Visualizer"
     , body =
-        [ div [ class "container visualizer" ]
+        [ div [ class "visualizer" ]
             [ div [ class "row" ]
                 [ div [ class "col-7" ]
                     -- Map & Controller
@@ -50,7 +60,9 @@ view rootModel =
                     ]
                 , div [ class "col-5" ]
                     -- People, Traffic...
-                    []
+                    [ Visualizer.People.view rootModel.visualizer
+                        |> Html.map PeopleMsg
+                    ]
                 ]
             ]
         ]

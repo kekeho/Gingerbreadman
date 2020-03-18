@@ -78,6 +78,7 @@
 }
 
 .controller {
+    padding-left: 5%;
     width: 100%;
 }
 
@@ -109,4 +110,8 @@ ul.all-places {
 
 .controller .date-selector.form input {
     height: 1.5rem;
+}
+
+.face img {
+    width: 100%;
 }
