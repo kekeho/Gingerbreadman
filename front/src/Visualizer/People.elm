@@ -41,9 +41,13 @@ view rootModel =
 
 personView : Time.Zone -> Person -> Html Msg
 personView timezone person =
+    let
+        sorted =
+            sortWithTime person
+    in
     div [ class "person col-xl-3 col-4" ]
         [ div [ class "row" ]
-            (List.map (faceView timezone) person)
+            (List.map (faceView timezone) sorted)
         ]
 
 
