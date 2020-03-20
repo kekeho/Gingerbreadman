@@ -1,11 +1,13 @@
 module Visualizer.People exposing (..)
 
 import Common.Data exposing (..)
+import Common.Settings exposing (localDropSecsStr)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Model exposing (..)
 import Visualizer.Model exposing (..)
+import Time
 
 
 
@@ -29,25 +31,25 @@ update msg rootModel =
 -- VIEW
 
 
-view : Visualizer.Model.Model -> Html Msg
-view visualizerModel =
+view : RootModel -> Html Msg
+view rootModel =
     div [ class "row people" ]
         (div [ class "col-12" ] [ h2 [] [ text "People" ] ]
-            :: List.map personView visualizerModel.people
+            :: List.map (personView rootModel.settings.timezone) rootModel.visualizer.people
         )
 
 
-personView : Person -> Html Msg
-personView person =
+personView : Time.Zone -> Person -> Html Msg
+personView timezone person =
     div [ class "person col-xl-3 col-4" ]
         [ div [ class "row" ]
-            (List.map faceView person)
+            (List.map (faceView timezone) person)
         ]
 
 
-faceView : Face -> Html Msg
-faceView face =
+faceView : Time.Zone -> Face -> Html Msg
+faceView timezone face =
     div [ class "face col-xl-4 col-6" ]
-        [ img [ src face.faceImageB64 ] []
+        [ img [ src face.faceImageB64, title (localDropSecsStr timezone face.datetime) ] []
         , p [ class "place" ] [ text face.place.name ]
         ]

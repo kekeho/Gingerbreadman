@@ -60,7 +60,7 @@ view rootModel =
                     ]
                 , div [ class "col-5" ]
                     -- People, Traffic...
-                    [ Visualizer.People.view rootModel.visualizer
+                    [ Visualizer.People.view rootModel
                         |> Html.map PeopleMsg
                     ]
                 ]
