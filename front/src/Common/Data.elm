@@ -19,6 +19,7 @@ type alias Place =
     }
 
 
+
 -- COMMON VIEWS
 
 
@@ -42,6 +43,7 @@ placeDecoder =
 placesDecoder : Decoder (List Place)
 placesDecoder =
     D.list placeDecoder
+
 
 datetimeDecoder : Decoder Time.Posix
 datetimeDecoder =

@@ -6,7 +6,9 @@ import File
 import Http
 
 
+
 -- MODEL INIT
+
 
 modelInit : Model
 modelInit =
@@ -20,7 +22,10 @@ modelInit =
     }
 
 
+
 -- MODEL
+
+
 type alias Model =
     { places : Maybe (List Common.Data.Place)
     , selectedPlace : Maybe Common.Data.Place

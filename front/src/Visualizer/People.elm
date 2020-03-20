@@ -6,8 +6,8 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Model exposing (..)
-import Visualizer.Model exposing (..)
 import Time
+import Visualizer.Model exposing (..)
 
 
 

@@ -5,8 +5,8 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Model exposing (RootModel)
 import Visualizer.Controller
-import Visualizer.People
 import Visualizer.Model exposing (Model)
+import Visualizer.People
 
 
 
@@ -30,12 +30,14 @@ update msg rootModel =
                     Cmd.map ControllerMsg cmd_
             in
             ( rootModel_, cmd )
-        
+
         PeopleMsg subMsg ->
             let
                 ( rootModel_, cmd_ ) =
                     Visualizer.People.update subMsg rootModel
-                cmd = Cmd.map PeopleMsg cmd_    
+
+                cmd =
+                    Cmd.map PeopleMsg cmd_
             in
             ( rootModel_, cmd )
 

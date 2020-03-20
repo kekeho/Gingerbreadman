@@ -1,18 +1,21 @@
 module Visualizer.Model exposing (..)
 
-import Common.Data exposing (Place, placeDecoder, datetimeDecoder)
+import Common.Data exposing (Place, datetimeDecoder, placeDecoder)
 import Json.Decode as D exposing (Decoder)
 import Json.Decode.Pipeline as P
 import Time
 
 
+
 -- MODEL INIT
+
 
 modelInit : Model
 modelInit =
     { controller = controllerModelInit
     , people = peopleInit
     }
+
 
 controllerModelInit : ControllerModel
 controllerModelInit =
@@ -25,9 +28,11 @@ controllerModelInit =
         }
     }
 
+
 peopleInit : List Person
 peopleInit =
     []
+
 
 
 -- MODELS
@@ -126,6 +131,7 @@ sortWithTime person =
 
 
 -- JSON DECODERS
+
 
 peopleDecoder : Decoder (List Person)
 peopleDecoder =

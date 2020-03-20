@@ -30,14 +30,14 @@ import Http
 import Json.Decode as D exposing (Decoder)
 import Model exposing (..)
 import Time
-import Upload.Upload
 import Upload.Model
+import Upload.Upload
 import Url
 import Url.Builder
 import Url.Parser
 import Visualizer.Controller
-import Visualizer.Visualizer
 import Visualizer.Model
+import Visualizer.Visualizer
 
 
 
