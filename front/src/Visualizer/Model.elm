@@ -6,6 +6,29 @@ import Json.Decode.Pipeline as P
 import Time
 
 
+-- MODEL INIT
+
+modelInit : Model
+modelInit =
+    { controller = controllerModelInit
+    , people = peopleInit
+    }
+
+controllerModelInit : ControllerModel
+controllerModelInit =
+    { places = []
+    , selectedPlaces = []
+    , placeSearchKeyword = ""
+    , dateRange =
+        { since = Time.millisToPosix 0
+        , until = Time.millisToPosix 0
+        }
+    }
+
+peopleInit : List Person
+peopleInit =
+    []
+
 
 -- MODELS
 

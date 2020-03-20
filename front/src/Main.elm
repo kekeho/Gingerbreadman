@@ -31,11 +31,13 @@ import Json.Decode as D exposing (Decoder)
 import Model exposing (..)
 import Time
 import Upload.Upload
+import Upload.Model
 import Url
 import Url.Builder
 import Url.Parser
 import Visualizer.Controller
 import Visualizer.Visualizer
+import Visualizer.Model
 
 
 
@@ -65,31 +67,9 @@ init flags url key =
       , url = url
       , route = VisualizerPage
       , errorList = []
-      , visualizer =
-            { controller =
-                { places = []
-                , selectedPlaces = []
-                , placeSearchKeyword = ""
-                , dateRange =
-                    { since = Time.millisToPosix 0
-                    , until = Time.millisToPosix 0
-                    }
-                }
-            , people = []
-            }
-      , upload =
-            { places = Nothing
-            , selectedPlace = Nothing
-            , selectedImages = Nothing
-            , newPlace = { name = "", latitude = 0.0, longitude = 0.0 }
-            , placeSearchFiltered = []
-            , placeSearchInput = ""
-            , uploadedIndicator = Nothing
-            }
-      , settings =
-            { timezone = Time.utc
-            , timezoneName = Time.Name "UTC"
-            }
+      , visualizer = Visualizer.Model.modelInit
+      , upload = Upload.Model.modelInit
+      , settings = Common.Settings.modelInit
       }
       -- Command to get all places
     , Cmd.batch

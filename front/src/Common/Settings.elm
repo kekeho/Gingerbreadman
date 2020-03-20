@@ -6,6 +6,14 @@ import Time
 import Time.Extra
 
 
+-- MODELINIT
+
+modelInit : Model
+modelInit =
+    { timezone = Time.utc
+    , timezoneName = Time.Name "UTC"
+    }
+
 
 -- MODEL
 
