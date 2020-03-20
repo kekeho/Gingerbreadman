@@ -7,6 +7,7 @@ import Model exposing (RootModel)
 import Visualizer.Controller
 import Visualizer.Model exposing (Model)
 import Visualizer.People
+import Visualizer.Traffic
 
 
 
@@ -64,6 +65,7 @@ view rootModel =
                     -- People, Traffic...
                     [ Visualizer.People.view rootModel
                         |> Html.map PeopleMsg
+                    , Visualizer.Traffic.view rootModel.visualizer
                     ]
                 ]
             ]

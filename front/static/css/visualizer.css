@@ -115,3 +115,22 @@ ul.all-places {
 .face img {
     width: 100%;
 }
+
+
+
+/* Traffic */
+
+.top6 {
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.top6 p {
+    display: inline-block;
+    margin: auto 1rem;
+}
+
+.under6 p {
+    display: inline-block;
+    margin: auto 0.2rem;
+}

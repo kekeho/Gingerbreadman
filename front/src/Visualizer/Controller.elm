@@ -13,6 +13,7 @@ import Model exposing (RootModel)
 import Time
 import Url.Builder
 import Visualizer.Model exposing (..)
+import Visualizer.Traffic
 
 
 type Msg
@@ -174,7 +175,11 @@ update msg rootModel =
                     )
 
                 Ok people ->
-                    ( { rootModel | visualizer = { visualizerModel | people = people } }
+                    let
+                        trafficCount =
+                            Visualizer.Traffic.f people
+                    in
+                    ( { rootModel | visualizer = { visualizerModel | people = people, traffic = trafficCount } }
                     , Cmd.none
                     )
 

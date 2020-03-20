@@ -4,6 +4,7 @@ import Common.Data exposing (Place, datetimeDecoder, placeDecoder)
 import Json.Decode as D exposing (Decoder)
 import Json.Decode.Pipeline as P
 import Time
+import Tuple
 
 
 
@@ -14,6 +15,7 @@ modelInit : Model
 modelInit =
     { controller = controllerModelInit
     , people = peopleInit
+    , traffic = trafficInit
     }
 
 
@@ -34,6 +36,11 @@ peopleInit =
     []
 
 
+trafficInit : List TrafficCount
+trafficInit =
+    []
+
+
 
 -- MODELS
 
@@ -41,6 +48,7 @@ peopleInit =
 type alias Model =
     { controller : ControllerModel
     , people : List Person
+    , traffic : TrafficModel
     }
 
 
@@ -50,6 +58,10 @@ type alias ControllerModel =
     , placeSearchKeyword : String
     , dateRange : DateRange
     }
+
+
+type alias TrafficModel =
+    List TrafficCount
 
 
 type alias Person =
@@ -98,8 +110,16 @@ type Emotion
     | Surprise
 
 
+
+-- (a, b) : a -> b
+
+
 type alias Traffic =
-    { places : List Place
+    ( Place, Place )
+
+
+type alias TrafficCount =
+    { traffic : Traffic
     , count : Int
     }
 
