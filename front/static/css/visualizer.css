@@ -17,6 +17,11 @@
  * along with Gingerbreadman.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+.visualizer {
+    max-width: none;
+}
+
+
 .face-row {
     padding: 1rem;
 }

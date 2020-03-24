@@ -51,7 +51,7 @@ view : RootModel -> Browser.Document Msg
 view rootModel =
     { title = "Visualizer"
     , body =
-        [ div [ class "visualizer" ]
+        [ div [ class "visualizer container" ]
             [ div [ class "row" ]
                 [ div [ class "col-7" ]
                     -- Map & Controller
