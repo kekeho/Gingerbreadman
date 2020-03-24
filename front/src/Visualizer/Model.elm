@@ -28,6 +28,12 @@ controllerModelInit =
         { since = Time.millisToPosix 0
         , until = Time.millisToPosix 0
         }
+    , resultPlaces = []
+    , resultDateRange =
+        { since = Time.millisToPosix 0
+        , until = Time.millisToPosix 0
+        }
+    , modalState = False
     }
 
 
@@ -55,8 +61,11 @@ type alias Model =
 type alias ControllerModel =
     { places : List Place
     , selectedPlaces : List Place
+    , resultPlaces : List Place
     , placeSearchKeyword : String
     , dateRange : DateRange
+    , resultDateRange : DateRange
+    , modalState : Bool
     }
 
 

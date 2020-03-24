@@ -21,3 +21,21 @@
     margin: 0;
     padding: 0;
 }
+
+
+.gb-modal {
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: 0;
+    padding: 5rem;
+    max-width: none;
+
+    background-color: rgba(255, 255, 255, 0.829);
+
+    z-index: 999;
+}

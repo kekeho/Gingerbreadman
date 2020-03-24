@@ -69,6 +69,9 @@ view rootModel =
                     ]
                 ]
             ]
+        -- MODAL
+        , Visualizer.Controller.viewControllerModal rootModel
+            |> Html.map ControllerMsg
         ]
     }
 

@@ -25,6 +25,7 @@ type Msg
     | GotUntilTime String
     | Analyze
     | Analyzed (Result Http.Error (List Visualizer.Model.Person))
+    | ChangeModalState Bool
     | ErrorMsg Common.ErrorPanel.Msg
 
 
@@ -165,7 +166,11 @@ update msg rootModel =
                     )
 
         Analyze ->
-            analyze rootModel
+            let
+                (model_, cmd_) =
+                    update (ChangeModalState False) rootModel
+            in
+            analyze model_
 
         Analyzed result ->
             case result of
@@ -178,10 +183,17 @@ update msg rootModel =
                     let
                         trafficCount =
                             Visualizer.Traffic.f people
+                        newController =
+                            { controllerModel | resultDateRange = controllerModel.dateRange, resultPlaces = controllerModel.selectedPlaces }
                     in
-                    ( { rootModel | visualizer = { visualizerModel | people = people, traffic = trafficCount } }
+                    ( { rootModel | visualizer = { visualizerModel | controller = newController, people = people, traffic = trafficCount } }
                     , Cmd.none
                     )
+        
+        ChangeModalState state ->
+            ( { rootModel | visualizer = { visualizerModel | controller = { controllerModel | modalState = state }}}
+            , Cmd.none
+            )
 
         ErrorMsg subMsg ->
             let
@@ -198,17 +210,64 @@ view rootModel =
     div [ class "row controller" ]
         [ div [ class "col-12" ]
             [ h2 [] [ text "Controller" ] ]
-        , div [ class "col-6" ]
-            [ dateSelectorView rootModel ]
-        , div [ class "col-6" ]
-            [ placesView rootModel.visualizer.controller ]
         , div [ class "col-12" ]
-            [ button
-                [ class "btn btn-dark", onClick Analyze ]
-                [ text "Analyze" ]
+            [ viewControllerState rootModel
+            , button
+                [ class "btn btn-dark", onClick (ChangeModalState True) ]
+                [ text "Change" ]
             ]
         ]
 
+viewControllerState : RootModel -> Html Msg
+viewControllerState rootModel =
+    let
+        controllerModel =
+            rootModel.visualizer.controller
+        since =
+            Common.Settings.localDropSecsStr rootModel.settings.timezone controllerModel.resultDateRange.since
+        until =
+            Common.Settings.localDropSecsStr rootModel.settings.timezone controllerModel.resultDateRange.until
+        timezone =
+            case rootModel.settings.timezoneName of
+                Time.Name tzname ->
+                    tzname
+                Time.Offset integer ->
+                    "UTC" ++ String.fromInt integer
+        places =
+            List.map .name controllerModel.resultPlaces
+                |> String.join ", "
+    in
+    
+    div [ class "controller-state" ]
+        [ p [ class "date "]
+            [ text ("date : " ++ since ++ " ~ " ++ until ++ " (" ++ timezone ++ ")") ]
+        , p [ class "place" ]
+            [ text ("places : " ++ places) ]
+        ]
+
+
+viewControllerModal : RootModel -> Html Msg
+viewControllerModal rootModel =
+    if rootModel.visualizer.controller.modalState then
+        div [ class "container gb-modal" ]
+            [ div [ class "row controller" ]
+                [ div [ class "col-12" ]
+                    [ h2 [] [ text "Controller" ] ]
+                , div [ class "col-6" ]
+                    [ dateSelectorView rootModel ]
+                , div [ class "col-6" ]
+                    [ placesView rootModel.visualizer.controller ]
+                , div [ class "col-12" ]
+                    [ button
+                        [ class "btn btn-dark", onClick Analyze ]
+                        [ text "Analyze" ]
+                    , button [ class "btn", onClick (ChangeModalState False)]
+                        [ text "Close"]
+                    ]
+                ]
+            ]
+    else
+        div [] []
 
 placesView : ControllerModel -> Html Msg
 placesView controllerModel =
