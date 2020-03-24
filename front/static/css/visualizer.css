@@ -139,3 +139,11 @@ ul.all-places {
     display: inline-block;
     margin: auto 0.2rem;
 }
+
+
+/* Map */
+
+.map#map {
+    height: 60vh;
+    width: 100%;
+}

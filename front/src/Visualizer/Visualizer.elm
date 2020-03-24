@@ -8,6 +8,7 @@ import Visualizer.Controller
 import Visualizer.Model exposing (Model)
 import Visualizer.People
 import Visualizer.Traffic
+import Visualizer.Map
 
 
 
@@ -56,7 +57,7 @@ view rootModel =
                 [ div [ class "col-7" ]
                     -- Map & Controller
                     [ div [ class "row" ]
-                        [-- MAP
+                        [ Visualizer.Map.mapView "map"
                         ]
                     , Visualizer.Controller.view rootModel
                         |> Html.map ControllerMsg
@@ -84,7 +85,6 @@ view rootModel =
 onLoad : Cmd Msg
 onLoad =
     Cmd.batch
-        (List.map (\( msg, cmd ) -> Cmd.map msg cmd)
-            [ ( ControllerMsg, Visualizer.Controller.getPlaces )
-            ]
-        )
+        [ Cmd.map ControllerMsg Visualizer.Controller.getPlaces
+        , Visualizer.Map.initMap "map"
+        ]

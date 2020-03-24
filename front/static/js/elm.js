@@ -11043,15 +11043,15 @@ var $elm$core$Basics$never = function (_v0) {
 	}
 };
 var $elm$browser$Browser$application = _Browser_application;
-var $elm$time$Time$Name = function (a) {
-	return {$: 'Name', a: a};
-};
 var $author$project$Main$SettingsMsg = function (a) {
 	return {$: 'SettingsMsg', a: a};
 };
 var $author$project$Model$VisualizerPage = {$: 'VisualizerPage'};
 var $author$project$Common$Settings$GotTimezone = function (a) {
 	return {$: 'GotTimezone', a: a};
+};
+var $elm$time$Time$Name = function (a) {
+	return {$: 'Name', a: a};
 };
 var $elm$time$Time$Offset = function (a) {
 	return {$: 'Offset', a: a};
@@ -11071,10 +11071,42 @@ var $author$project$Common$Settings$getTimeZoneName = A2($elm$core$Task$perform,
 var $author$project$Common$Settings$getTimezoneWithZoneName = $elm$core$Platform$Cmd$batch(
 	_List_fromArray(
 		[$author$project$Common$Settings$getTimeZoneName, $author$project$Common$Settings$getTimeZone]));
+var $elm$time$Time$utc = A2($elm$time$Time$Zone, 0, _List_Nil);
+var $author$project$Common$Settings$modelInit = {
+	timezone: $elm$time$Time$utc,
+	timezoneName: $elm$time$Time$Name('UTC')
+};
+var $author$project$Upload$Model$modelInit = {
+	newPlace: {latitude: 0.0, longitude: 0.0, name: ''},
+	placeSearchFiltered: _List_Nil,
+	placeSearchInput: '',
+	places: $elm$core$Maybe$Nothing,
+	selectedImages: $elm$core$Maybe$Nothing,
+	selectedPlace: $elm$core$Maybe$Nothing,
+	uploadedIndicator: $elm$core$Maybe$Nothing
+};
 var $elm$time$Time$Posix = function (a) {
 	return {$: 'Posix', a: a};
 };
 var $elm$time$Time$millisToPosix = $elm$time$Time$Posix;
+var $author$project$Visualizer$Model$controllerModelInit = {
+	dateRange: {
+		since: $elm$time$Time$millisToPosix(0),
+		until: $elm$time$Time$millisToPosix(0)
+	},
+	modalState: false,
+	placeSearchKeyword: '',
+	places: _List_Nil,
+	resultDateRange: {
+		since: $elm$time$Time$millisToPosix(0),
+		until: $elm$time$Time$millisToPosix(0)
+	},
+	resultPlaces: _List_Nil,
+	selectedPlaces: _List_Nil
+};
+var $author$project$Visualizer$Model$peopleInit = _List_Nil;
+var $author$project$Visualizer$Model$trafficInit = _List_Nil;
+var $author$project$Visualizer$Model$modelInit = {controller: $author$project$Visualizer$Model$controllerModelInit, people: $author$project$Visualizer$Model$peopleInit, traffic: $author$project$Visualizer$Model$trafficInit};
 var $elm$browser$Browser$Navigation$pushUrl = _Browser_pushUrl;
 var $elm$url$Url$addPort = F2(
 	function (maybePort, starter) {
@@ -11120,41 +11152,10 @@ var $elm$url$Url$toString = function (url) {
 					_Utils_ap(http, url.host)),
 				url.path)));
 };
-var $elm$time$Time$utc = A2($elm$time$Time$Zone, 0, _List_Nil);
 var $author$project$Main$init = F3(
 	function (flags, url, key) {
 		return _Utils_Tuple2(
-			{
-				errorList: _List_Nil,
-				key: key,
-				route: $author$project$Model$VisualizerPage,
-				settings: {
-					timezone: $elm$time$Time$utc,
-					timezoneName: $elm$time$Time$Name('UTC')
-				},
-				upload: {
-					newPlace: {latitude: 0.0, longitude: 0.0, name: ''},
-					placeSearchFiltered: _List_Nil,
-					placeSearchInput: '',
-					places: $elm$core$Maybe$Nothing,
-					selectedImages: $elm$core$Maybe$Nothing,
-					selectedPlace: $elm$core$Maybe$Nothing,
-					uploadedIndicator: $elm$core$Maybe$Nothing
-				},
-				url: url,
-				visualizer: {
-					controller: {
-						dateRange: {
-							since: $elm$time$Time$millisToPosix(0),
-							until: $elm$time$Time$millisToPosix(0)
-						},
-						placeSearchKeyword: '',
-						places: _List_Nil,
-						selectedPlaces: _List_Nil
-					},
-					people: _List_Nil
-				}
-			},
+			{errorList: _List_Nil, key: key, route: $author$project$Model$VisualizerPage, settings: $author$project$Common$Settings$modelInit, upload: $author$project$Upload$Model$modelInit, url: url, visualizer: $author$project$Visualizer$Model$modelInit},
 			$elm$core$Platform$Cmd$batch(
 				_List_fromArray(
 					[
@@ -11472,18 +11473,13 @@ var $author$project$Visualizer$Controller$getPlaces = $elm$http$Http$request(
 		tracker: $elm$core$Maybe$Nothing,
 		url: '/api/db/get_places_all/'
 	});
+var $author$project$Visualizer$Map$initMap = _Platform_outgoingPort('initMap', $elm$json$Json$Encode$string);
 var $author$project$Visualizer$Visualizer$onLoad = $elm$core$Platform$Cmd$batch(
-	A2(
-		$elm$core$List$map,
-		function (_v0) {
-			var msg = _v0.a;
-			var cmd = _v0.b;
-			return A2($elm$core$Platform$Cmd$map, msg, cmd);
-		},
-		_List_fromArray(
-			[
-				_Utils_Tuple2($author$project$Visualizer$Visualizer$ControllerMsg, $author$project$Visualizer$Controller$getPlaces)
-			])));
+	_List_fromArray(
+		[
+			A2($elm$core$Platform$Cmd$map, $author$project$Visualizer$Visualizer$ControllerMsg, $author$project$Visualizer$Controller$getPlaces),
+			$author$project$Visualizer$Map$initMap('map')
+		]));
 var $elm$url$Url$Parser$State = F5(
 	function (visited, unvisited, params, frag, value) {
 		return {frag: frag, params: params, unvisited: unvisited, value: value, visited: visited};
@@ -12115,6 +12111,12 @@ var $author$project$Upload$Upload$update = F2(
 			}
 		}
 	});
+var $author$project$Visualizer$Visualizer$PeopleMsg = function (a) {
+	return {$: 'PeopleMsg', a: a};
+};
+var $author$project$Visualizer$Controller$ChangeModalState = function (a) {
+	return {$: 'ChangeModalState', a: a};
+};
 var $author$project$Visualizer$Controller$ErrorMsg = function (a) {
 	return {$: 'ErrorMsg', a: a};
 };
@@ -12654,6 +12656,113 @@ var $author$project$Visualizer$Controller$analyze = function (rootModel) {
 					tracker: $elm$core$Maybe$Nothing,
 					url: path(query)
 				}));
+	}
+};
+var $author$project$Visualizer$Model$TrafficCount = F2(
+	function (traffic, count) {
+		return {count: count, traffic: traffic};
+	});
+var $author$project$Visualizer$Traffic$h = F3(
+	function (traffic, trafficList, trafficCountList) {
+		h:
+		while (true) {
+			var withoutList = A2(
+				$elm$core$List$filter,
+				$elm$core$Basics$neq(traffic),
+				trafficList);
+			var nextTraffic = $elm$core$List$head(withoutList);
+			var count = $elm$core$List$length(
+				A2(
+					$elm$core$List$filter,
+					$elm$core$Basics$eq(traffic),
+					trafficList));
+			if (nextTraffic.$ === 'Nothing') {
+				return A2(
+					$elm$core$List$cons,
+					A2($author$project$Visualizer$Model$TrafficCount, traffic, count),
+					trafficCountList);
+			} else {
+				var next = nextTraffic.a;
+				var $temp$traffic = next,
+					$temp$trafficList = withoutList,
+					$temp$trafficCountList = A2(
+					$elm$core$List$cons,
+					A2($author$project$Visualizer$Model$TrafficCount, traffic, count),
+					trafficCountList);
+				traffic = $temp$traffic;
+				trafficList = $temp$trafficList;
+				trafficCountList = $temp$trafficCountList;
+				continue h;
+			}
+		}
+	});
+var $author$project$Visualizer$Traffic$listIndex = F2(
+	function (index, list) {
+		return $elm$core$List$head(
+			A2($elm$core$List$drop, index, list));
+	});
+var $author$project$Visualizer$Traffic$personTrafficList = function (person) {
+	personTrafficList:
+	while (true) {
+		var _v0 = A2($author$project$Visualizer$Traffic$listIndex, 0, person);
+		if (_v0.$ === 'Just') {
+			var face = _v0.a;
+			var _v1 = A2($author$project$Visualizer$Traffic$listIndex, 1, person);
+			if (_v1.$ === 'Just') {
+				var nextFace = _v1.a;
+				if (!_Utils_eq(face.place, nextFace.place)) {
+					return A2(
+						$elm$core$List$cons,
+						_Utils_Tuple2(face.place, nextFace.place),
+						$author$project$Visualizer$Traffic$personTrafficList(
+							A2($elm$core$List$drop, 1, person)));
+				} else {
+					var $temp$person = A2($elm$core$List$drop, 1, person);
+					person = $temp$person;
+					continue personTrafficList;
+				}
+			} else {
+				return _List_Nil;
+			}
+		} else {
+			return _List_Nil;
+		}
+	}
+};
+var $elm$core$List$sortBy = _List_sortBy;
+var $author$project$Visualizer$Model$sortWithTime = function (person) {
+	var times = A2(
+		$elm$core$List$map,
+		function (f) {
+			return {
+				face: f,
+				posix: $elm$time$Time$posixToMillis(f.datetime)
+			};
+		},
+		person);
+	var sortedFaces = A2(
+		$elm$core$List$map,
+		function (t) {
+			return t.face;
+		},
+		A2(
+			$elm$core$List$sortBy,
+			function ($) {
+				return $.posix;
+			},
+			times));
+	return sortedFaces;
+};
+var $author$project$Visualizer$Traffic$f = function (people) {
+	var sorted = A2($elm$core$List$map, $author$project$Visualizer$Model$sortWithTime, people);
+	var allTraffic = $elm$core$List$concat(
+		A2($elm$core$List$map, $author$project$Visualizer$Traffic$personTrafficList, sorted));
+	var _v0 = $elm$core$List$head(allTraffic);
+	if (_v0.$ === 'Nothing') {
+		return _List_Nil;
+	} else {
+		var traffic = _v0.a;
+		return A3($author$project$Visualizer$Traffic$h, traffic, allTraffic, _List_Nil);
 	}
 };
 var $elm$core$Debug$log = _Debug_log;
@@ -13775,7 +13884,13 @@ var $author$project$Visualizer$Controller$update = F2(
 					return _Utils_Tuple2(newRootModel, cmd);
 				}
 			case 'Analyze':
-				return $author$project$Visualizer$Controller$analyze(rootModel);
+				var _v8 = A2(
+					$author$project$Visualizer$Controller$update,
+					$author$project$Visualizer$Controller$ChangeModalState(false),
+					rootModel);
+				var model_ = _v8.a;
+				var cmd_ = _v8.b;
+				return $author$project$Visualizer$Controller$analyze(model_);
 			case 'Analyzed':
 				var result = msg.a;
 				if (result.$ === 'Err') {
@@ -13795,21 +13910,40 @@ var $author$project$Visualizer$Controller$update = F2(
 						$elm$core$Platform$Cmd$none);
 				} else {
 					var people = result.a;
+					var trafficCount = $author$project$Visualizer$Traffic$f(people);
+					var newController = _Utils_update(
+						controllerModel,
+						{resultDateRange: controllerModel.dateRange, resultPlaces: controllerModel.selectedPlaces});
 					return _Utils_Tuple2(
 						_Utils_update(
 							rootModel,
 							{
 								visualizer: _Utils_update(
 									visualizerModel,
-									{people: people})
+									{controller: newController, people: people, traffic: trafficCount})
 							}),
 						$elm$core$Platform$Cmd$none);
 				}
+			case 'ChangeModalState':
+				var state = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						rootModel,
+						{
+							visualizer: _Utils_update(
+								visualizerModel,
+								{
+									controller: _Utils_update(
+										controllerModel,
+										{modalState: state})
+								})
+						}),
+					$elm$core$Platform$Cmd$none);
 			default:
 				var subMsg = msg.a;
-				var _v9 = A2($author$project$Common$ErrorPanel$update, subMsg, rootModel.errorList);
-				var errorPanelModel = _v9.a;
-				var cmd = _v9.b;
+				var _v10 = A2($author$project$Common$ErrorPanel$update, subMsg, rootModel.errorList);
+				var errorPanelModel = _v10.a;
+				var cmd = _v10.b;
 				return _Utils_Tuple2(
 					_Utils_update(
 						rootModel,
@@ -13817,14 +13951,27 @@ var $author$project$Visualizer$Controller$update = F2(
 					A2($elm$core$Platform$Cmd$map, $author$project$Visualizer$Controller$ErrorMsg, cmd));
 		}
 	});
+var $author$project$Visualizer$People$update = F2(
+	function (msg, rootModel) {
+		return _Utils_Tuple2(rootModel, $elm$core$Platform$Cmd$none);
+	});
 var $author$project$Visualizer$Visualizer$update = F2(
 	function (msg, rootModel) {
-		var subMsg = msg.a;
-		var _v1 = A2($author$project$Visualizer$Controller$update, subMsg, rootModel);
-		var rootModel_ = _v1.a;
-		var cmd_ = _v1.b;
-		var cmd = A2($elm$core$Platform$Cmd$map, $author$project$Visualizer$Visualizer$ControllerMsg, cmd_);
-		return _Utils_Tuple2(rootModel_, cmd);
+		if (msg.$ === 'ControllerMsg') {
+			var subMsg = msg.a;
+			var _v1 = A2($author$project$Visualizer$Controller$update, subMsg, rootModel);
+			var rootModel_ = _v1.a;
+			var cmd_ = _v1.b;
+			var cmd = A2($elm$core$Platform$Cmd$map, $author$project$Visualizer$Visualizer$ControllerMsg, cmd_);
+			return _Utils_Tuple2(rootModel_, cmd);
+		} else {
+			var subMsg = msg.a;
+			var _v2 = A2($author$project$Visualizer$People$update, subMsg, rootModel);
+			var rootModel_ = _v2.a;
+			var cmd_ = _v2.b;
+			var cmd = A2($elm$core$Platform$Cmd$map, $author$project$Visualizer$Visualizer$PeopleMsg, cmd_);
+			return _Utils_Tuple2(rootModel_, cmd);
+		}
 	});
 var $author$project$Main$update = F2(
 	function (msg, rootModel) {
@@ -14355,12 +14502,15 @@ var $author$project$Upload$Upload$view = function (rootModel) {
 		title: 'Upload'
 	};
 };
-var $author$project$Visualizer$Controller$Analyze = {$: 'Analyze'};
-var $author$project$Visualizer$Controller$GotSinceTime = function (a) {
-	return {$: 'GotSinceTime', a: a};
-};
-var $author$project$Visualizer$Controller$GotUntilTime = function (a) {
-	return {$: 'GotUntilTime', a: a};
+var $author$project$Visualizer$Map$mapView = function (mapId) {
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$id(mapId),
+				$elm$html$Html$Attributes$class('map')
+			]),
+		_List_Nil);
 };
 var $author$project$Common$Settings$localDropSecsStr = F2(
 	function (hereZone, utcTime) {
@@ -14372,6 +14522,307 @@ var $author$project$Common$Settings$localDropSecsStr = F2(
 				}(
 					$elm$time$Time$posixToMillis(utcTime))));
 	});
+var $author$project$Visualizer$Controller$viewControllerState = function (rootModel) {
+	var timezone = function () {
+		var _v0 = rootModel.settings.timezoneName;
+		if (_v0.$ === 'Name') {
+			var tzname = _v0.a;
+			return tzname;
+		} else {
+			var integer = _v0.a;
+			return 'UTC' + $elm$core$String$fromInt(integer);
+		}
+	}();
+	var controllerModel = rootModel.visualizer.controller;
+	var places = A2(
+		$elm$core$String$join,
+		', ',
+		A2(
+			$elm$core$List$map,
+			function ($) {
+				return $.name;
+			},
+			controllerModel.resultPlaces));
+	var since = A2($author$project$Common$Settings$localDropSecsStr, rootModel.settings.timezone, controllerModel.resultDateRange.since);
+	var until = A2($author$project$Common$Settings$localDropSecsStr, rootModel.settings.timezone, controllerModel.resultDateRange.until);
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('controller-state')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$p,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('date ')
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('date : ' + (since + (' ~ ' + (until + (' (' + (timezone + ')'))))))
+					])),
+				A2(
+				$elm$html$Html$p,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('place')
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('places : ' + places)
+					]))
+			]));
+};
+var $author$project$Visualizer$Controller$view = function (rootModel) {
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('row controller')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('col-12')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$h2,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Controller')
+							]))
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('col-12')
+					]),
+				_List_fromArray(
+					[
+						$author$project$Visualizer$Controller$viewControllerState(rootModel),
+						A2(
+						$elm$html$Html$button,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('btn btn-dark'),
+								$elm$html$Html$Events$onClick(
+								$author$project$Visualizer$Controller$ChangeModalState(true))
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Change')
+							]))
+					]))
+			]));
+};
+var $author$project$Visualizer$People$faceView = F2(
+	function (timezone, face) {
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('face col-xl-4 col-6')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$img,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$src(face.faceImageB64),
+							$elm$html$Html$Attributes$title(
+							A2($author$project$Common$Settings$localDropSecsStr, timezone, face.datetime))
+						]),
+					_List_Nil),
+					A2(
+					$elm$html$Html$p,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('place')
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text(face.place.name)
+						]))
+				]));
+	});
+var $author$project$Visualizer$People$personView = F2(
+	function (timezone, person) {
+		var sorted = $author$project$Visualizer$Model$sortWithTime(person);
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('person col-xl-3 col-4')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('row')
+						]),
+					A2(
+						$elm$core$List$map,
+						$author$project$Visualizer$People$faceView(timezone),
+						sorted))
+				]));
+	});
+var $author$project$Visualizer$People$view = function (rootModel) {
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('row people')
+			]),
+		A2(
+			$elm$core$List$cons,
+			A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('col-12')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$h2,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('People')
+							]))
+					])),
+			A2(
+				$elm$core$List$map,
+				$author$project$Visualizer$People$personView(rootModel.settings.timezone),
+				rootModel.visualizer.people)));
+};
+var $author$project$Visualizer$Traffic$trafficCountString = function (trafficCount) {
+	var count = trafficCount.count;
+	var _v0 = trafficCount.traffic;
+	var from = _v0.a;
+	var to = _v0.b;
+	return from.name + (' -> ' + (to.name + (' : ' + $elm$core$String$fromInt(count))));
+};
+var $author$project$Visualizer$Traffic$trafficView = function (trafficList) {
+	var sorted = $elm$core$List$reverse(
+		A2(
+			$elm$core$List$sortBy,
+			function ($) {
+				return $.count;
+			},
+			trafficList));
+	var top6 = A2($elm$core$List$take, 6, sorted);
+	var under6 = A2($elm$core$List$drop, 6, sorted);
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('row')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('col-12 top6')
+					]),
+				A2(
+					$elm$core$List$map,
+					function (t) {
+						return A2(
+							$elm$html$Html$p,
+							_List_Nil,
+							_List_fromArray(
+								[t]));
+					},
+					A2(
+						$elm$core$List$map,
+						function (t) {
+							return $elm$html$Html$text(
+								$author$project$Visualizer$Traffic$trafficCountString(t));
+						},
+						top6))),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('col-12 under6')
+					]),
+				A2(
+					$elm$core$List$map,
+					function (t) {
+						return A2(
+							$elm$html$Html$p,
+							_List_Nil,
+							_List_fromArray(
+								[t]));
+					},
+					A2(
+						$elm$core$List$map,
+						function (t) {
+							return $elm$html$Html$text(
+								$author$project$Visualizer$Traffic$trafficCountString(t));
+						},
+						under6)))
+			]));
+};
+var $author$project$Visualizer$Traffic$view = function (model) {
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('row traffic')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('col-12')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$h2,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Traffic')
+							]))
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('col-12')
+					]),
+				_List_fromArray(
+					[
+						$author$project$Visualizer$Traffic$trafficView(model.traffic)
+					]))
+			]));
+};
+var $author$project$Visualizer$Controller$Analyze = {$: 'Analyze'};
+var $author$project$Visualizer$Controller$GotSinceTime = function (a) {
+	return {$: 'GotSinceTime', a: a};
+};
+var $author$project$Visualizer$Controller$GotUntilTime = function (a) {
+	return {$: 'GotUntilTime', a: a};
+};
 var $author$project$Common$Settings$timezoneNameString = function (zonename) {
 	if (zonename.$ === 'Name') {
 		var name = zonename.a;
@@ -14579,12 +15030,12 @@ var $author$project$Visualizer$Controller$placesView = function (controllerModel
 					]))
 			]));
 };
-var $author$project$Visualizer$Controller$view = function (rootModel) {
-	return A2(
+var $author$project$Visualizer$Controller$viewControllerModal = function (rootModel) {
+	return rootModel.visualizer.controller.modalState ? A2(
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$class('row controller')
+				$elm$html$Html$Attributes$class('container gb-modal')
 			]),
 		_List_fromArray(
 			[
@@ -14592,59 +15043,80 @@ var $author$project$Visualizer$Controller$view = function (rootModel) {
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('col-12')
+						$elm$html$Html$Attributes$class('row controller')
 					]),
 				_List_fromArray(
 					[
 						A2(
-						$elm$html$Html$h2,
-						_List_Nil,
+						$elm$html$Html$div,
 						_List_fromArray(
 							[
-								$elm$html$Html$text('Controller')
-							]))
-					])),
-				A2(
-				$elm$html$Html$div,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class('col-6')
-					]),
-				_List_fromArray(
-					[
-						$author$project$Visualizer$Controller$dateSelectorView(rootModel)
-					])),
-				A2(
-				$elm$html$Html$div,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class('col-6')
-					]),
-				_List_fromArray(
-					[
-						$author$project$Visualizer$Controller$placesView(rootModel.visualizer.controller)
-					])),
-				A2(
-				$elm$html$Html$div,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class('col-12')
-					]),
-				_List_fromArray(
-					[
-						A2(
-						$elm$html$Html$button,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('btn btn-dark'),
-								$elm$html$Html$Events$onClick($author$project$Visualizer$Controller$Analyze)
+								$elm$html$Html$Attributes$class('col-12')
 							]),
 						_List_fromArray(
 							[
-								$elm$html$Html$text('Analyze')
+								A2(
+								$elm$html$Html$h2,
+								_List_Nil,
+								_List_fromArray(
+									[
+										$elm$html$Html$text('Controller')
+									]))
+							])),
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('col-6')
+							]),
+						_List_fromArray(
+							[
+								$author$project$Visualizer$Controller$dateSelectorView(rootModel)
+							])),
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('col-6')
+							]),
+						_List_fromArray(
+							[
+								$author$project$Visualizer$Controller$placesView(rootModel.visualizer.controller)
+							])),
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('col-12')
+							]),
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$button,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('btn btn-dark'),
+										$elm$html$Html$Events$onClick($author$project$Visualizer$Controller$Analyze)
+									]),
+								_List_fromArray(
+									[
+										$elm$html$Html$text('Analyze')
+									])),
+								A2(
+								$elm$html$Html$button,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('btn'),
+										$elm$html$Html$Events$onClick(
+										$author$project$Visualizer$Controller$ChangeModalState(false))
+									]),
+								_List_fromArray(
+									[
+										$elm$html$Html$text('Close')
+									]))
 							]))
 					]))
-			]));
+			])) : A2($elm$html$Html$div, _List_Nil, _List_Nil);
 };
 var $author$project$Visualizer$Visualizer$view = function (rootModel) {
 	return {
@@ -14654,7 +15126,7 @@ var $author$project$Visualizer$Visualizer$view = function (rootModel) {
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('container visualizer')
+						$elm$html$Html$Attributes$class('visualizer container')
 					]),
 				_List_fromArray(
 					[
@@ -14680,7 +15152,10 @@ var $author$project$Visualizer$Visualizer$view = function (rootModel) {
 											[
 												$elm$html$Html$Attributes$class('row')
 											]),
-										_List_Nil),
+										_List_fromArray(
+											[
+												$author$project$Visualizer$Map$mapView('map')
+											])),
 										A2(
 										$elm$html$Html$map,
 										$author$project$Visualizer$Visualizer$ControllerMsg,
@@ -14692,9 +15167,20 @@ var $author$project$Visualizer$Visualizer$view = function (rootModel) {
 									[
 										$elm$html$Html$Attributes$class('col-5')
 									]),
-								_List_Nil)
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$map,
+										$author$project$Visualizer$Visualizer$PeopleMsg,
+										$author$project$Visualizer$People$view(rootModel)),
+										$author$project$Visualizer$Traffic$view(rootModel.visualizer)
+									]))
 							]))
-					]))
+					])),
+				A2(
+				$elm$html$Html$map,
+				$author$project$Visualizer$Visualizer$ControllerMsg,
+				$author$project$Visualizer$Controller$viewControllerModal(rootModel))
 			]),
 		title: 'Visualizer'
 	};
@@ -14752,4 +15238,4 @@ var $author$project$Main$main = $elm$browser$Browser$application(
 		view: $author$project$Main$view
 	});
 _Platform_export({'Main':{'init':$author$project$Main$main(
-	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"},"Common.ErrorPanel.ErrorModel":{"args":[],"type":"{ error : Common.ErrorPanel.Error, str : String.String }"},"Common.Data.Place":{"args":[],"type":"{ name : String.String, latitude : Basics.Float, longitude : Basics.Float }"},"Time.Era":{"args":[],"type":"{ start : Basics.Int, offset : Basics.Int }"},"Visualizer.Model.Face":{"args":[],"type":"{ id : String.String, imageId : String.String, imageUrl : String.String, faceImageB64 : String.String, faceLocation : Visualizer.Model.FaceLocation, faceEncoding : List.List Basics.Float, place : Common.Data.Place, datetime : Time.Posix }"},"Visualizer.Model.FaceLocation":{"args":[],"type":"{ x : Basics.Int, y : Basics.Int, w : Basics.Int, h : Basics.Int }"},"Visualizer.Model.Person":{"args":[],"type":"List.List Visualizer.Model.Face"}},"unions":{"Main.Msg":{"args":[],"tags":{"LinkClicked":["Browser.UrlRequest"],"UrlChanged":["Url.Url"],"VisualizerMsg":["Visualizer.Visualizer.Msg"],"UploadMsg":["Upload.Upload.Msg"],"ErrorMsg":["Common.ErrorPanel.Msg"],"SettingsMsg":["Common.Settings.Msg"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Common.ErrorPanel.Msg":{"args":[],"tags":{"AddError":["Common.ErrorPanel.ErrorModel"],"DelError":["Basics.Int"]}},"Common.Settings.Msg":{"args":[],"tags":{"GotTimezoneName":["Time.ZoneName"],"GotTimezone":["Time.Zone"]}},"Upload.Upload.Msg":{"args":[],"tags":{"ImageRequested":[],"ImageSelected":["File.File","List.List File.File"],"Upload":[],"Uploaded":["Result.Result Http.Error ()"],"GotPlaces":["Result.Result Http.Error (List.List Common.Data.Place)"],"PlaceSelected":["String.String"],"NewPlaceName":["String.String"],"NewPlaceLongitude":["String.String"],"NewPlaceLatitude":["String.String"],"PlaceSearchInput":["String.String"],"ErrorMsg":["Common.ErrorPanel.Msg"]}},"Visualizer.Visualizer.Msg":{"args":[],"tags":{"ControllerMsg":["Visualizer.Controller.Msg"]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Common.ErrorPanel.Error":{"args":[],"tags":{"HttpError":["Http.Error"],"OnlyStr":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"File.File":{"args":[],"tags":{"File":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"List.List":{"args":["a"],"tags":{}},"Visualizer.Controller.Msg":{"args":[],"tags":{"GotPlace":["Result.Result Http.Error (List.List Common.Data.Place)"],"SelectPlace":["String.String"],"DelSelectedPlace":["String.String"],"PlaceSearchInput":["String.String"],"GotSinceTime":["String.String"],"GotUntilTime":["String.String"],"Analyze":[],"Analyzed":["Result.Result Http.Error (List.List Visualizer.Model.Person)"],"ErrorMsg":["Common.ErrorPanel.Msg"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Time.Zone":{"args":[],"tags":{"Zone":["Basics.Int","List.List Time.Era"]}},"Time.ZoneName":{"args":[],"tags":{"Name":["String.String"],"Offset":["Basics.Int"]}},"Time.Posix":{"args":[],"tags":{"Posix":["Basics.Int"]}}}}})}});}(this));
+	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"},"Common.ErrorPanel.ErrorModel":{"args":[],"type":"{ error : Common.ErrorPanel.Error, str : String.String }"},"Common.Data.Place":{"args":[],"type":"{ name : String.String, latitude : Basics.Float, longitude : Basics.Float }"},"Time.Era":{"args":[],"type":"{ start : Basics.Int, offset : Basics.Int }"},"Visualizer.Model.Face":{"args":[],"type":"{ id : String.String, imageId : String.String, imageUrl : String.String, faceImageB64 : String.String, faceLocation : Visualizer.Model.FaceLocation, faceEncoding : List.List Basics.Float, place : Common.Data.Place, datetime : Time.Posix }"},"Visualizer.Model.FaceLocation":{"args":[],"type":"{ x : Basics.Int, y : Basics.Int, w : Basics.Int, h : Basics.Int }"},"Visualizer.Model.Person":{"args":[],"type":"List.List Visualizer.Model.Face"}},"unions":{"Main.Msg":{"args":[],"tags":{"LinkClicked":["Browser.UrlRequest"],"UrlChanged":["Url.Url"],"VisualizerMsg":["Visualizer.Visualizer.Msg"],"UploadMsg":["Upload.Upload.Msg"],"ErrorMsg":["Common.ErrorPanel.Msg"],"SettingsMsg":["Common.Settings.Msg"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Common.ErrorPanel.Msg":{"args":[],"tags":{"AddError":["Common.ErrorPanel.ErrorModel"],"DelError":["Basics.Int"]}},"Common.Settings.Msg":{"args":[],"tags":{"GotTimezoneName":["Time.ZoneName"],"GotTimezone":["Time.Zone"]}},"Upload.Upload.Msg":{"args":[],"tags":{"ImageRequested":[],"ImageSelected":["File.File","List.List File.File"],"Upload":[],"Uploaded":["Result.Result Http.Error ()"],"GotPlaces":["Result.Result Http.Error (List.List Common.Data.Place)"],"PlaceSelected":["String.String"],"NewPlaceName":["String.String"],"NewPlaceLongitude":["String.String"],"NewPlaceLatitude":["String.String"],"PlaceSearchInput":["String.String"],"ErrorMsg":["Common.ErrorPanel.Msg"]}},"Visualizer.Visualizer.Msg":{"args":[],"tags":{"ControllerMsg":["Visualizer.Controller.Msg"],"PeopleMsg":["Visualizer.People.Msg"]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Common.ErrorPanel.Error":{"args":[],"tags":{"HttpError":["Http.Error"],"OnlyStr":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"File.File":{"args":[],"tags":{"File":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"List.List":{"args":["a"],"tags":{}},"Visualizer.Controller.Msg":{"args":[],"tags":{"GotPlace":["Result.Result Http.Error (List.List Common.Data.Place)"],"SelectPlace":["String.String"],"DelSelectedPlace":["String.String"],"PlaceSearchInput":["String.String"],"GotSinceTime":["String.String"],"GotUntilTime":["String.String"],"Analyze":[],"Analyzed":["Result.Result Http.Error (List.List Visualizer.Model.Person)"],"ChangeModalState":["Basics.Bool"],"ErrorMsg":["Common.ErrorPanel.Msg"]}},"Visualizer.People.Msg":{"args":[],"tags":{"Dammy":[]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Time.Zone":{"args":[],"tags":{"Zone":["Basics.Int","List.List Time.Era"]}},"Time.ZoneName":{"args":[],"tags":{"Name":["String.String"],"Offset":["Basics.Int"]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Time.Posix":{"args":[],"tags":{"Posix":["Basics.Int"]}}}}})}});}(this));
