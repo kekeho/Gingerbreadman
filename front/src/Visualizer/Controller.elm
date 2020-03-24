@@ -167,7 +167,7 @@ update msg rootModel =
 
         Analyze ->
             let
-                (model_, cmd_) =
+                ( model_, cmd_ ) =
                     update (ChangeModalState False) rootModel
             in
             analyze model_
@@ -183,15 +183,16 @@ update msg rootModel =
                     let
                         trafficCount =
                             Visualizer.Traffic.f people
+
                         newController =
                             { controllerModel | resultDateRange = controllerModel.dateRange, resultPlaces = controllerModel.selectedPlaces }
                     in
                     ( { rootModel | visualizer = { visualizerModel | controller = newController, people = people, traffic = trafficCount } }
                     , Cmd.none
                     )
-        
+
         ChangeModalState state ->
-            ( { rootModel | visualizer = { visualizerModel | controller = { controllerModel | modalState = state }}}
+            ( { rootModel | visualizer = { visualizerModel | controller = { controllerModel | modalState = state } } }
             , Cmd.none
             )
 
@@ -218,28 +219,33 @@ view rootModel =
             ]
         ]
 
+
 viewControllerState : RootModel -> Html Msg
 viewControllerState rootModel =
     let
         controllerModel =
             rootModel.visualizer.controller
+
         since =
             Common.Settings.localDropSecsStr rootModel.settings.timezone controllerModel.resultDateRange.since
+
         until =
             Common.Settings.localDropSecsStr rootModel.settings.timezone controllerModel.resultDateRange.until
+
         timezone =
             case rootModel.settings.timezoneName of
                 Time.Name tzname ->
                     tzname
+
                 Time.Offset integer ->
                     "UTC" ++ String.fromInt integer
+
         places =
             List.map .name controllerModel.resultPlaces
                 |> String.join ", "
     in
-    
     div [ class "controller-state" ]
-        [ p [ class "date "]
+        [ p [ class "date " ]
             [ text ("date : " ++ since ++ " ~ " ++ until ++ " (" ++ timezone ++ ")") ]
         , p [ class "place" ]
             [ text ("places : " ++ places) ]
@@ -261,13 +267,15 @@ viewControllerModal rootModel =
                     [ button
                         [ class "btn btn-dark", onClick Analyze ]
                         [ text "Analyze" ]
-                    , button [ class "btn", onClick (ChangeModalState False)]
-                        [ text "Close"]
+                    , button [ class "btn", onClick (ChangeModalState False) ]
+                        [ text "Close" ]
                     ]
                 ]
             ]
+
     else
         div [] []
+
 
 placesView : ControllerModel -> Html Msg
 placesView controllerModel =

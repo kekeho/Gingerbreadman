@@ -75,9 +75,12 @@ personTrafficList person =
             case listIndex 1 person of
                 Just nextFace ->
                     if face.place /= nextFace.place then
-                    ( face.place, nextFace.place ) :: personTrafficList (List.drop 1 person)
-                    else personTrafficList (List.drop 1 person) -- Tokyo -> Tokyo is just staying
+                        ( face.place, nextFace.place ) :: personTrafficList (List.drop 1 person)
 
+                    else
+                        personTrafficList (List.drop 1 person)
+
+                -- Tokyo -> Tokyo is just staying
                 Nothing ->
                     []
 
