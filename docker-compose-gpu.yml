@@ -34,6 +34,7 @@ services:
     command: nginx -c /etc/nginx/nginx.conf
     depends_on:
       - db-controller
+      - mapcache
     ports: 
       - 8000:80
   
@@ -63,6 +64,11 @@ services:
     build: services/face_grouping
     volumes:
       - "./services/face_grouping:/code"
+  
+  mapcache:
+    build: mapcache
+    volumes:
+      - "./mapcache/cache:/mapcache/cache"
 
 
 volumes:
