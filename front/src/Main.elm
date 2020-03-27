@@ -36,6 +36,7 @@ import Url
 import Url.Builder
 import Url.Parser
 import Visualizer.Controller
+import Visualizer.Map
 import Visualizer.Model
 import Visualizer.Visualizer
 
@@ -122,9 +123,22 @@ update msg rootModel =
 
                         _ ->
                             Cmd.none
+
+                clearMap =
+                    case Url.Parser.parse routeParser rootModel.url of
+                        Just VisualizerPage ->
+                            case Url.Parser.parse routeParser url of
+                                Just VisualizerPage ->
+                                    []
+
+                                _ ->
+                                    [ Visualizer.Map.clearMap "map" ]
+
+                        _ ->
+                            []
             in
             ( { rootModel | url = url }
-            , onLoadCmd
+            , Cmd.batch (onLoadCmd :: clearMap)
             )
 
         VisualizerMsg subMsg ->

@@ -5,10 +5,10 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Model exposing (RootModel)
 import Visualizer.Controller
+import Visualizer.Map
 import Visualizer.Model exposing (Model)
 import Visualizer.People
 import Visualizer.Traffic
-import Visualizer.Map
 
 
 

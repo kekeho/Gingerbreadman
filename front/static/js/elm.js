@@ -11177,6 +11177,7 @@ var $author$project$Main$UploadMsg = function (a) {
 var $author$project$Main$VisualizerMsg = function (a) {
 	return {$: 'VisualizerMsg', a: a};
 };
+var $author$project$Visualizer$Map$clearMap = _Platform_outgoingPort('clearMap', $elm$json$Json$Encode$string);
 var $author$project$Upload$Upload$GotPlaces = function (a) {
 	return {$: 'GotPlaces', a: a};
 };
@@ -13995,45 +13996,64 @@ var $author$project$Main$update = F2(
 			case 'UrlChanged':
 				var url = msg.a;
 				var onLoadCmd = function () {
-					var _v2 = A2($elm$url$Url$Parser$parse, $author$project$Main$routeParser, url);
-					if (_v2.$ === 'Just') {
-						if (_v2.a.$ === 'UploadPage') {
-							var _v3 = _v2.a;
+					var _v6 = A2($elm$url$Url$Parser$parse, $author$project$Main$routeParser, url);
+					if (_v6.$ === 'Just') {
+						if (_v6.a.$ === 'UploadPage') {
+							var _v7 = _v6.a;
 							return A2($elm$core$Platform$Cmd$map, $author$project$Main$UploadMsg, $author$project$Upload$Upload$getPlaces);
 						} else {
-							var _v4 = _v2.a;
+							var _v8 = _v6.a;
 							return A2($elm$core$Platform$Cmd$map, $author$project$Main$VisualizerMsg, $author$project$Visualizer$Visualizer$onLoad);
 						}
 					} else {
 						return $elm$core$Platform$Cmd$none;
 					}
 				}();
+				var clearMap = function () {
+					var _v2 = A2($elm$url$Url$Parser$parse, $author$project$Main$routeParser, rootModel.url);
+					if ((_v2.$ === 'Just') && (_v2.a.$ === 'VisualizerPage')) {
+						var _v3 = _v2.a;
+						var _v4 = A2($elm$url$Url$Parser$parse, $author$project$Main$routeParser, url);
+						if ((_v4.$ === 'Just') && (_v4.a.$ === 'VisualizerPage')) {
+							var _v5 = _v4.a;
+							return _List_Nil;
+						} else {
+							return _List_fromArray(
+								[
+									$author$project$Visualizer$Map$clearMap('map')
+								]);
+						}
+					} else {
+						return _List_Nil;
+					}
+				}();
 				return _Utils_Tuple2(
 					_Utils_update(
 						rootModel,
 						{url: url}),
-					onLoadCmd);
+					$elm$core$Platform$Cmd$batch(
+						A2($elm$core$List$cons, onLoadCmd, clearMap)));
 			case 'VisualizerMsg':
 				var subMsg = msg.a;
-				var _v5 = A2($author$project$Visualizer$Visualizer$update, subMsg, rootModel);
-				var rootModel_ = _v5.a;
-				var cmd = _v5.b;
+				var _v9 = A2($author$project$Visualizer$Visualizer$update, subMsg, rootModel);
+				var rootModel_ = _v9.a;
+				var cmd = _v9.b;
 				return _Utils_Tuple2(
 					rootModel_,
 					A2($elm$core$Platform$Cmd$map, $author$project$Main$VisualizerMsg, cmd));
 			case 'UploadMsg':
 				var subMsg = msg.a;
-				var _v6 = A2($author$project$Upload$Upload$update, subMsg, rootModel);
-				var model_ = _v6.a;
-				var cmd = _v6.b;
+				var _v10 = A2($author$project$Upload$Upload$update, subMsg, rootModel);
+				var model_ = _v10.a;
+				var cmd = _v10.b;
 				return _Utils_Tuple2(
 					model_,
 					A2($elm$core$Platform$Cmd$map, $author$project$Main$UploadMsg, cmd));
 			case 'ErrorMsg':
 				var subMsg = msg.a;
-				var _v7 = A2($author$project$Common$ErrorPanel$update, subMsg, rootModel.errorList);
-				var model_ = _v7.a;
-				var cmd = _v7.b;
+				var _v11 = A2($author$project$Common$ErrorPanel$update, subMsg, rootModel.errorList);
+				var model_ = _v11.a;
+				var cmd = _v11.b;
 				return _Utils_Tuple2(
 					_Utils_update(
 						rootModel,
@@ -14041,9 +14061,9 @@ var $author$project$Main$update = F2(
 					A2($elm$core$Platform$Cmd$map, $author$project$Main$ErrorMsg, cmd));
 			default:
 				var subMsg = msg.a;
-				var _v8 = A2($author$project$Common$Settings$update, subMsg, rootModel.settings);
-				var settingsModel = _v8.a;
-				var cmd = _v8.b;
+				var _v12 = A2($author$project$Common$Settings$update, subMsg, rootModel.settings);
+				var settingsModel = _v12.a;
+				var cmd = _v12.b;
 				return _Utils_Tuple2(
 					_Utils_update(
 						rootModel,
