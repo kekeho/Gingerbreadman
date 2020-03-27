@@ -45,15 +45,16 @@ personView timezone person =
         sorted =
             sortWithTime person
     in
-    div [ class "person col-xl-3 col-4" ]
-        [ div [ class "row" ]
-            (List.map (faceView timezone) sorted)
+    div [ class "person-container col-xl-3 col-4" ]
+        [ div [ class "person" ]
+            [ div [ class "row" ]
+                (List.map (faceView timezone) sorted)
+            ]
         ]
 
 
 faceView : Time.Zone -> Face -> Html Msg
 faceView timezone face =
     div [ class "face col-xl-4 col-6" ]
-        [ img [ src face.faceImageB64, title (localDropSecsStr timezone face.datetime) ] []
-        , p [ class "place" ] [ text face.place.name ]
+        [ img [ src face.faceImageB64, title (face.place.name ++ " " ++ localDropSecsStr timezone face.datetime) ] []
         ]

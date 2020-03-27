@@ -14660,19 +14660,9 @@ var $author$project$Visualizer$People$faceView = F2(
 						[
 							$elm$html$Html$Attributes$src(face.faceImageB64),
 							$elm$html$Html$Attributes$title(
-							A2($author$project$Common$Settings$localDropSecsStr, timezone, face.datetime))
+							face.place.name + (' ' + A2($author$project$Common$Settings$localDropSecsStr, timezone, face.datetime)))
 						]),
-					_List_Nil),
-					A2(
-					$elm$html$Html$p,
-					_List_fromArray(
-						[
-							$elm$html$Html$Attributes$class('place')
-						]),
-					_List_fromArray(
-						[
-							$elm$html$Html$text(face.place.name)
-						]))
+					_List_Nil)
 				]));
 	});
 var $author$project$Visualizer$People$personView = F2(
@@ -14682,7 +14672,7 @@ var $author$project$Visualizer$People$personView = F2(
 			$elm$html$Html$div,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('person col-xl-3 col-4')
+					$elm$html$Html$Attributes$class('person-container col-xl-3 col-4')
 				]),
 			_List_fromArray(
 				[
@@ -14690,12 +14680,21 @@ var $author$project$Visualizer$People$personView = F2(
 					$elm$html$Html$div,
 					_List_fromArray(
 						[
-							$elm$html$Html$Attributes$class('row')
+							$elm$html$Html$Attributes$class('person')
 						]),
-					A2(
-						$elm$core$List$map,
-						$author$project$Visualizer$People$faceView(timezone),
-						sorted))
+					_List_fromArray(
+						[
+							A2(
+							$elm$html$Html$div,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('row')
+								]),
+							A2(
+								$elm$core$List$map,
+								$author$project$Visualizer$People$faceView(timezone),
+								sorted))
+						]))
 				]));
 	});
 var $author$project$Visualizer$People$view = function (rootModel) {
