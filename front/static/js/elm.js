@@ -12121,6 +12121,10 @@ var $author$project$Visualizer$Controller$ChangeModalState = function (a) {
 var $author$project$Visualizer$Controller$ErrorMsg = function (a) {
 	return {$: 'ErrorMsg', a: a};
 };
+var $author$project$Visualizer$Controller$MapMsg = function (a) {
+	return {$: 'MapMsg', a: a};
+};
+var $author$project$Visualizer$Map$Update = {$: 'Update'};
 var $author$project$Visualizer$Controller$Analyzed = function (a) {
 	return {$: 'Analyzed', a: a};
 };
@@ -13681,6 +13685,119 @@ var $author$project$Common$Settings$toUTC = F2(
 			}(
 				$elm$time$Time$posixToMillis(localTime)));
 	});
+var $elm$json$Json$Encode$float = _Json_wrap;
+var $elm$json$Json$Encode$int = _Json_wrap;
+var $author$project$Visualizer$Map$drawPlaceCirclePort = _Platform_outgoingPort(
+	'drawPlaceCirclePort',
+	$elm$json$Json$Encode$list(
+		function ($) {
+			var a = $.a;
+			var b = $.b;
+			return A2(
+				$elm$json$Json$Encode$list,
+				$elm$core$Basics$identity,
+				_List_fromArray(
+					[
+						function ($) {
+						return $elm$json$Json$Encode$object(
+							_List_fromArray(
+								[
+									_Utils_Tuple2(
+									'latitude',
+									$elm$json$Json$Encode$float($.latitude)),
+									_Utils_Tuple2(
+									'longitude',
+									$elm$json$Json$Encode$float($.longitude)),
+									_Utils_Tuple2(
+									'name',
+									$elm$json$Json$Encode$string($.name))
+								]));
+					}(a),
+						$elm$json$Json$Encode$int(b)
+					]));
+		}));
+var $author$project$Visualizer$Map$consIfNotMember = F2(
+	function (el, list) {
+		return A2($elm$core$List$member, el, list) ? list : A2($elm$core$List$cons, el, list);
+	});
+var $author$project$Visualizer$Map$uniqueList = function (list) {
+	return A3($elm$core$List$foldr, $author$project$Visualizer$Map$consIfNotMember, _List_Nil, list);
+};
+var $author$project$Visualizer$Map$personPlacesNoDuplicate = function (person) {
+	return $author$project$Visualizer$Map$uniqueList(
+		A2(
+			$elm$core$List$map,
+			function ($) {
+				return $.place;
+			},
+			person));
+};
+var $elm$core$List$tail = function (list) {
+	if (list.b) {
+		var x = list.a;
+		var xs = list.b;
+		return $elm$core$Maybe$Just(xs);
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
+var $author$project$Visualizer$Map$placesCount = function (places) {
+	var _v0 = $elm$core$List$head(places);
+	if (_v0.$ === 'Just') {
+		var place = _v0.a;
+		var _v1 = $elm$core$List$tail(places);
+		if (_v1.$ === 'Just') {
+			var tail = _v1.a;
+			return A2(
+				$elm$core$List$cons,
+				_Utils_Tuple2(
+					place,
+					function (i) {
+						return i + 1;
+					}(
+						$elm$core$List$length(
+							A2(
+								$elm$core$List$filter,
+								function (p) {
+									return _Utils_eq(p, place);
+								},
+								tail)))),
+				$author$project$Visualizer$Map$placesCount(
+					A2(
+						$elm$core$List$filter,
+						function (p) {
+							return !_Utils_eq(p, place);
+						},
+						tail)));
+		} else {
+			return _List_fromArray(
+				[
+					_Utils_Tuple2(place, 1)
+				]);
+		}
+	} else {
+		return _List_Nil;
+	}
+};
+var $author$project$Visualizer$Map$uniquePeopleCount = function (people) {
+	return $author$project$Visualizer$Map$placesCount(
+		$elm$core$List$concat(
+			A2($elm$core$List$map, $author$project$Visualizer$Map$personPlacesNoDuplicate, people)));
+};
+var $author$project$Visualizer$Map$drawPlaceCircle = function (people) {
+	return $author$project$Visualizer$Map$drawPlaceCirclePort(
+		$author$project$Visualizer$Map$uniquePeopleCount(people));
+};
+var $author$project$Visualizer$Map$update = F2(
+	function (msg, rootModel) {
+		var mapUpdate = _List_fromArray(
+			[
+				$author$project$Visualizer$Map$drawPlaceCircle(rootModel.visualizer.people)
+			]);
+		return _Utils_Tuple2(
+			rootModel,
+			$elm$core$Platform$Cmd$batch(mapUpdate));
+	});
 var $author$project$Visualizer$Controller$update = F2(
 	function (msg, rootModel) {
 		var visualizerModel = rootModel.visualizer;
@@ -13915,15 +14032,19 @@ var $author$project$Visualizer$Controller$update = F2(
 					var newController = _Utils_update(
 						controllerModel,
 						{resultDateRange: controllerModel.dateRange, resultPlaces: controllerModel.selectedPlaces});
+					var newRootModel = _Utils_update(
+						rootModel,
+						{
+							visualizer: _Utils_update(
+								visualizerModel,
+								{controller: newController, people: people, traffic: trafficCount})
+						});
+					var _v10 = A2($author$project$Visualizer$Map$update, $author$project$Visualizer$Map$Update, newRootModel);
+					var newRootModel_ = _v10.a;
+					var cmd_ = _v10.b;
 					return _Utils_Tuple2(
-						_Utils_update(
-							rootModel,
-							{
-								visualizer: _Utils_update(
-									visualizerModel,
-									{controller: newController, people: people, traffic: trafficCount})
-							}),
-						$elm$core$Platform$Cmd$none);
+						newRootModel_,
+						A2($elm$core$Platform$Cmd$map, $author$project$Visualizer$Controller$MapMsg, cmd_));
 				}
 			case 'ChangeModalState':
 				var state = msg.a;
@@ -13940,11 +14061,19 @@ var $author$project$Visualizer$Controller$update = F2(
 								})
 						}),
 					$elm$core$Platform$Cmd$none);
+			case 'MapMsg':
+				var subMsg = msg.a;
+				var _v11 = A2($author$project$Visualizer$Map$update, subMsg, rootModel);
+				var rootModel_ = _v11.a;
+				var cmd_ = _v11.b;
+				return _Utils_Tuple2(
+					rootModel_,
+					A2($elm$core$Platform$Cmd$map, $author$project$Visualizer$Controller$MapMsg, cmd_));
 			default:
 				var subMsg = msg.a;
-				var _v10 = A2($author$project$Common$ErrorPanel$update, subMsg, rootModel.errorList);
-				var errorPanelModel = _v10.a;
-				var cmd = _v10.b;
+				var _v12 = A2($author$project$Common$ErrorPanel$update, subMsg, rootModel.errorList);
+				var errorPanelModel = _v12.a;
+				var cmd = _v12.b;
 				return _Utils_Tuple2(
 					_Utils_update(
 						rootModel,
@@ -15257,4 +15386,4 @@ var $author$project$Main$main = $elm$browser$Browser$application(
 		view: $author$project$Main$view
 	});
 _Platform_export({'Main':{'init':$author$project$Main$main(
-	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"},"Common.ErrorPanel.ErrorModel":{"args":[],"type":"{ error : Common.ErrorPanel.Error, str : String.String }"},"Common.Data.Place":{"args":[],"type":"{ name : String.String, latitude : Basics.Float, longitude : Basics.Float }"},"Time.Era":{"args":[],"type":"{ start : Basics.Int, offset : Basics.Int }"},"Visualizer.Model.Face":{"args":[],"type":"{ id : String.String, imageId : String.String, imageUrl : String.String, faceImageB64 : String.String, faceLocation : Visualizer.Model.FaceLocation, faceEncoding : List.List Basics.Float, place : Common.Data.Place, datetime : Time.Posix }"},"Visualizer.Model.FaceLocation":{"args":[],"type":"{ x : Basics.Int, y : Basics.Int, w : Basics.Int, h : Basics.Int }"},"Visualizer.Model.Person":{"args":[],"type":"List.List Visualizer.Model.Face"}},"unions":{"Main.Msg":{"args":[],"tags":{"LinkClicked":["Browser.UrlRequest"],"UrlChanged":["Url.Url"],"VisualizerMsg":["Visualizer.Visualizer.Msg"],"UploadMsg":["Upload.Upload.Msg"],"ErrorMsg":["Common.ErrorPanel.Msg"],"SettingsMsg":["Common.Settings.Msg"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Common.ErrorPanel.Msg":{"args":[],"tags":{"AddError":["Common.ErrorPanel.ErrorModel"],"DelError":["Basics.Int"]}},"Common.Settings.Msg":{"args":[],"tags":{"GotTimezoneName":["Time.ZoneName"],"GotTimezone":["Time.Zone"]}},"Upload.Upload.Msg":{"args":[],"tags":{"ImageRequested":[],"ImageSelected":["File.File","List.List File.File"],"Upload":[],"Uploaded":["Result.Result Http.Error ()"],"GotPlaces":["Result.Result Http.Error (List.List Common.Data.Place)"],"PlaceSelected":["String.String"],"NewPlaceName":["String.String"],"NewPlaceLongitude":["String.String"],"NewPlaceLatitude":["String.String"],"PlaceSearchInput":["String.String"],"ErrorMsg":["Common.ErrorPanel.Msg"]}},"Visualizer.Visualizer.Msg":{"args":[],"tags":{"ControllerMsg":["Visualizer.Controller.Msg"],"PeopleMsg":["Visualizer.People.Msg"]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Common.ErrorPanel.Error":{"args":[],"tags":{"HttpError":["Http.Error"],"OnlyStr":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"File.File":{"args":[],"tags":{"File":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"List.List":{"args":["a"],"tags":{}},"Visualizer.Controller.Msg":{"args":[],"tags":{"GotPlace":["Result.Result Http.Error (List.List Common.Data.Place)"],"SelectPlace":["String.String"],"DelSelectedPlace":["String.String"],"PlaceSearchInput":["String.String"],"GotSinceTime":["String.String"],"GotUntilTime":["String.String"],"Analyze":[],"Analyzed":["Result.Result Http.Error (List.List Visualizer.Model.Person)"],"ChangeModalState":["Basics.Bool"],"ErrorMsg":["Common.ErrorPanel.Msg"]}},"Visualizer.People.Msg":{"args":[],"tags":{"Dammy":[]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Time.Zone":{"args":[],"tags":{"Zone":["Basics.Int","List.List Time.Era"]}},"Time.ZoneName":{"args":[],"tags":{"Name":["String.String"],"Offset":["Basics.Int"]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Time.Posix":{"args":[],"tags":{"Posix":["Basics.Int"]}}}}})}});}(this));
+	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"},"Common.ErrorPanel.ErrorModel":{"args":[],"type":"{ error : Common.ErrorPanel.Error, str : String.String }"},"Common.Data.Place":{"args":[],"type":"{ name : String.String, latitude : Basics.Float, longitude : Basics.Float }"},"Time.Era":{"args":[],"type":"{ start : Basics.Int, offset : Basics.Int }"},"Visualizer.Model.Face":{"args":[],"type":"{ id : String.String, imageId : String.String, imageUrl : String.String, faceImageB64 : String.String, faceLocation : Visualizer.Model.FaceLocation, faceEncoding : List.List Basics.Float, place : Common.Data.Place, datetime : Time.Posix }"},"Visualizer.Model.FaceLocation":{"args":[],"type":"{ x : Basics.Int, y : Basics.Int, w : Basics.Int, h : Basics.Int }"},"Visualizer.Model.Person":{"args":[],"type":"List.List Visualizer.Model.Face"}},"unions":{"Main.Msg":{"args":[],"tags":{"LinkClicked":["Browser.UrlRequest"],"UrlChanged":["Url.Url"],"VisualizerMsg":["Visualizer.Visualizer.Msg"],"UploadMsg":["Upload.Upload.Msg"],"ErrorMsg":["Common.ErrorPanel.Msg"],"SettingsMsg":["Common.Settings.Msg"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"Common.ErrorPanel.Msg":{"args":[],"tags":{"AddError":["Common.ErrorPanel.ErrorModel"],"DelError":["Basics.Int"]}},"Common.Settings.Msg":{"args":[],"tags":{"GotTimezoneName":["Time.ZoneName"],"GotTimezone":["Time.Zone"]}},"Upload.Upload.Msg":{"args":[],"tags":{"ImageRequested":[],"ImageSelected":["File.File","List.List File.File"],"Upload":[],"Uploaded":["Result.Result Http.Error ()"],"GotPlaces":["Result.Result Http.Error (List.List Common.Data.Place)"],"PlaceSelected":["String.String"],"NewPlaceName":["String.String"],"NewPlaceLongitude":["String.String"],"NewPlaceLatitude":["String.String"],"PlaceSearchInput":["String.String"],"ErrorMsg":["Common.ErrorPanel.Msg"]}},"Visualizer.Visualizer.Msg":{"args":[],"tags":{"ControllerMsg":["Visualizer.Controller.Msg"],"PeopleMsg":["Visualizer.People.Msg"]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Common.ErrorPanel.Error":{"args":[],"tags":{"HttpError":["Http.Error"],"OnlyStr":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"File.File":{"args":[],"tags":{"File":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"List.List":{"args":["a"],"tags":{}},"Visualizer.Controller.Msg":{"args":[],"tags":{"GotPlace":["Result.Result Http.Error (List.List Common.Data.Place)"],"SelectPlace":["String.String"],"DelSelectedPlace":["String.String"],"PlaceSearchInput":["String.String"],"GotSinceTime":["String.String"],"GotUntilTime":["String.String"],"Analyze":[],"Analyzed":["Result.Result Http.Error (List.List Visualizer.Model.Person)"],"ChangeModalState":["Basics.Bool"],"MapMsg":["Visualizer.Map.Msg"],"ErrorMsg":["Common.ErrorPanel.Msg"]}},"Visualizer.People.Msg":{"args":[],"tags":{"Dammy":[]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Time.Zone":{"args":[],"tags":{"Zone":["Basics.Int","List.List Time.Era"]}},"Time.ZoneName":{"args":[],"tags":{"Name":["String.String"],"Offset":["Basics.Int"]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Visualizer.Map.Msg":{"args":[],"tags":{"Update":[]}},"Time.Posix":{"args":[],"tags":{"Posix":["Basics.Int"]}}}}})}});}(this));

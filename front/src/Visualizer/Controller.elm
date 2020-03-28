@@ -12,6 +12,7 @@ import Iso8601
 import Model exposing (RootModel)
 import Time
 import Url.Builder
+import Visualizer.Map as Map
 import Visualizer.Model exposing (..)
 import Visualizer.Traffic
 
@@ -26,6 +27,7 @@ type Msg
     | Analyze
     | Analyzed (Result Http.Error (List Visualizer.Model.Person))
     | ChangeModalState Bool
+    | MapMsg Map.Msg
     | ErrorMsg Common.ErrorPanel.Msg
 
 
@@ -186,15 +188,28 @@ update msg rootModel =
 
                         newController =
                             { controllerModel | resultDateRange = controllerModel.dateRange, resultPlaces = controllerModel.selectedPlaces }
+
+                        newRootModel =
+                            { rootModel | visualizer = { visualizerModel | controller = newController, people = people, traffic = trafficCount } }
+
+                        ( newRootModel_, cmd_ ) =
+                            Map.update Map.Update newRootModel
                     in
-                    ( { rootModel | visualizer = { visualizerModel | controller = newController, people = people, traffic = trafficCount } }
-                    , Cmd.none
+                    ( newRootModel_
+                    , Cmd.map MapMsg cmd_
                     )
 
         ChangeModalState state ->
             ( { rootModel | visualizer = { visualizerModel | controller = { controllerModel | modalState = state } } }
             , Cmd.none
             )
+
+        MapMsg subMsg ->
+            let
+                ( rootModel_, cmd_ ) =
+                    Map.update subMsg rootModel
+            in
+            ( rootModel_, Cmd.map MapMsg cmd_ )
 
         ErrorMsg subMsg ->
             let
