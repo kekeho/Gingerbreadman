@@ -21,7 +21,9 @@ update msg rootModel =
         Update ->
             let
                 mapUpdate =
-                    [ drawPlaceCircle rootModel.visualizer.people ]
+                    [ drawPlaceCircle rootModel.visualizer.people
+                    , drawTrafficLine rootModel.visualizer.traffic
+                    ]
             in
             ( rootModel
             , Cmd.batch mapUpdate
@@ -39,6 +41,9 @@ port clearMap : String -> Cmd msg
 
 
 port drawPlaceCirclePort : List ( Place, Int ) -> Cmd msg
+
+
+port drawTrafficLinePort : List ( TrafficCount, List TrafficCount ) -> Cmd msg
 
 
 
@@ -60,6 +65,12 @@ drawPlaceCircle people =
         |> drawPlaceCirclePort
 
 
+drawTrafficLine : List TrafficCount -> Cmd msg
+drawTrafficLine trafficList =
+    bidirectionalTrafficList trafficList
+        |> drawTrafficLinePort
+
+
 
 -- FUNCTIONS
 
@@ -69,6 +80,23 @@ uniquePeopleCount people =
     List.map personPlacesNoDuplicate people
         |> List.concat
         |> placesCount
+
+
+bidirectionalTrafficList : List TrafficCount -> List ( TrafficCount, List TrafficCount )
+bidirectionalTrafficList trafficCountList =
+    case trafficCountList of
+        [] ->
+            []
+
+        x :: xs ->
+            let
+                same =
+                    List.filter (\t -> Tuple.first x.traffic == Tuple.second t.traffic && Tuple.second x.traffic == Tuple.first t.traffic) xs
+
+                others =
+                    List.filter (\t -> x /= t && not (List.member t same)) xs
+            in
+            ( x, same ) :: bidirectionalTrafficList others
 
 
 

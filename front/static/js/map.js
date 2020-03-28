@@ -3,13 +3,18 @@
 var map = null;
 var tileLayer = null;
 var placeMarkerList = null;
+var trafficLineList = null;
 var layers = null;
 
 function initMap (mapId) {
     placeMarkerList = L.layerGroup();
-    layers = {'people': placeMarkerList};
+    trafficLineList = L.layerGroup();
+    layers = {
+        'people': placeMarkerList,
+        'traffic': trafficLineList,
+    };
 
-    map = L.map('map', layers=[placeMarkerList]).setView([36.575,135.984], 5);    // 日本を中心に設定
+    map = L.map('map').setView([36.575,135.984], 5);    // 日本を中心に設定
 
     tileLayer = L.tileLayer('http://localhost:8000/mapcache/{s}/{z}/{x}/{y}',{
         attribution: '© <a href="http://osm.org/copyright">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
@@ -17,7 +22,7 @@ function initMap (mapId) {
     });
     tileLayer.addTo(map);
 
-    L.control.layers(layers).addTo(map);
+    L.control.layers([], layers).addTo(map);
 }
 
 
@@ -34,6 +39,7 @@ app.ports.clearMap.subscribe(function (mapId) {
         map = null;
         tileLayer = null;
         placeMarkerList = null;
+        trafficLineList = null;
         layers = null;
     }
 });
@@ -42,6 +48,21 @@ app.ports.clearMap.subscribe(function (mapId) {
 app.ports.drawPlaceCirclePort.subscribe(function(place_list) {
     requestAnimationFrame(function() {
         place_list.map(x => placeCircle([x[0].latitude, x[0].longitude], x[0].name, x[1]).addTo(placeMarkerList));
+    });
+});
+
+
+app.ports.drawTrafficLinePort.subscribe(function(traffic_list){
+    requestAnimationFrame(function() {
+        traffic_list.map(function(x){
+            let p1position = [x[0].traffic[0].latitude, x[0].traffic[0].longitude];
+            let p2position = [x[0].traffic[1].latitude, x[0].traffic[1].longitude];
+            let p1name = x[0].traffic[0].name;
+            let p2name = x[0].traffic[1].name;
+            let p1ToP2Count = x[0].count;
+            let p2ToP1Count = (x[1].length === 0) ? 0 : x[1][0].count;
+            trafficLine(p1position, p2position, p1name, p2name, p1ToP2Count, p2ToP1Count).addTo(trafficLineList);
+        });
     });
 });
 
@@ -55,5 +76,20 @@ function placeCircle(position, placeName, count) {
         fillColor: '#df3474',
         fillOpacity: 0.3
     }).bindPopup(placeName + ": " + count + " unique people");
+}
+
+
+function trafficLine(position1, position2, p1name, p2name, p1ToP2Count, p2ToP1Count) {
+    let weight = Math.log10(p1ToP2Count + p2ToP1Count) + 1;
+    let p1ToP2Str = p1name + " -> " + p2name + ": " + p1ToP2Count + " counts / ";
+    let p2ToP1Str = p2name + " -> " + p1name + ": " + p2ToP1Count + " counts";
+    return L.polyline([
+        position1,
+        position2,
+    ],{
+        "color": "#ff3474",
+        "weight": weight,
+        "opacity": 0.6
+    }).bindPopup(p1ToP2Str + p2ToP1Str);
 }
 

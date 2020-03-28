@@ -13788,11 +13788,156 @@ var $author$project$Visualizer$Map$drawPlaceCircle = function (people) {
 	return $author$project$Visualizer$Map$drawPlaceCirclePort(
 		$author$project$Visualizer$Map$uniquePeopleCount(people));
 };
+var $author$project$Visualizer$Map$bidirectionalTrafficList = function (trafficCountList) {
+	if (!trafficCountList.b) {
+		return _List_Nil;
+	} else {
+		var x = trafficCountList.a;
+		var xs = trafficCountList.b;
+		var same = A2(
+			$elm$core$List$filter,
+			function (t) {
+				return _Utils_eq(x.traffic.a, t.traffic.b) && _Utils_eq(x.traffic.b, t.traffic.a);
+			},
+			xs);
+		var others = A2(
+			$elm$core$List$filter,
+			function (t) {
+				return (!_Utils_eq(x, t)) && (!A2($elm$core$List$member, t, same));
+			},
+			xs);
+		return A2(
+			$elm$core$List$cons,
+			_Utils_Tuple2(x, same),
+			$author$project$Visualizer$Map$bidirectionalTrafficList(others));
+	}
+};
+var $author$project$Visualizer$Map$drawTrafficLinePort = _Platform_outgoingPort(
+	'drawTrafficLinePort',
+	$elm$json$Json$Encode$list(
+		function ($) {
+			var a = $.a;
+			var b = $.b;
+			return A2(
+				$elm$json$Json$Encode$list,
+				$elm$core$Basics$identity,
+				_List_fromArray(
+					[
+						function ($) {
+						return $elm$json$Json$Encode$object(
+							_List_fromArray(
+								[
+									_Utils_Tuple2(
+									'count',
+									$elm$json$Json$Encode$int($.count)),
+									_Utils_Tuple2(
+									'traffic',
+									function ($) {
+										var a = $.a;
+										var b = $.b;
+										return A2(
+											$elm$json$Json$Encode$list,
+											$elm$core$Basics$identity,
+											_List_fromArray(
+												[
+													function ($) {
+													return $elm$json$Json$Encode$object(
+														_List_fromArray(
+															[
+																_Utils_Tuple2(
+																'latitude',
+																$elm$json$Json$Encode$float($.latitude)),
+																_Utils_Tuple2(
+																'longitude',
+																$elm$json$Json$Encode$float($.longitude)),
+																_Utils_Tuple2(
+																'name',
+																$elm$json$Json$Encode$string($.name))
+															]));
+												}(a),
+													function ($) {
+													return $elm$json$Json$Encode$object(
+														_List_fromArray(
+															[
+																_Utils_Tuple2(
+																'latitude',
+																$elm$json$Json$Encode$float($.latitude)),
+																_Utils_Tuple2(
+																'longitude',
+																$elm$json$Json$Encode$float($.longitude)),
+																_Utils_Tuple2(
+																'name',
+																$elm$json$Json$Encode$string($.name))
+															]));
+												}(b)
+												]));
+									}($.traffic))
+								]));
+					}(a),
+						$elm$json$Json$Encode$list(
+						function ($) {
+							return $elm$json$Json$Encode$object(
+								_List_fromArray(
+									[
+										_Utils_Tuple2(
+										'count',
+										$elm$json$Json$Encode$int($.count)),
+										_Utils_Tuple2(
+										'traffic',
+										function ($) {
+											var a = $.a;
+											var b = $.b;
+											return A2(
+												$elm$json$Json$Encode$list,
+												$elm$core$Basics$identity,
+												_List_fromArray(
+													[
+														function ($) {
+														return $elm$json$Json$Encode$object(
+															_List_fromArray(
+																[
+																	_Utils_Tuple2(
+																	'latitude',
+																	$elm$json$Json$Encode$float($.latitude)),
+																	_Utils_Tuple2(
+																	'longitude',
+																	$elm$json$Json$Encode$float($.longitude)),
+																	_Utils_Tuple2(
+																	'name',
+																	$elm$json$Json$Encode$string($.name))
+																]));
+													}(a),
+														function ($) {
+														return $elm$json$Json$Encode$object(
+															_List_fromArray(
+																[
+																	_Utils_Tuple2(
+																	'latitude',
+																	$elm$json$Json$Encode$float($.latitude)),
+																	_Utils_Tuple2(
+																	'longitude',
+																	$elm$json$Json$Encode$float($.longitude)),
+																	_Utils_Tuple2(
+																	'name',
+																	$elm$json$Json$Encode$string($.name))
+																]));
+													}(b)
+													]));
+										}($.traffic))
+									]));
+						})(b)
+					]));
+		}));
+var $author$project$Visualizer$Map$drawTrafficLine = function (trafficList) {
+	return $author$project$Visualizer$Map$drawTrafficLinePort(
+		$author$project$Visualizer$Map$bidirectionalTrafficList(trafficList));
+};
 var $author$project$Visualizer$Map$update = F2(
 	function (msg, rootModel) {
 		var mapUpdate = _List_fromArray(
 			[
-				$author$project$Visualizer$Map$drawPlaceCircle(rootModel.visualizer.people)
+				$author$project$Visualizer$Map$drawPlaceCircle(rootModel.visualizer.people),
+				$author$project$Visualizer$Map$drawTrafficLine(rootModel.visualizer.traffic)
 			]);
 		return _Utils_Tuple2(
 			rootModel,
