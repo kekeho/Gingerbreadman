@@ -87,9 +87,9 @@ function trafficLine(position1, position2, p1name, p2name, p1ToP2Count, p2ToP1Co
         position1,
         position2,
     ],{
-        "color": "#ff3474",
+        "color": "#ff00ff",
         "weight": weight,
-        "opacity": 0.6
+        "opacity": 1.0
     }).bindPopup(p1ToP2Str + p2ToP1Str);
 }
 

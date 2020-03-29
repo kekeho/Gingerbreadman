@@ -34,8 +34,8 @@
 }
 
 
-.people-row {
-    max-height: 40vh;
+.people.row {
+    height: 50vh;
     overflow-y: scroll;
 }
 
@@ -101,6 +101,11 @@ ul.all-places {
 
 
 /* Traffic */
+
+.traffic.row {
+    height: 40vh;
+    overflow-y: scroll;
+}
 
 .top6 {
     font-weight: bold;
