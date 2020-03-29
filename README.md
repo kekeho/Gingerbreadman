@@ -3,11 +3,17 @@
 ![gmtitle](docs/logo/gmtitle.svg)  
 GUI Tools for Face tacking & Analyze attributes
 
-**NOTICE**: Now developing on **[Develop brantch](https://github.com/kekeho/Gingerbreadman/tree/develop)**.
+## Dependencies
 
-## Build
+- Docker
 
-Just two steps.
+- docker-compose
+
+- nvidia-docker (when GPU environment)
+
+## Let's start
+
+Just three steps.
 
 ### 1. Clone this repository
 
@@ -15,16 +21,32 @@ Just two steps.
 git clone https://github.com/kekeho/gingerbreadman && cd gingerbreadman
 ```
 
-### 2. Build containers
+### 2. Build
+
+#### CPU
 
 ```sh
 docker-compose build
 ```
 
-## Start
+#### GPU
 
 ```sh
-docker-compose start  # Launch containers
+docker-compose -f docker-compose-gpu.yml build
+```
+
+### 3. Launch containers
+
+#### CPU
+
+```sh
+docker-compose up
+```
+
+#### GPU
+
+```sh
+docker-compose -f docker-compose-gpu.yml up
 ```
 
 and, open browser [http://localhost:8080](http://localhost:8080)

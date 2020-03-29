@@ -1,0 +1,131 @@
+/**
+ * Copyright (C) 2019 Hiroki Takemura (kekeho)
+ * 
+ * This file is part of Gingerbreadman.
+ * 
+ * Gingerbreadman is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * Gingerbreadman is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with Gingerbreadman.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+.visualizer {
+    max-width: none;
+}
+
+.maincontainer {
+    padding: 0;
+    margin: 0;
+    width: 100vw;
+}
+
+.mainrow {
+    padding: 0;
+    margin: 0;
+    width: 100vw;
+}
+
+
+.people.row {
+    height: 50vh;
+    overflow-y: scroll;
+}
+
+.controller {
+    padding-left: 5%;
+    width: 100%;
+}
+
+ul.all-places {
+    list-style: none;
+    padding-left: 0;
+    height: 10rem;
+    overflow-y: scroll;
+}
+
+
+.controller .selected {
+    padding-bottom: 1rem;
+}
+
+
+.controller .selected .selected-place-box {
+    width: min-content;
+    height: min-content;
+    padding: 0.3rem;
+    margin: 0.4rem;
+
+    display: inline-block;
+
+    border-radius: 0.5rem;
+    background-color: rgb(201, 201, 201);
+}
+
+
+.controller .date-selector.form input {
+    height: 1.5rem;
+}
+
+
+/* Person */
+
+.person {
+    box-sizing: border-box;
+    padding: 0 1rem;
+    box-shadow: 0.2rem 0.2rem 1.5rem 0.1rem #ddd;
+    border-radius: 1rem;
+    height: 22vmin;
+    overflow: scroll;
+}
+
+.person .row {
+    padding: 0.5rem;
+}
+
+.face {
+    padding: 0.1rem;
+}
+
+.face img {
+    width: 100%;
+}
+
+
+
+/* Traffic */
+
+.traffic.row {
+    height: 40vh;
+    overflow-y: scroll;
+}
+
+.top6 {
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.top6 p {
+    display: inline-block;
+    margin: auto 1rem;
+}
+
+.under6 p {
+    display: inline-block;
+    margin: auto 0.2rem;
+}
+
+
+/* Map */
+
+.map#map {
+    height: 60vh;
+    width: 100%;
+}

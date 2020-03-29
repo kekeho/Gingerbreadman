@@ -1,0 +1,41 @@
+.navbar-brand img {
+    height: 2rem;
+}
+
+.errorPanel {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+}
+
+
+.errorBox.row {
+    background-color: rgb(214, 214, 214);
+    padding: 0.2rem;
+    margin: 0.2rem;
+    border-left: solid 0.35rem rgb(216, 30, 30);
+}
+
+
+.errorPanel .delButton {
+    margin: 0;
+    padding: 0;
+}
+
+
+.gb-modal {
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: 0;
+    padding: 5rem;
+    max-width: none;
+
+    background-color: rgba(255, 255, 255, 0.829);
+
+    z-index: 999;
+}
