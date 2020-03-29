@@ -49,7 +49,7 @@ docker-compose up
 docker-compose -f docker-compose-gpu.yml up
 ```
 
-and, open browser [http://localhost:8080](http://localhost:8080)
+and, open browser [http://localhost:8000](http://localhost:8000)
 
 ## Warnings
 
