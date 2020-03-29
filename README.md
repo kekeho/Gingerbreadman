@@ -1,6 +1,7 @@
 # Gingerbreadman
 
-![gmtitle](docs/logo/gmtitle.svg)  
+![gmtitle](docs/logo/gmtitle.svg) [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fkekeho%2FGingerbreadman.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fkekeho%2FGingerbreadman?ref=badge_shield)
+ 
 GUI Tools for Face tacking & Analyze attributes
 
 ## Dependencies
@@ -60,3 +61,6 @@ and, open browser [http://localhost:8000](http://localhost:8000)
 ## License
 
 GPLv3 [View license file](./LICENSE)
+
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fkekeho%2FGingerbreadman.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fkekeho%2FGingerbreadman?ref=badge_large)
