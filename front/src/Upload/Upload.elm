@@ -67,7 +67,25 @@ update msg rootModel =
                 Just files ->
                     case model.selectedPlace of
                         Nothing ->
-                            update (ErrorMsg (ErrorPanel.AddError { error = ErrorPanel.OnlyStr, str = "NO SELECTED PLACE" })) newRootModel
+                            if model.newPlace.name == "" then
+                                update (ErrorMsg (ErrorPanel.AddError { error = ErrorPanel.OnlyStr, str = "NO SELECTED PLACE" })) newRootModel
+
+                            else
+                                ( newRootModel
+                                , Http.post
+                                    { url = "/api/db/regist_images/"
+                                    , body =
+                                        Http.multipartBody
+                                            (Http.stringPart "place_selected" ""
+                                                :: Http.stringPart "place_new" model.newPlace.name
+                                                :: Http.stringPart "new_latitude" (String.fromFloat model.newPlace.latitude)
+                                                :: Http.stringPart "new_longitude" (String.fromFloat model.newPlace.longitude)
+                                                :: List.map (\f -> Http.filePart "images" f) files
+                                                ++ List.map (\f -> Http.stringPart "images_mtimes" (msecToStr (File.lastModified f))) files
+                                            )
+                                    , expect = Http.expectWhatever Uploaded
+                                    }
+                                )
 
                         Just selectedPlace ->
                             ( newRootModel

@@ -11876,13 +11876,59 @@ var $author$project$Upload$Upload$update = F2(
 						var files = _v1.a;
 						var _v2 = model.selectedPlace;
 						if (_v2.$ === 'Nothing') {
-							var $temp$msg = $author$project$Upload$Upload$ErrorMsg(
-								$author$project$Common$ErrorPanel$AddError(
-									{error: $author$project$Common$ErrorPanel$OnlyStr, str: 'NO SELECTED PLACE'})),
-								$temp$rootModel = newRootModel;
-							msg = $temp$msg;
-							rootModel = $temp$rootModel;
-							continue update;
+							if (model.newPlace.name === '') {
+								var $temp$msg = $author$project$Upload$Upload$ErrorMsg(
+									$author$project$Common$ErrorPanel$AddError(
+										{error: $author$project$Common$ErrorPanel$OnlyStr, str: 'NO SELECTED PLACE'})),
+									$temp$rootModel = newRootModel;
+								msg = $temp$msg;
+								rootModel = $temp$rootModel;
+								continue update;
+							} else {
+								return _Utils_Tuple2(
+									newRootModel,
+									$elm$http$Http$post(
+										{
+											body: $elm$http$Http$multipartBody(
+												A2(
+													$elm$core$List$cons,
+													A2($elm$http$Http$stringPart, 'place_selected', ''),
+													A2(
+														$elm$core$List$cons,
+														A2($elm$http$Http$stringPart, 'place_new', model.newPlace.name),
+														A2(
+															$elm$core$List$cons,
+															A2(
+																$elm$http$Http$stringPart,
+																'new_latitude',
+																$elm$core$String$fromFloat(model.newPlace.latitude)),
+															A2(
+																$elm$core$List$cons,
+																A2(
+																	$elm$http$Http$stringPart,
+																	'new_longitude',
+																	$elm$core$String$fromFloat(model.newPlace.longitude)),
+																_Utils_ap(
+																	A2(
+																		$elm$core$List$map,
+																		function (f) {
+																			return A2($elm$http$Http$filePart, 'images', f);
+																		},
+																		files),
+																	A2(
+																		$elm$core$List$map,
+																		function (f) {
+																			return A2(
+																				$elm$http$Http$stringPart,
+																				'images_mtimes',
+																				$author$project$Common$Data$msecToStr(
+																					$elm$file$File$lastModified(f)));
+																		},
+																		files))))))),
+											expect: $elm$http$Http$expectWhatever($author$project$Upload$Upload$Uploaded),
+											url: '/api/db/regist_images/'
+										}));
+							}
 						} else {
 							var selectedPlace = _v2.a;
 							return _Utils_Tuple2(
