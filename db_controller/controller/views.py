@@ -46,12 +46,9 @@ def regist_images(request):
 
     if request.method == 'POST':
         images = request.FILES.getlist('images')
-        print(len(images), images)
         images_mtimes = list(map(
             int, request.POST.getlist('images_mtimes')
         ))
-        print(len(images_mtimes), images_mtimes)
-        print(request.POST)
 
         # save to db
         for image, mtime in zip(images, images_mtimes):
@@ -82,7 +79,6 @@ def regist_images(request):
             i.service_face_encoding_analyzed = False
 
             i.save()
-            print(i)
 
         return JsonResponse(context)
 

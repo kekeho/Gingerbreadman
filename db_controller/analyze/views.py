@@ -92,8 +92,6 @@ def grouping(request):
             }
             face_dict['posix_millisec'] = int(face.image.datetime.timestamp() * 1e3)
 
-            print(face_dict)  # TODO: DEBUG
-            
             with BytesIO() as img_fp:
                 image = Image.open(face.image.image.file)
                 image = image.convert('RGB')
@@ -110,7 +108,6 @@ def grouping(request):
 
         return_list.append(return_group_list)
 
-    print(return_list)  # TODO: Debug
     context = {'grouped_faces': return_list}
     return JsonResponse(context, safe=False)
 

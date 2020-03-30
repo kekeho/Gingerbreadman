@@ -80,7 +80,7 @@ function placeCircle(position, placeName, count) {
 
 
 function trafficLine(position1, position2, p1name, p2name, p1ToP2Count, p2ToP1Count) {
-    let weight = Math.log10(p1ToP2Count + p2ToP1Count) + 1;
+    let weight = p1ToP2Count + p2ToP1Count;
     let p1ToP2Str = p1name + " -> " + p2name + ": " + p1ToP2Count + " counts / ";
     let p2ToP1Str = p2name + " -> " + p1name + ": " + p2ToP1Count + " counts";
     return L.polyline([
