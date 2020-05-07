@@ -3,7 +3,6 @@ module Visualizer.Controller exposing (..)
 import Common.Data exposing (..)
 import Common.ErrorPanel
 import Common.Settings
-import Debug
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -117,7 +116,7 @@ update msg rootModel =
                 dateRange =
                     controllerModel.dateRange
             in
-            case Iso8601.toTime normalized |> Debug.log "debug" of
+            case Iso8601.toTime normalized of
                 Ok localTime ->
                     ( { rootModel
                         | visualizer =
@@ -146,7 +145,7 @@ update msg rootModel =
                 dateRange =
                     controllerModel.dateRange
             in
-            case Iso8601.toTime normalized |> Debug.log "debug" of
+            case Iso8601.toTime normalized of
                 Ok localTime ->
                     ( { rootModel
                         | visualizer =
