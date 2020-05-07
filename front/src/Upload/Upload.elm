@@ -237,7 +237,7 @@ view rootModel =
                     [ div [ class "form-row" ]
                         [ div [ class "col" ]
                             [ h1 [ class "title" ] [ text "Upload Images" ]
-                            , button [ onClick ImageRequested ] [ text "Select Images" ]
+                            , button [ onClick ImageRequested ] [ text "Select Images (~100MB)" ]
                             , filesCountView model.selectedImages
                             ]
                         ]

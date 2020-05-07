@@ -14765,7 +14765,7 @@ var $author$project$Upload$Upload$view = function (rootModel) {
 															]),
 														_List_fromArray(
 															[
-																$elm$html$Html$text('Select Images')
+																$elm$html$Html$text('Select Images (~100MB)')
 															])),
 														$author$project$Upload$Upload$filesCountView(model.selectedImages)
 													]))
