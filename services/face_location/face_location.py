@@ -16,13 +16,16 @@
 # along with Gingerbreadman.  If not, see <http://www.gnu.org/licenses/>.
 
 import time
+import os
 from lib import utils
 
 
 def main():
     while True:
         analyzer = utils.LocationAnalzyer(
-            'nginx', 80,'/api/db/get_unanalyzed_face_location_images/', '/api/db/regist_faces/')
+            os.getenv('NGINX_HOST'), int(os.getenv('NGINX_PORT')),
+            '/api/db/get_unanalyzed_face_location_images/', '/api/db/regist_faces/',
+        )
         analyzer.analyze_face_locations()
         count = analyzer.regist()
 

@@ -16,13 +16,15 @@
 # along with Gingerbreadman.  If not, see <http://www.gnu.org/licenses/>.
 
 import time
+import os
 from lib import utils
 
 
 def main():
     while True:
         analyzer = utils.EncodingAnalzyer(
-            'nginx', 80, '/api/db/get_unanalyzed_face_encodings/', '/api/db/regist_face_encodings/'
+            os.getenv('NGINX_HOST'), int(os.getenv('NGINX_PORT')),
+            '/api/db/get_unanalyzed_face_encodings/', '/api/db/regist_face_encodings/',
         )
         analyzer.analyze_face_encodings()
         count = analyzer.regist()
