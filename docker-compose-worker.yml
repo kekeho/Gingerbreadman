@@ -15,3 +15,7 @@ services:
     env_file:
       - worker.env
 
+  state:
+    build: state
+    ports:
+      - "10999:10999"
