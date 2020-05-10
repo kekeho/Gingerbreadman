@@ -5,7 +5,7 @@ author        = "Hiroki.T"
 description   = "A new awesome nimble package"
 license       = "GPL-3.0"
 srcDir        = "src"
-bin           = @["state_worker"]
+bin           = @["state"]
 
 
 
