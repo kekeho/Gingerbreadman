@@ -18,7 +18,11 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils import timezone
+from datetime import datetime
 import uuid
+
+
+unixzero = datetime.fromtimestamp(0)
 
 
 def uuid4_str():
@@ -91,6 +95,7 @@ class Image(models.Model):
     image = models.ImageField(
         upload_to='images', default='default', blank=False, null=False)
     
+    service_face_location_analyzing_startdate = models.DateTimeField(null=False, blank=False, default=unixzero)
     service_face_location_analyzed = models.BooleanField(default=False)
 
 
@@ -113,6 +118,7 @@ class Face(models.Model):
     face_location_w = models.IntegerField(blank=False, null=False, default=0)
     face_location_h = models.IntegerField(blank=False, null=False, default=0)
 
+    service_face_encoding_analyzing_startdate = models.DateTimeField(null=False, blank=False, default=unixzero)
     service_face_encoding_analyzed = models.BooleanField(default=False)
     face_encoding = models.TextField(blank=True, null=True)
     gender = models.ForeignKey(Gender, on_delete=models.PROTECT,
