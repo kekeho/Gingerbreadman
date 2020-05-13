@@ -15,11 +15,14 @@
 # You should have received a copy of the GNU General Public License
 # along with Gingerbreadman.  If not, see <http://www.gnu.org/licenses/>.
 
-import asyncdispatch
+import httpclient, asyncdispatch
 import sequtils
 import strutils
 import os
 import sugar
+import strformat
+import marshal
+import json
 
 
 type
@@ -44,6 +47,12 @@ type
     State* = object
         cpuStateList: seq[CoreState]
         error: string
+
+
+type
+    WorkerState* = object
+        address: string
+        state: State
 
 
 
@@ -107,3 +116,17 @@ proc getState*(): Future[State] =
 
     resultState.complete(state)
     return resultState
+
+
+proc getStateOverNetwork*(address: string): Future[WorkerState] {.async.} =
+    let client = newAsyncHttpClient()
+
+    let resp = await client.getContent(fmt"http://{address}:10999")
+
+    var state: State
+    try:
+        state = to[State](resp)
+    except JsonParsingError:
+        state = State(cpuStateList: @[], error: "Broken Data.")
+    
+    return WorkerState(address: address, state: state)
