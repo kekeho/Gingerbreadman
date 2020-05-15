@@ -12,11 +12,15 @@ import random
 
 
 class Sex(enum.Enum):
-    MALE = 0
-    FEMALE = 1
+    MALE = enum.auto()
+    FEMALE = enum.auto()
 
-def sex_to_categorical(sex: Sex) -> np.ndarray:
+def sex_to_categorical(sex: Sex) -> List[int]:
     return [0, 1] if sex == Sex.MALE else [1, 0]
+
+
+def result_to_sex(csex: np.ndarray) -> Sex:
+    return Sex.MALE if np.argmax(csex) == 1 else Sex.FEMALE
 
 
 def get_images(filename: str) -> (Image.Image, Sex):

@@ -32,10 +32,10 @@ from . import view_utils
 
 
 def get_face_location(f: models.Face):
-    return [(
+    return (
         int(f.face_location_x), int(f.face_location_y),
         int(f.face_location_w), int(f.face_location_h)
-    )]
+    )
 
 
 def get_places_all(request):
@@ -173,7 +173,33 @@ def get_unanalyzed_face_encoding_faces(request):
         face.service_face_encoding_analyzing_startdate = timezone.now()
         face.save()
 
-    return JsonResponse([[str(f.id), str(f.image.image.url), get_face_location(f)] for f in faces], safe=False)
+    return JsonResponse([[str(f.id), str(f.image.image.url), [get_face_location(f)]] for f in faces], safe=False)
+
+
+@csrf_exempt
+def regist_sex(request):
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
+    
+    # [
+    #     {"face_id": models.Face.id,
+    #      "sex": "MALE" | "FEMALE"
+    #     }
+    # ]
+
+    face_list = json.loads(request.body)
+    for face_info in face_list:
+        id = face_info['face_id']
+        sex_id = 1 if face_info['sex'] == 'MALE' else 2 if face_info['sex'] == 'FEMALE' else 0
+        
+        sex, _ = models.Sex.objects.get_or_create(id=sex_id)
+
+        face = models.Face.objects.get(id=id)
+        face.sex = sex
+        face.service_sex_detection_analyzed = True
+        face.save()
+    
+    return JsonResponse({'message': 'Done'})
 
 
 def get_unanalyzed_faces_sex(request):
@@ -207,7 +233,7 @@ def regist_encodings(request):
         return HttpResponseNotAllowed(["POST"])
 
     # [
-    #   {"face_id": models.Image.id,
+    #   {"face_id": models.Face.id,
     #    "encoding": [x, y, w, h]
     #   }
     #   ...
