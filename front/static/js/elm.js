@@ -10850,7 +10850,7 @@ var $author$project$Visualizer$Visualizer$view = function (rootModel) {
 										$elm$html$Html$div,
 										_List_fromArray(
 											[
-												$elm$html$Html$Attributes$class('row')
+												$elm$html$Html$Attributes$class('row maprow')
 											]),
 										_List_fromArray(
 											[

@@ -56,7 +56,7 @@ view rootModel =
             [ div [ class "row" ]
                 [ div [ class "col-7" ]
                     -- Map & Controller
-                    [ div [ class "row" ]
+                    [ div [ class "row maprow" ]
                         [ Visualizer.Map.mapView "map"
                         ]
                     , Visualizer.Controller.view rootModel

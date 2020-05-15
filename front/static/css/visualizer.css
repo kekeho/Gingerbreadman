@@ -125,7 +125,16 @@ ul.all-places {
 
 /* Map */
 
+.maprow {
+    margin: 1rem;
+    padding: 1.5rem;
+    border-radius: 1.5rem;
+}
+
 .map#map {
+    border-radius: 1.5rem;
     height: 60vh;
     width: 100%;
+    filter: drop-shadow(0.8rem 0.8rem 1rem #b3b2b2)
+            drop-shadow(-1rem -1rem 0.7rem #ffffff);
 }
