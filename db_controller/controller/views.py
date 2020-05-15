@@ -31,6 +31,13 @@ from . import models
 from . import view_utils
 
 
+def get_face_location(f: models.Face):
+    return [(
+        int(f.face_location_x), int(f.face_location_y),
+        int(f.face_location_w), int(f.face_location_h)
+    )]
+
+
 def get_places_all(request):
     places = models.Place.objects.all()
     resp_data = [{'name': p.name,
@@ -166,12 +173,32 @@ def get_unanalyzed_face_encoding_faces(request):
         face.service_face_encoding_analyzing_startdate = timezone.now()
         face.save()
 
-    def get_face_location(f): return [(
-            int(f.face_location_x), int(f.face_location_y),
-            int(f.face_location_w), int(f.face_location_h)
-        )]
+    return JsonResponse([[str(f.id), str(f.image.image.url), get_face_location(f)] for f in faces], safe=False)
+
+
+def get_unanalyzed_faces_sex(request):
+    """Return face parent image and rect of face"""
+    if request.method != 'GET':
+        HttpResponseNotAllowed(['GET'])
+    
+    # Get unanalyzed faces
+    unixstart = datetime.fromtimestamp(0)
+    locktime = timezone.now() - timedelta(minutes=10)
+    faces = models.Face.objects.filter(
+        service_sex_detection_analyzed=False,
+        service_sex_detection_analyzing_startdate__range=(unixstart, locktime),
+        )[:100]  # 100 images per request
+
+    if list(faces) == []:
+        return HttpResponseNotFound()
+    
+    # Refresh service_face_encoding_analyzing_startdate
+    for face in faces:
+        face.service_sex_detection_analyzing_startdate = timezone.now()
+        face.save()
 
     return JsonResponse([[str(f.id), str(f.image.image.url), get_face_location(f)] for f in faces], safe=False)
+
 
 
 @csrf_exempt
