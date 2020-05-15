@@ -86,8 +86,7 @@ type alias Face =
     , faceEncoding : List Float
     , place : Place
     , datetime : Time.Posix
-
-    -- , gender : Maybe Gender
+    , sex : Sex
     -- , age : Maybe Float
     -- , emotion : Maybe Emotion
     }
@@ -101,7 +100,7 @@ type alias FaceLocation =
     }
 
 
-type Gender
+type Sex
     = NotKnown
     | Male
     | Female
@@ -183,6 +182,7 @@ faceDecoder =
         |> P.required "face_encoding" (D.list D.float)
         |> P.required "place" placeDecoder
         |> P.required "posix_millisec" datetimeDecoder
+        |> P.required "sex" sexDecoder
 
 
 faceLocationDecoder : Decoder FaceLocation
@@ -192,3 +192,19 @@ faceLocationDecoder =
         (D.index 1 D.int)
         (D.index 2 D.int)
         (D.index 3 D.int)
+
+
+sexDecoder : Decoder Sex
+sexDecoder =
+    D.map intToSex D.int 
+
+
+intToSex : Int -> Sex
+intToSex val =
+    case val of
+        1 ->
+            Male
+        2 ->
+            Female
+        _ ->
+            NotKnown

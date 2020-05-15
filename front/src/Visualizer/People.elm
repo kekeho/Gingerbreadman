@@ -56,5 +56,17 @@ personView timezone person =
 faceView : Time.Zone -> Face -> Html Msg
 faceView timezone face =
     div [ class "face col-xl-4 col-6" ]
-        [ img [ src face.faceImageB64, title (face.place.name ++ " " ++ localDropSecsStr timezone face.datetime) ] []
+        [ img
+            [ src face.faceImageB64
+            , title (face.place.name ++ " " ++ sexString face.sex ++ " " ++ localDropSecsStr timezone face.datetime) ] []
         ]
+
+sexString : Sex -> String
+sexString sex =
+    case sex of
+        Male ->
+            "Male"
+        Female ->
+            "Female"
+        NotKnown ->
+            "Not Known"
