@@ -50,8 +50,6 @@ def clustering():
         except KeyError:
             grouped[int(group_index)] = {'faces': [faces_json[i]]}
     
-    print(grouped)
-    
     return flask.jsonify(grouped)
 
 
