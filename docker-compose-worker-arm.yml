@@ -1,0 +1,20 @@
+version: '3'
+version: '3'
+services:
+  service_face_location:
+    build: 
+      context: "services/face_location"
+      dockerfile: "Dockerfile_ARM"
+    volumes:
+      - "./services/face_location:/code"
+    env_file:
+      - worker.env
+  
+  service_face_encoding:
+    build:
+      context: "services/face_encoding"
+      dockerfile: "Dockerfile_ARM"
+    volumes:
+      - "./services/face_encoding:/code"
+    env_file:
+      - worker.env

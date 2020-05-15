@@ -25,6 +25,7 @@ import json
 from PIL import Image, ExifTags
 from django.core.files.uploadedfile import InMemoryUploadedFile
 import os
+from datetime import timedelta
 
 from . import models
 from . import view_utils
@@ -91,9 +92,21 @@ def get_unanalyzed_face_location_images(request):
     if request.method != 'GET':
         HttpResponseNotAllowed(["GET"])
 
-    images = models.Image.objects.filter(service_face_location_analyzed=False)[:1000]  # 1000 images per request
+    # Get unanalyzed images
+    unixstart = datetime.fromtimestamp(0)
+    locktime = timezone.now() - timedelta(minutes=10)
+    images = models.Image.objects.filter(
+        service_face_location_analyzed=False,
+        service_face_location_analyzing_startdate__range=(unixstart, locktime),
+        )[:100]  # 100 images per request
+
     if list(images) == []:
         return HttpResponseNotFound()
+    
+    # Refresh service_face_location_analyzing_startdate
+    for image in images:
+        image.service_face_location_analyzing_startdate = timezone.now()
+        image.save()
 
     return JsonResponse([[str(i.id), str(i.image.url)] for i in images], safe=False)
 
@@ -136,10 +149,22 @@ def get_unanalyzed_face_encoding_faces(request):
     """Return face parent image and rect of face"""
     if request.method != 'GET':
         HttpResponseNotAllowed(['GET'])
+    
+    # Get unanalyzed faces
+    unixstart = datetime.fromtimestamp(0)
+    locktime = timezone.now() - timedelta(minutes=10)
+    faces = models.Face.objects.filter(
+        service_face_encoding_analyzed=False,
+        service_face_encoding_analyzing_startdate__range=(unixstart, locktime),
+        )[:100]  # 100 images per request
 
-    faces = models.Face.objects.filter(service_face_encoding_analyzed=False)[:1000]  # 1000 images per request
     if list(faces) == []:
         return HttpResponseNotFound()
+    
+    # Refresh service_face_encoding_analyzing_startdate
+    for face in faces:
+        face.service_face_encoding_analyzing_startdate = timezone.now()
+        face.save()
 
     def get_face_location(f): return [(
             int(f.face_location_x), int(f.face_location_y),
