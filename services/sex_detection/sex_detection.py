@@ -20,8 +20,9 @@ def get_image(url: str, location: List[int]) -> Image.Image:
     # preprocess
     pil_image = Image.open(image)
     pil_image = pil_image.convert('RGB')
+    margin = 50  # 50px
     top, right, bottom, left = location
-    croped = pil_image.crop((left, top, right, bottom))
+    croped = pil_image.crop((left-margin, top-margin, right+margin, bottom+margin))
     croped.thumbnail((200, 200))
     preprocessed = Image.new(croped.mode, (200, 200), 255)
     preprocessed.paste(croped)
