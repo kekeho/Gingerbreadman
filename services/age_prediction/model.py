@@ -24,7 +24,7 @@ def get_images(filename: str) -> (Image.Image, int):
 
 class AgeModel():    
     def __init__(self):
-        self.base_model = Xception(include_top=False, input_shape=(200, 200, 3))
+        self.base_model = Xception(include_top=False, weights='imagenet', input_shape=(200, 200, 3))
         self.model = self._model()
 
     def _model(self):

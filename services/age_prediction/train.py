@@ -1,4 +1,4 @@
 from model import AgeModel
 
-a = AgeDetection()
+a = AgeModel()
 a.train()
