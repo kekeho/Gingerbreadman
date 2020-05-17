@@ -211,11 +211,11 @@ view rootModel =
 
 navbarView : RootModel -> Html Msg
 navbarView model =
-    div [ class "navbar navbar-expand bg-dark navbar-dark" ]
+    nav [ class "navbar" ]
         [ a [ class "navbar-brand", href "/" ]
             [ Common.Data.gmTitleLogo ]
         , div [ class "nav navbar-nav" ]
-            [ a [ class "nav-item nav-link active ", href "/upload" ] [ text "Upload" ]
+            [ a [ class "nav-item active ", href "/upload" ] [ text "Upload" ]
             ]
         ]
 

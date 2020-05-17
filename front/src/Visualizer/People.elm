@@ -33,12 +33,10 @@ update msg rootModel =
 
 view : RootModel -> Html Msg
 view rootModel =
-    div [ class "row people" ]
-        [ div [ class "col-12" ]
-            [ h2 [] [ text "People" ] 
-            , div [ class "people-container row" ]
-                (List.map (personView rootModel.settings.timezone) rootModel.visualizer.people)
-            ]
+    div [ class "people" ]
+        [ h2 [ class "title" ] [ text "People" ] 
+        , div [ class "people-container" ]
+            (List.map (personView rootModel.settings.timezone) rootModel.visualizer.people)
         ]
 
 
@@ -48,17 +46,13 @@ personView timezone person =
         sorted =
             sortWithTime person
     in
-    div [ class "person-container col-xl-3 col-4" ]
-        [ div [ class "person" ]
-            [ div [ class "row" ]
-                (List.map (faceView timezone) sorted)
-            ]
-        ]
+    div [ class "person-container" ]
+        (List.map (faceView timezone) sorted)
 
 
 faceView : Time.Zone -> Face -> Html Msg
 faceView timezone face =
-    div [ class "face col-xl-4 col-6" ]
+    div [ class "face" ]
         [ img
             [ src face.faceImageB64
             , title (face.place.name ++ " " ++ sexString face.sex ++ " " ++ localDropSecsStr timezone face.datetime) ] []

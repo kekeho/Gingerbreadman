@@ -52,22 +52,17 @@ view : RootModel -> Browser.Document Msg
 view rootModel =
     { title = "Visualizer"
     , body =
-        [ div [ class "visualizer container" ]
-            [ div [ class "row" ]
-                [ div [ class "col-7" ]
-                    -- Map & Controller
-                    [ div [ class "row maprow" ]
-                        [ Visualizer.Map.mapView "map"
-                        ]
-                    , Visualizer.Controller.view rootModel
-                        |> Html.map ControllerMsg
-                    ]
-                , div [ class "col-5" ]
-                    -- People, Traffic...
-                    [ Visualizer.People.view rootModel
-                        |> Html.map PeopleMsg
-                    , Visualizer.Traffic.view rootModel.visualizer
-                    ]
+        [ div [ class "visualizer" ]
+            [ div [ class "map-controller-row" ]
+                [ Visualizer.Map.mapView "map"
+                , Visualizer.Controller.view rootModel
+                    |> Html.map ControllerMsg
+                ]
+            , div [ class "row" ]
+                -- People, Traffic...
+                [ Visualizer.People.view rootModel
+                    |> Html.map PeopleMsg
+                , Visualizer.Traffic.view rootModel.visualizer
                 ]
             ]
 

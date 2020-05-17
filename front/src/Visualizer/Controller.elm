@@ -222,9 +222,8 @@ update msg rootModel =
 
 view : RootModel -> Html Msg
 view rootModel =
-    div [ class "row controller" ]
-        [ div [ class "col-12" ]
-            [ h2 [] [ text "Controller" ] ]
+    div [ class "controller" ]
+        [ h2 [ class "title" ] [ text "Controller" ]
         , div [ class "col-12" ]
             [ viewControllerState rootModel
             , button

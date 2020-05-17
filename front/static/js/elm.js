@@ -9699,14 +9699,15 @@ var $elm$html$Html$Attributes$href = function (url) {
 		'href',
 		_VirtualDom_noJavaScriptUri(url));
 };
+var $elm$html$Html$nav = _VirtualDom_node('nav');
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $author$project$Main$navbarView = function (model) {
 	return A2(
-		$elm$html$Html$div,
+		$elm$html$Html$nav,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$class('navbar navbar-expand bg-dark navbar-dark')
+				$elm$html$Html$Attributes$class('navbar')
 			]),
 		_List_fromArray(
 			[
@@ -9731,7 +9732,7 @@ var $author$project$Main$navbarView = function (model) {
 						$elm$html$Html$a,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$class('nav-item nav-link active '),
+								$elm$html$Html$Attributes$class('nav-item active '),
 								$elm$html$Html$Attributes$href('/upload')
 							]),
 						_List_fromArray(
@@ -10268,25 +10269,19 @@ var $author$project$Visualizer$Controller$view = function (rootModel) {
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$class('row controller')
+				$elm$html$Html$Attributes$class('controller')
 			]),
 		_List_fromArray(
 			[
 				A2(
-				$elm$html$Html$div,
+				$elm$html$Html$h2,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('col-12')
+						$elm$html$Html$Attributes$class('title')
 					]),
 				_List_fromArray(
 					[
-						A2(
-						$elm$html$Html$h2,
-						_List_Nil,
-						_List_fromArray(
-							[
-								$elm$html$Html$text('Controller')
-							]))
+						$elm$html$Html$text('Controller')
 					])),
 				A2(
 				$elm$html$Html$div,
@@ -10351,66 +10346,42 @@ var $author$project$Visualizer$People$personView = F2(
 			$elm$html$Html$div,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('person-container col-xl-3 col-4')
+					$elm$html$Html$Attributes$class('person-container')
 				]),
-			_List_fromArray(
-				[
-					A2(
-					$elm$html$Html$div,
-					_List_fromArray(
-						[
-							$elm$html$Html$Attributes$class('person')
-						]),
-					_List_fromArray(
-						[
-							A2(
-							$elm$html$Html$div,
-							_List_fromArray(
-								[
-									$elm$html$Html$Attributes$class('row')
-								]),
-							A2(
-								$elm$core$List$map,
-								$author$project$Visualizer$People$faceView(timezone),
-								sorted))
-						]))
-				]));
+			A2(
+				$elm$core$List$map,
+				$author$project$Visualizer$People$faceView(timezone),
+				sorted));
 	});
 var $author$project$Visualizer$People$view = function (rootModel) {
 	return A2(
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$class('row people')
+				$elm$html$Html$Attributes$class('people')
 			]),
 		_List_fromArray(
 			[
 				A2(
-				$elm$html$Html$div,
+				$elm$html$Html$h2,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('col-12')
+						$elm$html$Html$Attributes$class('title')
 					]),
 				_List_fromArray(
 					[
-						A2(
-						$elm$html$Html$h2,
-						_List_Nil,
-						_List_fromArray(
-							[
-								$elm$html$Html$text('People')
-							])),
-						A2(
-						$elm$html$Html$div,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('people-container row')
-							]),
-						A2(
-							$elm$core$List$map,
-							$author$project$Visualizer$People$personView(rootModel.ae.ai),
-							rootModel.bY.bI))
-					]))
+						$elm$html$Html$text('People')
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('people-container')
+					]),
+				A2(
+					$elm$core$List$map,
+					$author$project$Visualizer$People$personView(rootModel.ae.ai),
+					rootModel.bY.bI))
 			]));
 };
 var $author$project$Visualizer$Traffic$trafficCountString = function (trafficCount) {
@@ -10833,10 +10804,24 @@ var $author$project$Visualizer$Visualizer$view = function (rootModel) {
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('visualizer container')
+						$elm$html$Html$Attributes$class('visualizer')
 					]),
 				_List_fromArray(
 					[
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('map-controller-row')
+							]),
+						_List_fromArray(
+							[
+								$author$project$Visualizer$Map$mapView('map'),
+								A2(
+								$elm$html$Html$map,
+								$author$project$Visualizer$Visualizer$ControllerMsg,
+								$author$project$Visualizer$Controller$view(rootModel))
+							])),
 						A2(
 						$elm$html$Html$div,
 						_List_fromArray(
@@ -10846,42 +10831,10 @@ var $author$project$Visualizer$Visualizer$view = function (rootModel) {
 						_List_fromArray(
 							[
 								A2(
-								$elm$html$Html$div,
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('col-7')
-									]),
-								_List_fromArray(
-									[
-										A2(
-										$elm$html$Html$div,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$class('row maprow')
-											]),
-										_List_fromArray(
-											[
-												$author$project$Visualizer$Map$mapView('map')
-											])),
-										A2(
-										$elm$html$Html$map,
-										$author$project$Visualizer$Visualizer$ControllerMsg,
-										$author$project$Visualizer$Controller$view(rootModel))
-									])),
-								A2(
-								$elm$html$Html$div,
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('col-5')
-									]),
-								_List_fromArray(
-									[
-										A2(
-										$elm$html$Html$map,
-										$author$project$Visualizer$Visualizer$PeopleMsg,
-										$author$project$Visualizer$People$view(rootModel)),
-										$author$project$Visualizer$Traffic$view(rootModel.bY)
-									]))
+								$elm$html$Html$map,
+								$author$project$Visualizer$Visualizer$PeopleMsg,
+								$author$project$Visualizer$People$view(rootModel)),
+								$author$project$Visualizer$Traffic$view(rootModel.bY)
 							]))
 					])),
 				A2(

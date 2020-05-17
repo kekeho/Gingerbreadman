@@ -27,6 +27,10 @@
     width: 100vw;
 }
 
+h2.title {
+    margin: 0;
+}
+
 .mainrow {
     padding: 0;
     margin: 0;
@@ -39,7 +43,8 @@
 }
 
 .controller {
-    padding-left: 5%;
+    flex-grow: 1;
+    flex-shrink: 3;
     width: 100%;
 }
 
@@ -76,23 +81,19 @@ ul.all-places {
 
 /* Person */
 
-.person {
-    box-sizing: border-box;
-    border-radius: 1rem;
-    background-color: #dbd5d5;
-    height: 22vmin;
-    overflow: scroll;
-    filter: drop-shadow(0.5rem 0.5rem 1rem #999999)
-            drop-shadow(-0.8rem -0.8rem 0.7rem #ffffff);
-}
-
 .person .row {
+    display: flex;
+    flex-wrap: wrap;
     padding: 0 0.5rem;
     overflow-x: hidden;
 }
 
 .face {
+    flex-shrink: 1;
+    flex-grow: 1;
     padding: 0.1rem;
+    width: 48%;
+    max-width: 48%;
 }
 
 .face img {
@@ -124,9 +125,10 @@ ul.all-places {
 }
 
 .people-container {
+    display: flex;
+    flex-wrap: wrap;
     margin: 1rem;
     padding: 1rem;
-    position: absolute;
     bottom: 0;
     top: 2rem;
     left: 0;
@@ -134,25 +136,43 @@ ul.all-places {
     overflow-y: scroll;
     box-shadow: inset 0.5rem 0.5rem 1rem #aeaeae,
                 inset -1rem -1rem 0.7rem #f5f5f5;
-    border-radius: 1rem;
+    border-radius: 2rem;
 }
 
 .person-container {
-    margin: 1rem 0;
+    width: 18%;
+    max-width: 10rem;
+    margin: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    align-content: flex-start;
+    height: 25vh;
+    overflow-y: scroll;
+    justify-content: space-between;
+    background-color: #ddd7d7;
+    box-sizing: border-box;
+    border-radius: 1.5rem;
+    filter: drop-shadow(0.5rem 0.5rem 1rem #999999)
+            drop-shadow(-0.8rem -0.8rem 0.7rem #ffffff);
 }
 
 
 /* Map */
 
-.maprow {
-    margin: 1rem;
-    border-radius: 1.5rem;
+.map-controller-row {
+    margin: 4rem 5vw 2rem 5vw;
+    display: flex;
 }
 
 .map#map {
-    border-radius: 1.5rem;
-    height: 55vh;
+    flex-grow: 3;
+    flex-shrink: 1;
     width: 100%;
+    margin: 0 2rem 2rem 0;
+    border-radius: 1.5rem;
+    height: calc(100vh - 13rem);
+    max-height: calc(80vw - 6rem);
     filter: drop-shadow(0.8rem 0.8rem 1rem #999999)
             drop-shadow(-1rem -1rem 0.7rem #ffffff);
 }
