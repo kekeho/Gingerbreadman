@@ -34,9 +34,12 @@ update msg rootModel =
 view : RootModel -> Html Msg
 view rootModel =
     div [ class "row people" ]
-        (div [ class "col-12" ] [ h2 [] [ text "People" ] ]
-            :: List.map (personView rootModel.settings.timezone) rootModel.visualizer.people
-        )
+        [ div [ class "col-12" ]
+            [ h2 [] [ text "People" ] 
+            , div [ class "people-container row" ]
+                (List.map (personView rootModel.settings.timezone) rootModel.visualizer.people)
+            ]
+        ]
 
 
 personView : Time.Zone -> Person -> Html Msg

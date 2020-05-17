@@ -10383,9 +10383,9 @@ var $author$project$Visualizer$People$view = function (rootModel) {
 			[
 				$elm$html$Html$Attributes$class('row people')
 			]),
-		A2(
-			$elm$core$List$cons,
-			A2(
+		_List_fromArray(
+			[
+				A2(
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
@@ -10399,12 +10399,19 @@ var $author$project$Visualizer$People$view = function (rootModel) {
 						_List_fromArray(
 							[
 								$elm$html$Html$text('People')
-							]))
-					])),
-			A2(
-				$elm$core$List$map,
-				$author$project$Visualizer$People$personView(rootModel.ae.ai),
-				rootModel.bY.bI)));
+							])),
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('people-container row')
+							]),
+						A2(
+							$elm$core$List$map,
+							$author$project$Visualizer$People$personView(rootModel.ae.ai),
+							rootModel.bY.bI))
+					]))
+			]));
 };
 var $author$project$Visualizer$Traffic$trafficCountString = function (trafficCount) {
 	var count = trafficCount.aq;
