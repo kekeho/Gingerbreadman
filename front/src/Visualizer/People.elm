@@ -33,7 +33,7 @@ update msg rootModel =
 
 view : RootModel -> Html Msg
 view rootModel =
-    div [ class "people" ]
+    div [ class "people", id "people" ]
         [ h2 [ class "title" ] [ text "People" ] 
         , div [ class "people-container" ]
             (List.map (personView rootModel.settings.timezone) rootModel.visualizer.people)

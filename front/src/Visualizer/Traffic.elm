@@ -12,9 +12,8 @@ import Visualizer.Model exposing (..)
 
 view : Model -> Html msg
 view model =
-    div [ class "row traffic" ]
-        [ div [ class "col-12" ]
-            [ h2 [] [ text "Traffic" ] ]
+    div [ class "traffic", id "traffic" ]
+        [ h2 [ class "title" ] [ text "Traffic" ]
         , div [ class "col-12" ]
             [ trafficView model.traffic
             ]

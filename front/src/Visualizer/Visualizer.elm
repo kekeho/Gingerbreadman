@@ -58,12 +58,9 @@ view rootModel =
                 , Visualizer.Controller.view rootModel
                     |> Html.map ControllerMsg
                 ]
-            , div [ class "row" ]
-                -- People, Traffic...
-                [ Visualizer.People.view rootModel
-                    |> Html.map PeopleMsg
-                , Visualizer.Traffic.view rootModel.visualizer
-                ]
+            , Visualizer.People.view rootModel
+                |> Html.map PeopleMsg
+            , Visualizer.Traffic.view rootModel.visualizer
             ]
 
         -- MODAL

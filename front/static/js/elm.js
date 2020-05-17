@@ -10324,7 +10324,7 @@ var $author$project$Visualizer$People$faceView = F2(
 			$elm$html$Html$div,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('face col-xl-4 col-6')
+					$elm$html$Html$Attributes$class('face')
 				]),
 			_List_fromArray(
 				[
@@ -10358,7 +10358,8 @@ var $author$project$Visualizer$People$view = function (rootModel) {
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$class('people')
+				$elm$html$Html$Attributes$class('people'),
+				$elm$html$Html$Attributes$id('people')
 			]),
 		_List_fromArray(
 			[
@@ -10460,25 +10461,20 @@ var $author$project$Visualizer$Traffic$view = function (model) {
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$class('row traffic')
+				$elm$html$Html$Attributes$class('traffic'),
+				$elm$html$Html$Attributes$id('traffic')
 			]),
 		_List_fromArray(
 			[
 				A2(
-				$elm$html$Html$div,
+				$elm$html$Html$h2,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('col-12')
+						$elm$html$Html$Attributes$class('title')
 					]),
 				_List_fromArray(
 					[
-						A2(
-						$elm$html$Html$h2,
-						_List_Nil,
-						_List_fromArray(
-							[
-								$elm$html$Html$text('Traffic')
-							]))
+						$elm$html$Html$text('Traffic')
 					])),
 				A2(
 				$elm$html$Html$div,
@@ -10823,19 +10819,10 @@ var $author$project$Visualizer$Visualizer$view = function (rootModel) {
 								$author$project$Visualizer$Controller$view(rootModel))
 							])),
 						A2(
-						$elm$html$Html$div,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('row')
-							]),
-						_List_fromArray(
-							[
-								A2(
-								$elm$html$Html$map,
-								$author$project$Visualizer$Visualizer$PeopleMsg,
-								$author$project$Visualizer$People$view(rootModel)),
-								$author$project$Visualizer$Traffic$view(rootModel.bY)
-							]))
+						$elm$html$Html$map,
+						$author$project$Visualizer$Visualizer$PeopleMsg,
+						$author$project$Visualizer$People$view(rootModel)),
+						$author$project$Visualizer$Traffic$view(rootModel.bY)
 					])),
 				A2(
 				$elm$html$Html$map,
