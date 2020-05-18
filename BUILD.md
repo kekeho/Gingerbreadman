@@ -82,4 +82,5 @@ NGINX_PORT=8000
 ```sh
 docker-compose -f docker-compose-worker.yml up  # amd64
 docker-compose -f docker-compose-worker-arm.yml up  # arm (tested on raspberry pi 3 64bit)
+docker-compose -f docker-compose-worker-arm-gpu.yml up  # arm with GPU (tested on jetson nano)
 ```
