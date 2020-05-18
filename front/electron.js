@@ -30,7 +30,7 @@ const BrowserWindow = electron.BrowserWindow;
 expressApp.use('/static', express.static(__dirname + '/static'));
 expressApp.all('/api/*', function(req, res) {
     const apiServerUrl = 'http://localhost:8000' + req.url;
-    request(apiServerUrl).pipe(res);
+    request[req.method.toLowerCase()](apiServerUrl).pipe(res);
 });
 expressApp.get('/', function(req, res) {
     res.sendFile(__dirname + '/index.html');
