@@ -55,24 +55,15 @@ class Place(models.Model):
     longitude = models.FloatField(null=False, default=-1.0)
 
 
-class Gender(models.Model):
-    """Gender column
-    id: Gender code (ISO 5218)
+class Sex(models.Model):
+    """Sex column
+    id: Sex code (ISO 5218)
         0; Not known
         1: Male
         2: Female
     """
     id = models.IntegerField(primary_key=True, validators=[
                              MinValueValidator(0), MaxValueValidator(2)])
-
-
-class AgeGroup(models.Model):
-    """Age group column
-    id: Age code
-        n: 10*n ~ 10*n+9
-    """
-    id = models.IntegerField(primary_key=True, validators=[
-                             MinValueValidator(0), MaxValueValidator(9)])
 
 
 class Image(models.Model):
@@ -103,7 +94,7 @@ class Face(models.Model):
     """Face column
     id: face id (uuid.uuid4().hex)
     image: image which are appeard
-    gender: Gender code (ISO 5218)
+    sex: sex code (ISO 5218)
     age: Age group
     smile: smile score (from Microsoft Face API)
     anger ~ surprise: Emotion score (from Microsoft Face API)
@@ -121,9 +112,15 @@ class Face(models.Model):
     service_face_encoding_analyzing_startdate = models.DateTimeField(null=False, blank=False, default=unixzero)
     service_face_encoding_analyzed = models.BooleanField(default=False)
     face_encoding = models.TextField(blank=True, null=True)
-    gender = models.ForeignKey(Gender, on_delete=models.PROTECT,
+
+    service_sex_detection_analyzing_startdate = models.DateTimeField(null=False, blank=False, default=unixzero)
+    service_sex_detection_analyzed = models.BooleanField(default=False)
+    sex = models.ForeignKey(Sex, on_delete=models.PROTECT,
                                blank=True, null=True)
-    age = models.ForeignKey(AgeGroup, on_delete=models.PROTECT, null=True)
+
+    service_age_prediction_analyzing_startdate = models.DateTimeField(null=False, blank=False, default=unixzero)
+    service_age_prediction_analyzed = models.BooleanField(default=False)
+    age = models.IntegerField(null=True, blank=True)
 
     # Emotion
     smile = models.FloatField(blank=True, default=0.0)

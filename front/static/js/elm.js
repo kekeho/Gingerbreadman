@@ -1858,8 +1858,8 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 		flagDecoder,
 		args,
 		impl.bA,
-		impl.bU,
-		impl.bQ,
+		impl.bV,
+		impl.bR,
 		function() { return function() {} }
 	);
 });
@@ -3884,10 +3884,10 @@ var _Browser_element = _Debugger_element || F4(function(impl, flagDecoder, debug
 		flagDecoder,
 		args,
 		impl.bA,
-		impl.bU,
-		impl.bQ,
+		impl.bV,
+		impl.bR,
 		function(sendToApp, initialModel) {
-			var view = impl.bW;
+			var view = impl.bX;
 			/**/
 			var domNode = args['node'];
 			//*/
@@ -3920,11 +3920,11 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 		flagDecoder,
 		args,
 		impl.bA,
-		impl.bU,
-		impl.bQ,
+		impl.bV,
+		impl.bR,
 		function(sendToApp, initialModel) {
 			var divertHrefToApp = impl.af && impl.af(sendToApp)
-			var view = impl.bW;
+			var view = impl.bX;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
 			var currNode = _VirtualDom_virtualize(bodyNode);
@@ -4028,9 +4028,9 @@ function _Browser_application(impl)
 		{
 			return A3(impl.bA, flags, _Browser_getUrl(), key);
 		},
-		bW: impl.bW,
-		bU: impl.bU,
-		bQ: impl.bQ
+		bX: impl.bX,
+		bV: impl.bV,
+		bR: impl.bR
 	});
 }
 
@@ -4189,8 +4189,8 @@ function _Browser_getViewport()
 	return {
 		a2: _Browser_getScene(),
 		bd: {
-			b$: _Browser_window.pageXOffset,
-			b0: _Browser_window.pageYOffset,
+			b0: _Browser_window.pageXOffset,
+			b1: _Browser_window.pageYOffset,
 			bg: _Browser_doc.documentElement.clientWidth,
 			az: _Browser_doc.documentElement.clientHeight
 		}
@@ -4231,8 +4231,8 @@ function _Browser_getViewportOf(id)
 				az: node.scrollHeight
 			},
 			bd: {
-				b$: node.scrollLeft,
-				b0: node.scrollTop,
+				b0: node.scrollLeft,
+				b1: node.scrollTop,
 				bg: node.clientWidth,
 				az: node.clientHeight
 			}
@@ -4266,14 +4266,14 @@ function _Browser_getElement(id)
 		return {
 			a2: _Browser_getScene(),
 			bd: {
-				b$: x,
-				b0: y,
+				b0: x,
+				b1: y,
 				bg: _Browser_doc.documentElement.clientWidth,
 				az: _Browser_doc.documentElement.clientHeight
 			},
 			bn: {
-				b$: x + rect.left,
-				b0: y + rect.top,
+				b0: x + rect.left,
+				b1: y + rect.top,
 				bg: rect.width,
 				az: rect.height
 			}
@@ -4373,7 +4373,7 @@ var _Http_toTask = F3(function(router, toTask, request)
 		xhr.addEventListener('error', function() { done($elm$http$Http$NetworkError_); });
 		xhr.addEventListener('timeout', function() { done($elm$http$Http$Timeout_); });
 		xhr.addEventListener('load', function() { done(_Http_toResponse(request.T.b, xhr)); });
-		$elm$core$Maybe$isJust(request.bS) && _Http_track(router, xhr, request.bS.a);
+		$elm$core$Maybe$isJust(request.bT) && _Http_track(router, xhr, request.bT.a);
 
 		try {
 			xhr.open(request.bE, request.Q, true);
@@ -4399,7 +4399,7 @@ function _Http_configureRequest(xhr, request)
 	{
 		xhr.setRequestHeader(headers.a.a, headers.a.b);
 	}
-	xhr.timeout = request.bR.a || 0;
+	xhr.timeout = request.bS.a || 0;
 	xhr.responseType = request.T.d;
 	xhr.withCredentials = request.bi;
 }
@@ -4423,8 +4423,8 @@ function _Http_toMetadata(xhr)
 {
 	return {
 		Q: xhr.responseURL,
-		bO: xhr.status,
-		bP: xhr.statusText,
+		bP: xhr.status,
+		bQ: xhr.statusText,
 		bu: _Http_parseHeaders(xhr.getAllResponseHeaders())
 	};
 }
@@ -5745,7 +5745,7 @@ var $author$project$Visualizer$Model$controllerModelInit = {
 };
 var $author$project$Visualizer$Model$peopleInit = _List_Nil;
 var $author$project$Visualizer$Model$trafficInit = _List_Nil;
-var $author$project$Visualizer$Model$modelInit = {i: $author$project$Visualizer$Model$controllerModelInit, bI: $author$project$Visualizer$Model$peopleInit, bT: $author$project$Visualizer$Model$trafficInit};
+var $author$project$Visualizer$Model$modelInit = {i: $author$project$Visualizer$Model$controllerModelInit, bI: $author$project$Visualizer$Model$peopleInit, bU: $author$project$Visualizer$Model$trafficInit};
 var $elm$browser$Browser$Navigation$pushUrl = _Browser_pushUrl;
 var $elm$url$Url$addPort = F2(
 	function (maybePort, starter) {
@@ -5794,7 +5794,7 @@ var $elm$url$Url$toString = function (url) {
 var $author$project$Main$init = F3(
 	function (flags, url, key) {
 		return _Utils_Tuple2(
-			{M: _List_Nil, aF: key, bM: 0, ae: $author$project$Common$Settings$modelInit, bV: $author$project$Upload$Model$modelInit, Q: url, bX: $author$project$Visualizer$Model$modelInit},
+			{M: _List_Nil, aF: key, bM: 0, ae: $author$project$Common$Settings$modelInit, bW: $author$project$Upload$Model$modelInit, Q: url, bY: $author$project$Visualizer$Model$modelInit},
 			$elm$core$Platform$Cmd$batch(
 				_List_fromArray(
 					[
@@ -6414,7 +6414,7 @@ var $elm$http$Http$resolve = F2(
 			case 3:
 				var metadata = response.a;
 				return $elm$core$Result$Err(
-					$elm$http$Http$BadStatus(metadata.bO));
+					$elm$http$Http$BadStatus(metadata.bP));
 			default:
 				var body = response.b;
 				return A2(
@@ -6506,7 +6506,7 @@ var $elm$http$Http$updateReqs = F3(
 					return A2(
 						$elm$core$Task$andThen,
 						function (pid) {
-							var _v4 = req.bS;
+							var _v4 = req.bT;
 							if (_v4.$ === 1) {
 								return A3($elm$http$Http$updateReqs, router, otherCmds, reqs);
 							} else {
@@ -6598,8 +6598,8 @@ var $elm$http$Http$cmdMap = F2(
 					T: A2(_Http_mapExpect, func, r.T),
 					bu: r.bu,
 					bE: r.bE,
-					bR: r.bR,
 					bS: r.bS,
+					bT: r.bT,
 					Q: r.Q
 				});
 		}
@@ -6623,7 +6623,7 @@ var $elm$http$Http$subscription = _Platform_leaf('Http');
 var $elm$http$Http$request = function (r) {
 	return $elm$http$Http$command(
 		$elm$http$Http$Request(
-			{bi: false, R: r.R, T: r.T, bu: r.bu, bE: r.bE, bR: r.bR, bS: r.bS, Q: r.Q}));
+			{bi: false, R: r.R, T: r.T, bu: r.bu, bE: r.bE, bS: r.bS, bT: r.bT, Q: r.Q}));
 };
 var $author$project$Upload$Upload$getPlaces = $elm$http$Http$request(
 	{
@@ -6634,8 +6634,8 @@ var $author$project$Upload$Upload$getPlaces = $elm$http$Http$request(
 				A2($elm$http$Http$header, 'Accept', 'application/json')
 			]),
 		bE: 'GET',
-		bR: $elm$core$Maybe$Nothing,
 		bS: $elm$core$Maybe$Nothing,
+		bT: $elm$core$Maybe$Nothing,
 		Q: '/api/db/get_places_all/'
 	});
 var $elm$browser$Browser$Navigation$load = _Browser_load;
@@ -6655,8 +6655,8 @@ var $author$project$Visualizer$Controller$getPlaces = $elm$http$Http$request(
 				A2($elm$http$Http$header, 'Accept', 'application/json')
 			]),
 		bE: 'GET',
-		bR: $elm$core$Maybe$Nothing,
 		bS: $elm$core$Maybe$Nothing,
+		bT: $elm$core$Maybe$Nothing,
 		Q: '/api/db/get_places_all/'
 	});
 var $author$project$Visualizer$Map$initMap = _Platform_outgoingPort('initMap', $elm$json$Json$Encode$string);
@@ -7017,7 +7017,7 @@ var $elm$http$Http$multipartBody = function (parts) {
 };
 var $elm$http$Http$post = function (r) {
 	return $elm$http$Http$request(
-		{R: r.R, T: r.T, bu: _List_Nil, bE: 'POST', bR: $elm$core$Maybe$Nothing, bS: $elm$core$Maybe$Nothing, Q: r.Q});
+		{R: r.R, T: r.T, bu: _List_Nil, bE: 'POST', bS: $elm$core$Maybe$Nothing, bT: $elm$core$Maybe$Nothing, Q: r.Q});
 };
 var $elm$http$Http$stringPart = _Http_pair;
 var $elm$core$String$toFloat = _String_toFloat;
@@ -7029,9 +7029,9 @@ var $author$project$Upload$Upload$update = F2(
 			var modelMap = function (m1) {
 				return _Utils_update(
 					rootModel,
-					{bV: m1});
+					{bW: m1});
 			};
-			var model = rootModel.bV;
+			var model = rootModel.bW;
 			switch (msg.$) {
 				case 0:
 					return _Utils_Tuple2(
@@ -7059,7 +7059,7 @@ var $author$project$Upload$Upload$update = F2(
 						{bc: $elm$core$Maybe$Nothing});
 					var newRootModel = _Utils_update(
 						rootModel,
-						{bV: newModel});
+						{bW: newModel});
 					var _v1 = model.a3;
 					if (_v1.$ === 1) {
 						var $temp$msg = $author$project$Upload$Upload$ErrorMsg(
@@ -7225,12 +7225,12 @@ var $author$project$Upload$Upload$update = F2(
 							rootModel);
 						var newRootModel = _v5.a;
 						var cmd = _v5.b;
-						var newModel = newRootModel.bV;
+						var newModel = newRootModel.bW;
 						return _Utils_Tuple2(
 							_Utils_update(
 								newRootModel,
 								{
-									bV: _Utils_update(
+									bW: _Utils_update(
 										newModel,
 										{aN: _List_Nil, aP: $elm$core$Maybe$Nothing})
 								}),
@@ -7856,15 +7856,15 @@ var $author$project$Visualizer$Controller$groupingQuery = function (controllerMo
 				},
 				controllerModel.s)));
 };
-var $author$project$Visualizer$Model$Face = F8(
-	function (id, imageId, imageUrl, faceImageB64, faceLocation, faceEncoding, place, datetime) {
-		return {ar: datetime, bq: faceEncoding, br: faceImageB64, bs: faceLocation, bw: id, bx: imageId, by: imageUrl, bJ: place};
+var $author$project$Visualizer$Model$Face = F9(
+	function (id, imageId, imageUrl, faceImageB64, faceLocation, faceEncoding, place, datetime, sex) {
+		return {ar: datetime, bq: faceEncoding, br: faceImageB64, bs: faceLocation, bw: id, bx: imageId, by: imageUrl, bJ: place, bO: sex};
 	});
 var $elm$json$Json$Decode$int = _Json_decodeInt;
 var $author$project$Common$Data$datetimeDecoder = A2($elm$json$Json$Decode$map, $elm$time$Time$millisToPosix, $elm$json$Json$Decode$int);
 var $author$project$Visualizer$Model$FaceLocation = F4(
 	function (x, y, w, h) {
-		return {bt: h, bY: w, b$: x, b0: y};
+		return {bt: h, bZ: w, b0: x, b1: y};
 	});
 var $elm$json$Json$Decode$index = _Json_decodeIndex;
 var $elm$json$Json$Decode$map4 = _Json_map4;
@@ -7883,39 +7883,57 @@ var $NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required = F3(
 			A2($elm$json$Json$Decode$field, key, valDecoder),
 			decoder);
 	});
+var $author$project$Visualizer$Model$Female = 2;
+var $author$project$Visualizer$Model$Male = 1;
+var $author$project$Visualizer$Model$NotKnown = 0;
+var $author$project$Visualizer$Model$intToSex = function (val) {
+	switch (val) {
+		case 1:
+			return 1;
+		case 2:
+			return 2;
+		default:
+			return 0;
+	}
+};
+var $author$project$Visualizer$Model$sexDecoder = A2($elm$json$Json$Decode$map, $author$project$Visualizer$Model$intToSex, $elm$json$Json$Decode$int);
 var $author$project$Visualizer$Model$faceDecoder = A3(
 	$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-	'posix_millisec',
-	$author$project$Common$Data$datetimeDecoder,
+	'sex',
+	$author$project$Visualizer$Model$sexDecoder,
 	A3(
 		$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-		'place',
-		$author$project$Common$Data$placeDecoder,
+		'posix_millisec',
+		$author$project$Common$Data$datetimeDecoder,
 		A3(
 			$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-			'face_encoding',
-			$elm$json$Json$Decode$list($elm$json$Json$Decode$float),
+			'place',
+			$author$project$Common$Data$placeDecoder,
 			A3(
 				$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-				'face_location',
-				$author$project$Visualizer$Model$faceLocationDecoder,
+				'face_encoding',
+				$elm$json$Json$Decode$list($elm$json$Json$Decode$float),
 				A3(
 					$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-					'face_image',
-					$elm$json$Json$Decode$string,
+					'face_location',
+					$author$project$Visualizer$Model$faceLocationDecoder,
 					A3(
 						$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-						'image_url',
+						'face_image',
 						$elm$json$Json$Decode$string,
 						A3(
 							$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-							'image_id',
+							'image_url',
 							$elm$json$Json$Decode$string,
 							A3(
 								$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-								'id',
+								'image_id',
 								$elm$json$Json$Decode$string,
-								$elm$json$Json$Decode$succeed($author$project$Visualizer$Model$Face)))))))));
+								A3(
+									$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
+									'id',
+									$elm$json$Json$Decode$string,
+									$elm$json$Json$Decode$succeed($author$project$Visualizer$Model$Face))))))))));
 var $author$project$Visualizer$Model$personDecoder = $elm$json$Json$Decode$list($author$project$Visualizer$Model$faceDecoder);
 var $author$project$Visualizer$Model$peopleDecoder = A2(
 	$elm$json$Json$Decode$field,
@@ -7926,7 +7944,7 @@ var $author$project$Visualizer$Controller$analyze = function (rootModel) {
 		_List_fromArray(
 			['api', 'analyze', 'grouping']));
 	var errorList = rootModel.M;
-	var controllerModel = rootModel.bX.i;
+	var controllerModel = rootModel.bY.i;
 	var _v0 = $author$project$Visualizer$Controller$groupingQuery(controllerModel);
 	if (_v0.$ === 1) {
 		return _Utils_Tuple2(
@@ -7952,15 +7970,15 @@ var $author$project$Visualizer$Controller$analyze = function (rootModel) {
 							A2($elm$http$Http$header, 'Accept', 'application/json')
 						]),
 					bE: 'GET',
-					bR: $elm$core$Maybe$Nothing,
 					bS: $elm$core$Maybe$Nothing,
+					bT: $elm$core$Maybe$Nothing,
 					Q: path(query)
 				}));
 	}
 };
 var $author$project$Visualizer$Model$TrafficCount = F2(
 	function (traffic, count) {
-		return {aq: count, bT: traffic};
+		return {aq: count, bU: traffic};
 	});
 var $author$project$Visualizer$Traffic$h = F3(
 	function (traffic, trafficList, trafficCountList) {
@@ -9105,7 +9123,7 @@ var $author$project$Visualizer$Map$bidirectionalTrafficList = function (trafficC
 		var same = A2(
 			$elm$core$List$filter,
 			function (t) {
-				return _Utils_eq(x.bT.a, t.bT.b) && _Utils_eq(x.bT.b, t.bT.a);
+				return _Utils_eq(x.bU.a, t.bU.b) && _Utils_eq(x.bU.b, t.bU.a);
 			},
 			xs);
 		var others = A2(
@@ -9179,7 +9197,7 @@ var $author$project$Visualizer$Map$drawTrafficLinePort = _Platform_outgoingPort(
 															]));
 												}(b)
 												]));
-									}($.bT))
+									}($.bU))
 								]));
 					}(a),
 						$elm$json$Json$Encode$list(
@@ -9231,7 +9249,7 @@ var $author$project$Visualizer$Map$drawTrafficLinePort = _Platform_outgoingPort(
 																]));
 													}(b)
 													]));
-										}($.bT))
+										}($.bU))
 									]));
 						})(b)
 					]));
@@ -9244,8 +9262,8 @@ var $author$project$Visualizer$Map$update = F2(
 	function (msg, rootModel) {
 		var mapUpdate = _List_fromArray(
 			[
-				$author$project$Visualizer$Map$drawPlaceCircle(rootModel.bX.bI),
-				$author$project$Visualizer$Map$drawTrafficLine(rootModel.bX.bT)
+				$author$project$Visualizer$Map$drawPlaceCircle(rootModel.bY.bI),
+				$author$project$Visualizer$Map$drawTrafficLine(rootModel.bY.bU)
 			]);
 		return _Utils_Tuple2(
 			rootModel,
@@ -9253,7 +9271,7 @@ var $author$project$Visualizer$Map$update = F2(
 	});
 var $author$project$Visualizer$Controller$update = F2(
 	function (msg, rootModel) {
-		var visualizerModel = rootModel.bX;
+		var visualizerModel = rootModel.bY;
 		var errorList = rootModel.M;
 		var controllerModel = visualizerModel.i;
 		switch (msg.$) {
@@ -9265,7 +9283,7 @@ var $author$project$Visualizer$Controller$update = F2(
 						_Utils_update(
 							rootModel,
 							{
-								bX: _Utils_update(
+								bY: _Utils_update(
 									visualizerModel,
 									{
 										i: _Utils_update(
@@ -9287,13 +9305,13 @@ var $author$project$Visualizer$Controller$update = F2(
 						rootModel);
 					var newRootModel = _v2.a;
 					var cmd = _v2.b;
-					var newVisualizierModel = newRootModel.bX;
+					var newVisualizierModel = newRootModel.bY;
 					var newControllerModel = newVisualizierModel.i;
 					return _Utils_Tuple2(
 						_Utils_update(
 							newRootModel,
 							{
-								bX: _Utils_update(
+								bY: _Utils_update(
 									newVisualizierModel,
 									{
 										i: _Utils_update(
@@ -9318,7 +9336,7 @@ var $author$project$Visualizer$Controller$update = F2(
 						_Utils_update(
 							rootModel,
 							{
-								bX: _Utils_update(
+								bY: _Utils_update(
 									visualizerModel,
 									{
 										i: _Utils_update(
@@ -9341,7 +9359,7 @@ var $author$project$Visualizer$Controller$update = F2(
 					_Utils_update(
 						rootModel,
 						{
-							bX: _Utils_update(
+							bY: _Utils_update(
 								visualizerModel,
 								{
 									i: _Utils_update(
@@ -9363,7 +9381,7 @@ var $author$project$Visualizer$Controller$update = F2(
 					_Utils_update(
 						rootModel,
 						{
-							bX: _Utils_update(
+							bY: _Utils_update(
 								visualizerModel,
 								{
 									i: _Utils_update(
@@ -9383,7 +9401,7 @@ var $author$project$Visualizer$Controller$update = F2(
 						_Utils_update(
 							rootModel,
 							{
-								bX: _Utils_update(
+								bY: _Utils_update(
 									visualizerModel,
 									{
 										i: _Utils_update(
@@ -9421,7 +9439,7 @@ var $author$project$Visualizer$Controller$update = F2(
 						_Utils_update(
 							rootModel,
 							{
-								bX: _Utils_update(
+								bY: _Utils_update(
 									visualizerModel,
 									{
 										i: _Utils_update(
@@ -9482,9 +9500,9 @@ var $author$project$Visualizer$Controller$update = F2(
 					var newRootModel = _Utils_update(
 						rootModel,
 						{
-							bX: _Utils_update(
+							bY: _Utils_update(
 								visualizerModel,
-								{i: newController, bI: people, bT: trafficCount})
+								{i: newController, bI: people, bU: trafficCount})
 						});
 					var _v10 = A2($author$project$Visualizer$Map$update, 0, newRootModel);
 					var newRootModel_ = _v10.a;
@@ -9499,7 +9517,7 @@ var $author$project$Visualizer$Controller$update = F2(
 					_Utils_update(
 						rootModel,
 						{
-							bX: _Utils_update(
+							bY: _Utils_update(
 								visualizerModel,
 								{
 									i: _Utils_update(
@@ -9681,14 +9699,15 @@ var $elm$html$Html$Attributes$href = function (url) {
 		'href',
 		_VirtualDom_noJavaScriptUri(url));
 };
+var $elm$html$Html$nav = _VirtualDom_node('nav');
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $author$project$Main$navbarView = function (model) {
 	return A2(
-		$elm$html$Html$div,
+		$elm$html$Html$nav,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$class('navbar navbar-expand bg-dark navbar-dark')
+				$elm$html$Html$Attributes$class('navbar')
 			]),
 		_List_fromArray(
 			[
@@ -9713,7 +9732,7 @@ var $author$project$Main$navbarView = function (model) {
 						$elm$html$Html$a,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$class('nav-item nav-link active '),
+								$elm$html$Html$Attributes$class('nav-item active '),
 								$elm$html$Html$Attributes$href('/upload')
 							]),
 						_List_fromArray(
@@ -10032,7 +10051,7 @@ var $author$project$Upload$Upload$uploadedIndicator = function (model) {
 	}
 };
 var $author$project$Upload$Upload$view = function (rootModel) {
-	var model = rootModel.bV;
+	var model = rootModel.bW;
 	return {
 		R: _List_fromArray(
 			[
@@ -10203,7 +10222,7 @@ var $author$project$Visualizer$Controller$viewControllerState = function (rootMo
 			return 'UTC' + $elm$core$String$fromInt(integer);
 		}
 	}();
-	var controllerModel = rootModel.bX.i;
+	var controllerModel = rootModel.bY.i;
 	var places = A2(
 		$elm$core$String$join,
 		', ',
@@ -10250,25 +10269,19 @@ var $author$project$Visualizer$Controller$view = function (rootModel) {
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$class('row controller')
+				$elm$html$Html$Attributes$class('controller')
 			]),
 		_List_fromArray(
 			[
 				A2(
-				$elm$html$Html$div,
+				$elm$html$Html$h2,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('col-12')
+						$elm$html$Html$Attributes$class('title')
 					]),
 				_List_fromArray(
 					[
-						A2(
-						$elm$html$Html$h2,
-						_List_Nil,
-						_List_fromArray(
-							[
-								$elm$html$Html$text('Controller')
-							]))
+						$elm$html$Html$text('Controller')
 					])),
 				A2(
 				$elm$html$Html$div,
@@ -10294,6 +10307,16 @@ var $author$project$Visualizer$Controller$view = function (rootModel) {
 					]))
 			]));
 };
+var $author$project$Visualizer$People$sexString = function (sex) {
+	switch (sex) {
+		case 1:
+			return 'Male';
+		case 2:
+			return 'Female';
+		default:
+			return 'Not Known';
+	}
+};
 var $elm$html$Html$Attributes$title = $elm$html$Html$Attributes$stringProperty('title');
 var $author$project$Visualizer$People$faceView = F2(
 	function (timezone, face) {
@@ -10301,7 +10324,7 @@ var $author$project$Visualizer$People$faceView = F2(
 			$elm$html$Html$div,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('face col-xl-4 col-6')
+					$elm$html$Html$Attributes$class('face')
 				]),
 			_List_fromArray(
 				[
@@ -10311,7 +10334,7 @@ var $author$project$Visualizer$People$faceView = F2(
 						[
 							$elm$html$Html$Attributes$src(face.br),
 							$elm$html$Html$Attributes$title(
-							face.bJ.aI + (' ' + A2($author$project$Common$Settings$localDropSecsStr, timezone, face.ar)))
+							face.bJ.aI + (' ' + ($author$project$Visualizer$People$sexString(face.bO) + (' ' + A2($author$project$Common$Settings$localDropSecsStr, timezone, face.ar)))))
 						]),
 					_List_Nil)
 				]));
@@ -10323,64 +10346,48 @@ var $author$project$Visualizer$People$personView = F2(
 			$elm$html$Html$div,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('person-container col-xl-3 col-4')
+					$elm$html$Html$Attributes$class('person-container')
 				]),
-			_List_fromArray(
-				[
-					A2(
-					$elm$html$Html$div,
-					_List_fromArray(
-						[
-							$elm$html$Html$Attributes$class('person')
-						]),
-					_List_fromArray(
-						[
-							A2(
-							$elm$html$Html$div,
-							_List_fromArray(
-								[
-									$elm$html$Html$Attributes$class('row')
-								]),
-							A2(
-								$elm$core$List$map,
-								$author$project$Visualizer$People$faceView(timezone),
-								sorted))
-						]))
-				]));
+			A2(
+				$elm$core$List$map,
+				$author$project$Visualizer$People$faceView(timezone),
+				sorted));
 	});
 var $author$project$Visualizer$People$view = function (rootModel) {
 	return A2(
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$class('row people')
+				$elm$html$Html$Attributes$class('people'),
+				$elm$html$Html$Attributes$id('people')
 			]),
-		A2(
-			$elm$core$List$cons,
-			A2(
-				$elm$html$Html$div,
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$h2,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('col-12')
+						$elm$html$Html$Attributes$class('title')
 					]),
 				_List_fromArray(
 					[
-						A2(
-						$elm$html$Html$h2,
-						_List_Nil,
-						_List_fromArray(
-							[
-								$elm$html$Html$text('People')
-							]))
+						$elm$html$Html$text('People')
 					])),
-			A2(
-				$elm$core$List$map,
-				$author$project$Visualizer$People$personView(rootModel.ae.ai),
-				rootModel.bX.bI)));
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('people-container')
+					]),
+				A2(
+					$elm$core$List$map,
+					$author$project$Visualizer$People$personView(rootModel.ae.ai),
+					rootModel.bY.bI))
+			]));
 };
 var $author$project$Visualizer$Traffic$trafficCountString = function (trafficCount) {
 	var count = trafficCount.aq;
-	var _v0 = trafficCount.bT;
+	var _v0 = trafficCount.bU;
 	var from = _v0.a;
 	var to = _v0.b;
 	return from.aI + (' -> ' + (to.aI + (' : ' + $elm$core$String$fromInt(count))));
@@ -10454,25 +10461,20 @@ var $author$project$Visualizer$Traffic$view = function (model) {
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$class('row traffic')
+				$elm$html$Html$Attributes$class('traffic'),
+				$elm$html$Html$Attributes$id('traffic')
 			]),
 		_List_fromArray(
 			[
 				A2(
-				$elm$html$Html$div,
+				$elm$html$Html$h2,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('col-12')
+						$elm$html$Html$Attributes$class('title')
 					]),
 				_List_fromArray(
 					[
-						A2(
-						$elm$html$Html$h2,
-						_List_Nil,
-						_List_fromArray(
-							[
-								$elm$html$Html$text('Traffic')
-							]))
+						$elm$html$Html$text('Traffic')
 					])),
 				A2(
 				$elm$html$Html$div,
@@ -10482,7 +10484,7 @@ var $author$project$Visualizer$Traffic$view = function (model) {
 					]),
 				_List_fromArray(
 					[
-						$author$project$Visualizer$Traffic$trafficView(model.bT)
+						$author$project$Visualizer$Traffic$trafficView(model.bU)
 					]))
 			]));
 };
@@ -10504,7 +10506,7 @@ var $author$project$Common$Settings$timezoneNameString = function (zonename) {
 };
 var $author$project$Visualizer$Controller$dateSelectorView = function (rootModel) {
 	var hereTimeZone = rootModel.ae.ai;
-	var controllerModel = rootModel.bX.i;
+	var controllerModel = rootModel.bY.i;
 	return A2(
 		$elm$html$Html$div,
 		_List_fromArray(
@@ -10703,7 +10705,7 @@ var $author$project$Visualizer$Controller$placesView = function (controllerModel
 			]));
 };
 var $author$project$Visualizer$Controller$viewControllerModal = function (rootModel) {
-	return rootModel.bX.i.aG ? A2(
+	return rootModel.bY.i.aG ? A2(
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
@@ -10753,7 +10755,7 @@ var $author$project$Visualizer$Controller$viewControllerModal = function (rootMo
 							]),
 						_List_fromArray(
 							[
-								$author$project$Visualizer$Controller$placesView(rootModel.bX.i)
+								$author$project$Visualizer$Controller$placesView(rootModel.bY.i)
 							])),
 						A2(
 						$elm$html$Html$div,
@@ -10798,7 +10800,7 @@ var $author$project$Visualizer$Visualizer$view = function (rootModel) {
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('visualizer container')
+						$elm$html$Html$Attributes$class('visualizer')
 					]),
 				_List_fromArray(
 					[
@@ -10806,48 +10808,21 @@ var $author$project$Visualizer$Visualizer$view = function (rootModel) {
 						$elm$html$Html$div,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$class('row')
+								$elm$html$Html$Attributes$class('map-controller-row')
 							]),
 						_List_fromArray(
 							[
+								$author$project$Visualizer$Map$mapView('map'),
 								A2(
-								$elm$html$Html$div,
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('col-7')
-									]),
-								_List_fromArray(
-									[
-										A2(
-										$elm$html$Html$div,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$class('row')
-											]),
-										_List_fromArray(
-											[
-												$author$project$Visualizer$Map$mapView('map')
-											])),
-										A2(
-										$elm$html$Html$map,
-										$author$project$Visualizer$Visualizer$ControllerMsg,
-										$author$project$Visualizer$Controller$view(rootModel))
-									])),
-								A2(
-								$elm$html$Html$div,
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('col-5')
-									]),
-								_List_fromArray(
-									[
-										A2(
-										$elm$html$Html$map,
-										$author$project$Visualizer$Visualizer$PeopleMsg,
-										$author$project$Visualizer$People$view(rootModel)),
-										$author$project$Visualizer$Traffic$view(rootModel.bX)
-									]))
-							]))
+								$elm$html$Html$map,
+								$author$project$Visualizer$Visualizer$ControllerMsg,
+								$author$project$Visualizer$Controller$view(rootModel))
+							])),
+						A2(
+						$elm$html$Html$map,
+						$author$project$Visualizer$Visualizer$PeopleMsg,
+						$author$project$Visualizer$People$view(rootModel)),
+						$author$project$Visualizer$Traffic$view(rootModel.bY)
 					])),
 				A2(
 				$elm$html$Html$map,
@@ -10903,11 +10878,11 @@ var $author$project$Main$main = $elm$browser$Browser$application(
 		bA: $author$project$Main$init,
 		bF: $author$project$Main$UrlChanged,
 		bG: $author$project$Main$LinkClicked,
-		bQ: function (_v0) {
+		bR: function (_v0) {
 			return $elm$core$Platform$Sub$none;
 		},
-		bU: $author$project$Main$update,
-		bW: $author$project$Main$view
+		bV: $author$project$Main$update,
+		bX: $author$project$Main$view
 	});
 _Platform_export({'Main':{'init':$author$project$Main$main(
 	$elm$json$Json$Decode$succeed(0))(0)}});}(this));

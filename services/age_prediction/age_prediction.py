@@ -22,12 +22,11 @@ from io import BytesIO
 from typing import List, Tuple
 import numpy as np
 from urllib.parse import urljoin
-import model
 import os
 import time
 
 
-sexmodel = keras.models.load_model('sex_detection.h5')
+agemodel = keras.models.load_model('age_prediction.h5')
 
 
 def get_image(url: str, location: List[int]) -> Image.Image:
@@ -51,13 +50,11 @@ def get_images_with_url(urls: List[str], locations: List[List[int]]) -> np.ndarr
     images = [np.asarray(get_image(url, location), dtype=np.float16)[:,:,:3] for url, location in zip(urls, locations)]  # trim RGB
     return np.array(images)
 
-
 class RegistError(Exception):
     pass
 
 
-
-class SexAnalyzer():
+class AgeAnalyzer():
     def __init__(self, db_controller_host: str, db_controller_port: int, get_unanalyzed_faces_url: str, regist_url: str):
         self.db_controller_url = f'http://{db_controller_host}:{db_controller_port}'
         self.get_unanalyzed_faces_url = urljoin(self.db_controller_url, get_unanalyzed_faces_url)
@@ -69,7 +66,7 @@ class SexAnalyzer():
         self.__get_unanalyzed_urls_ids()  # get unanalyzed faces
         self.images = get_images_with_url(self.unanalyzed_urls, self.known_locations)
 
-        self.sexlist = None
+        self.agelist = None
     
     def __get_unanalyzed_urls_ids(self) -> List[str]:
         resp = requests.get(self.get_unanalyzed_faces_url)
@@ -85,17 +82,16 @@ class SexAnalyzer():
             self.known_locations.append(location)
     
     def analyze(self):
-        self.sexlist = [model.result_to_sex(result) for result in sexmodel.predict(self.images)]
+        self.agelist = agemodel.predict(self.images)
 
     def regist(self):
-        if len(self.sexlist) <= 0:  # Empty
+        if len(self.agelist) <= 0:  # Empty
             return
         
         data = []
-        for id, sex in zip(self.unanalyzed_ids, self.sexlist):
-            sex_str = 'MALE' if sex == model.Sex.MALE else 'FEMALE'
-            data.append({'face_id': id, 'sex': sex_str})
-        
+        for id, age in zip(self.unanalyzed_ids, self.agelist):
+            data.append({'face_id': id, 'age': int(age)})
+
         resp = requests.post(self.regist_url, json=data)
         
         if resp.status_code != 200:
@@ -106,10 +102,10 @@ class SexAnalyzer():
 
 def main():
     while True:
-        analyzer = SexAnalyzer(
+        analyzer = AgeAnalyzer(
             os.getenv('NGINX_HOST'), int(os.getenv('NGINX_PORT')),
-            '/api/db/get_unanalyzed_faces_sex/',
-            'api/db/regist_faces_sex/',
+            '/api/db/get_unanalyzed_faces_age/',
+            'api/db/regist_faces_age/',
         )
 
         if len(analyzer.unanalyzed_ids) <= 0:
@@ -120,7 +116,6 @@ def main():
         count = analyzer.regist()
 
         print(f'Analyzed {count} images')
-
 
 
 if __name__ == "__main__":

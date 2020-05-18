@@ -1,0 +1,74 @@
+{
+  "name": "gingerbreadman",
+  "version": "1.0.0",
+  "description": "",
+  "main": "electron.js",
+  "scripts": {
+    "build:mac": "elm make src/Main.elm --output=./static/js/elm.js --optimize && electron-builder --mac --x64",
+    "build:linux": "elm make src/Main.elm --output=./static/js/elm.js --optimize && electron-builder --linux --x64",
+    "build:win": "elm make src/Main.elm --output=./static/js/elm.js --optimize && electron-builder --win --x64"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kekeho/gingerbreadman.git"
+  },
+  "author": {
+    "name": "Hiroki.T (kekeho)",
+    "email": "hirodora@me.com",
+    "url": "https://twitter.com/k3k3h0"
+  },
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/kekeho/gingerbreadman/issues"
+  },
+  "homepage": "https://github.com/kekeho/gingerbreadman#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "request": "^2.88.2"
+  },
+  "build": {
+    "productName": "Gingerbreadman",
+    "appId": "local.gingerbreadman.front",
+    "directories": {
+      "output": "build"
+    },
+    "files": [
+      "./**/*"
+    ],
+    "dmg": {
+      "contents": [
+        {
+          "x": 410,
+          "y": 150,
+          "type": "link",
+          "path": "/Applications"
+        },
+        {
+          "x": 130,
+          "y": 150,
+          "type": "file"
+        }
+      ]
+    },
+    "mac": {
+      "icon": "icons/gingerbreadman.icns",
+      "target": [
+        "dmg"
+      ]
+    },
+    "win": {
+      "icon": "icons/gingerbreadman.ico",
+      "target": "nsis"
+    },
+    "linux": {
+      "icon": "icons/icon.png",
+      "target": [
+        "deb",
+        "rpm",
+        "AppImage",
+        "pacman",
+        "snap"
+      ]
+    }
+  }
+}

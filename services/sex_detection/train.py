@@ -1,4 +1,4 @@
-# Copyright (C) 2019 Hiroki Takemura (kekeho)
+# Copyright (C) 2020 Hiroki Takemura (kekeho)
 # 
 # This file is part of Gingerbreadman.
 # 
@@ -15,7 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Gingerbreadman.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.contrib import admin
-from .models import Date, Place, Sex, Image, Face, Person
+from model import SexDetection
 
-admin.site.register([Date, Place, Sex, Image, Face, Person])
+s = SexDetection()
+s.load_datasets()
+s.train()
