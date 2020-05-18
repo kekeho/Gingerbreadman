@@ -226,7 +226,7 @@ def get_unanalyzed_faces_sex(request):
     return JsonResponse([[str(f.id), str(f.image.image.url), get_face_location(f)] for f in faces], safe=False)
 
 
-
+@csrf_exempt
 def regist_age(request):
     if request.method != 'POST':
         return HttpResponseNotAllowed(['POST'])

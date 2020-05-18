@@ -64,6 +64,14 @@ services:
     environment:
       - NGINX_HOST=nginx
       - NGINX_PORT=80
+  
+  service_age_prediction:
+    build: services/age_prediction
+    depends_on:
+      - nginx
+    environment:
+      - NGINX_HOST=nginx
+      - NGINX_PORT=80
 
   service_face_grouping:
     build: services/face_grouping
