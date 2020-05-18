@@ -70,5 +70,9 @@
         "snap"
       ]
     }
+  },
+  "devDependencies": {
+    "electron": "^8.3.0",
+    "elm": "^0.19.1-3"
   }
 }
