@@ -20,15 +20,22 @@ from . import views
 
 urlpatterns = [
     path('get_places_all/', views.get_places_all, name='get_places_all'),
+
     path('regist_images/', views.regist_images, name='regist_images'),
-    path('regist_faces/', views.regist_faces, name='regist_faces'),
+
     path('get_unanalyzed_face_location_images/', views.get_unanalyzed_face_location_images, name='url_un_face_location_images'),
-    path('get_unanaluzed_face_location_images_count/', views.get_unanalyzed_images_count),
+    path('regist_faces/', views.regist_faces, name='regist_faces'),
+
     path('get_unanalyzed_face_encodings/', views.get_unanalyzed_face_encoding_faces),
     path('regist_face_encodings/', views.regist_encodings, name='regist_encodings'),
+    
     path('get_unanalyzed_faces_sex/', views.get_unanalyzed_faces_sex),
     path('regist_faces_sex/', views.regist_sex),
+    
     path('get_unanalyzed_faces_age/', views.get_unanalyzed_faces_age),
     path('regist_faces_age/', views.regist_age),
+    
     path('get_face_encodings/', views.get_face_encodings, name='get_face_encodings'),
+
+    path('get_analyze_state/', views.get_analyze_state),
 ]

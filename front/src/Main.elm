@@ -53,7 +53,7 @@ main =
         { init = init
         , view = view
         , update = update
-        , subscriptions = \_ -> Sub.none
+        , subscriptions = subscriptions
         , onUrlChange = UrlChanged
         , onUrlRequest = LinkClicked
         }
@@ -245,6 +245,16 @@ notFoundView =
             [ h1 [] [ text "404" ] ]
         ]
     }
+
+
+
+-- SUBSCRIPTIONS
+
+subscriptions : RootModel -> Sub Msg
+subscriptions rootModel =
+    Sub.batch
+        [ Sub.map AnalyzeMonitorMsg ( AnalyzeMonitor.AnalyzeMonitor.subscriptions rootModel)
+        ]
 
 
 

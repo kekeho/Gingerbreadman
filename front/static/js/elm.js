@@ -11071,23 +11071,7 @@ var $author$project$Common$Settings$getTimeZoneName = A2($elm$core$Task$perform,
 var $author$project$Common$Settings$getTimezoneWithZoneName = $elm$core$Platform$Cmd$batch(
 	_List_fromArray(
 		[$author$project$Common$Settings$getTimeZoneName, $author$project$Common$Settings$getTimeZone]));
-var $author$project$AnalyzeMonitor$Model$AgePrediction = {$: 'AgePrediction'};
-var $author$project$AnalyzeMonitor$Model$FaceEncodings = {$: 'FaceEncodings'};
-var $author$project$AnalyzeMonitor$Model$FaceLocation = {$: 'FaceLocation'};
-var $author$project$AnalyzeMonitor$Model$ServiceModel = F4(
-	function (service, remain, analyzing, analyzed) {
-		return {analyzed: analyzed, analyzing: analyzing, remain: remain, service: service};
-	});
-var $author$project$AnalyzeMonitor$Model$SexDetection = {$: 'SexDetection'};
-var $author$project$AnalyzeMonitor$Model$modelInit = {
-	services: _List_fromArray(
-		[
-			A4($author$project$AnalyzeMonitor$Model$ServiceModel, $author$project$AnalyzeMonitor$Model$FaceLocation, 1024, 500, 36251),
-			A4($author$project$AnalyzeMonitor$Model$ServiceModel, $author$project$AnalyzeMonitor$Model$FaceEncodings, 324, 500, 12961),
-			A4($author$project$AnalyzeMonitor$Model$ServiceModel, $author$project$AnalyzeMonitor$Model$AgePrediction, 0, 0, 121512),
-			A4($author$project$AnalyzeMonitor$Model$ServiceModel, $author$project$AnalyzeMonitor$Model$SexDetection, 0, 213, 52190)
-		])
-};
+var $author$project$AnalyzeMonitor$Model$modelInit = {services: _List_Nil};
 var $elm$time$Time$utc = A2($elm$time$Time$Zone, 0, _List_Nil);
 var $author$project$Common$Settings$modelInit = {
 	timezone: $elm$time$Time$utc,
@@ -11183,10 +11167,192 @@ var $author$project$Main$init = F3(
 						A2($elm$core$Platform$Cmd$map, $author$project$Main$SettingsMsg, $author$project$Common$Settings$getTimezoneWithZoneName)
 					])));
 	});
-var $elm$core$Platform$Sub$batch = _Platform_batch;
-var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
 var $author$project$Main$AnalyzeMonitorMsg = function (a) {
 	return {$: 'AnalyzeMonitorMsg', a: a};
+};
+var $elm$core$Platform$Sub$batch = _Platform_batch;
+var $author$project$AnalyzeMonitor$AnalyzeMonitor$Update = function (a) {
+	return {$: 'Update', a: a};
+};
+var $elm$time$Time$Every = F2(
+	function (a, b) {
+		return {$: 'Every', a: a, b: b};
+	});
+var $elm$time$Time$State = F2(
+	function (taggers, processes) {
+		return {processes: processes, taggers: taggers};
+	});
+var $elm$time$Time$init = $elm$core$Task$succeed(
+	A2($elm$time$Time$State, $elm$core$Dict$empty, $elm$core$Dict$empty));
+var $elm$time$Time$addMySub = F2(
+	function (_v0, state) {
+		var interval = _v0.a;
+		var tagger = _v0.b;
+		var _v1 = A2($elm$core$Dict$get, interval, state);
+		if (_v1.$ === 'Nothing') {
+			return A3(
+				$elm$core$Dict$insert,
+				interval,
+				_List_fromArray(
+					[tagger]),
+				state);
+		} else {
+			var taggers = _v1.a;
+			return A3(
+				$elm$core$Dict$insert,
+				interval,
+				A2($elm$core$List$cons, tagger, taggers),
+				state);
+		}
+	});
+var $elm$core$Process$kill = _Scheduler_kill;
+var $elm$core$Platform$sendToSelf = _Platform_sendToSelf;
+var $elm$time$Time$setInterval = _Time_setInterval;
+var $elm$core$Process$spawn = _Scheduler_spawn;
+var $elm$time$Time$spawnHelp = F3(
+	function (router, intervals, processes) {
+		if (!intervals.b) {
+			return $elm$core$Task$succeed(processes);
+		} else {
+			var interval = intervals.a;
+			var rest = intervals.b;
+			var spawnTimer = $elm$core$Process$spawn(
+				A2(
+					$elm$time$Time$setInterval,
+					interval,
+					A2($elm$core$Platform$sendToSelf, router, interval)));
+			var spawnRest = function (id) {
+				return A3(
+					$elm$time$Time$spawnHelp,
+					router,
+					rest,
+					A3($elm$core$Dict$insert, interval, id, processes));
+			};
+			return A2($elm$core$Task$andThen, spawnRest, spawnTimer);
+		}
+	});
+var $elm$time$Time$onEffects = F3(
+	function (router, subs, _v0) {
+		var processes = _v0.processes;
+		var rightStep = F3(
+			function (_v6, id, _v7) {
+				var spawns = _v7.a;
+				var existing = _v7.b;
+				var kills = _v7.c;
+				return _Utils_Tuple3(
+					spawns,
+					existing,
+					A2(
+						$elm$core$Task$andThen,
+						function (_v5) {
+							return kills;
+						},
+						$elm$core$Process$kill(id)));
+			});
+		var newTaggers = A3($elm$core$List$foldl, $elm$time$Time$addMySub, $elm$core$Dict$empty, subs);
+		var leftStep = F3(
+			function (interval, taggers, _v4) {
+				var spawns = _v4.a;
+				var existing = _v4.b;
+				var kills = _v4.c;
+				return _Utils_Tuple3(
+					A2($elm$core$List$cons, interval, spawns),
+					existing,
+					kills);
+			});
+		var bothStep = F4(
+			function (interval, taggers, id, _v3) {
+				var spawns = _v3.a;
+				var existing = _v3.b;
+				var kills = _v3.c;
+				return _Utils_Tuple3(
+					spawns,
+					A3($elm$core$Dict$insert, interval, id, existing),
+					kills);
+			});
+		var _v1 = A6(
+			$elm$core$Dict$merge,
+			leftStep,
+			bothStep,
+			rightStep,
+			newTaggers,
+			processes,
+			_Utils_Tuple3(
+				_List_Nil,
+				$elm$core$Dict$empty,
+				$elm$core$Task$succeed(_Utils_Tuple0)));
+		var spawnList = _v1.a;
+		var existingDict = _v1.b;
+		var killTask = _v1.c;
+		return A2(
+			$elm$core$Task$andThen,
+			function (newProcesses) {
+				return $elm$core$Task$succeed(
+					A2($elm$time$Time$State, newTaggers, newProcesses));
+			},
+			A2(
+				$elm$core$Task$andThen,
+				function (_v2) {
+					return A3($elm$time$Time$spawnHelp, router, spawnList, existingDict);
+				},
+				killTask));
+	});
+var $elm$time$Time$now = _Time_now($elm$time$Time$millisToPosix);
+var $elm$time$Time$onSelfMsg = F3(
+	function (router, interval, state) {
+		var _v0 = A2($elm$core$Dict$get, interval, state.taggers);
+		if (_v0.$ === 'Nothing') {
+			return $elm$core$Task$succeed(state);
+		} else {
+			var taggers = _v0.a;
+			var tellTaggers = function (time) {
+				return $elm$core$Task$sequence(
+					A2(
+						$elm$core$List$map,
+						function (tagger) {
+							return A2(
+								$elm$core$Platform$sendToApp,
+								router,
+								tagger(time));
+						},
+						taggers));
+			};
+			return A2(
+				$elm$core$Task$andThen,
+				function (_v1) {
+					return $elm$core$Task$succeed(state);
+				},
+				A2($elm$core$Task$andThen, tellTaggers, $elm$time$Time$now));
+		}
+	});
+var $elm$time$Time$subMap = F2(
+	function (f, _v0) {
+		var interval = _v0.a;
+		var tagger = _v0.b;
+		return A2(
+			$elm$time$Time$Every,
+			interval,
+			A2($elm$core$Basics$composeL, f, tagger));
+	});
+_Platform_effectManagers['Time'] = _Platform_createManager($elm$time$Time$init, $elm$time$Time$onEffects, $elm$time$Time$onSelfMsg, 0, $elm$time$Time$subMap);
+var $elm$time$Time$subscription = _Platform_leaf('Time');
+var $elm$time$Time$every = F2(
+	function (interval, tagger) {
+		return $elm$time$Time$subscription(
+			A2($elm$time$Time$Every, interval, tagger));
+	});
+var $author$project$AnalyzeMonitor$AnalyzeMonitor$subscriptions = function (_v0) {
+	return A2($elm$time$Time$every, 500, $author$project$AnalyzeMonitor$AnalyzeMonitor$Update);
+};
+var $author$project$Main$subscriptions = function (rootModel) {
+	return $elm$core$Platform$Sub$batch(
+		_List_fromArray(
+			[
+				A2(
+				$elm$core$Platform$Sub$map,
+				$author$project$Main$AnalyzeMonitorMsg,
+				$author$project$AnalyzeMonitor$AnalyzeMonitor$subscriptions(rootModel))
+			]));
 };
 var $author$project$Main$ErrorMsg = function (a) {
 	return {$: 'ErrorMsg', a: a};
@@ -11227,7 +11393,6 @@ var $elm$core$Maybe$isJust = function (maybe) {
 		return false;
 	}
 };
-var $elm$core$Platform$sendToSelf = _Platform_sendToSelf;
 var $elm$http$Http$emptyBody = _Http_emptyBody;
 var $elm$http$Http$expectStringResponse = F2(
 	function (toMsg, toResult) {
@@ -11320,8 +11485,6 @@ var $elm$http$Http$State = F2(
 	});
 var $elm$http$Http$init = $elm$core$Task$succeed(
 	A2($elm$http$Http$State, $elm$core$Dict$empty, _List_Nil));
-var $elm$core$Process$kill = _Scheduler_kill;
-var $elm$core$Process$spawn = _Scheduler_spawn;
 var $elm$http$Http$updateReqs = F3(
 	function (router, cmds, reqs) {
 		updateReqs:
@@ -11713,9 +11876,43 @@ var $author$project$Main$routeParser = $elm$url$Url$Parser$oneOf(
 			$author$project$Model$AnalyzeMonitor,
 			$elm$url$Url$Parser$s('monitor'))
 		]));
-var $author$project$AnalyzeMonitor$AnalyzeMonitor$update = F2(
-	function (msg, rootModel) {
-		return _Utils_Tuple2(rootModel, $elm$core$Platform$Cmd$none);
+var $author$project$Common$ErrorPanel$AddError = function (a) {
+	return {$: 'AddError', a: a};
+};
+var $author$project$AnalyzeMonitor$AnalyzeMonitor$ErrorMsg = function (a) {
+	return {$: 'ErrorMsg', a: a};
+};
+var $author$project$Common$ErrorPanel$HttpError = function (a) {
+	return {$: 'HttpError', a: a};
+};
+var $author$project$AnalyzeMonitor$AnalyzeMonitor$GotStatus = function (a) {
+	return {$: 'GotStatus', a: a};
+};
+var $author$project$AnalyzeMonitor$Model$ServiceModel = F4(
+	function (service, remain, analyzing, analyzed) {
+		return {analyzed: analyzed, analyzing: analyzing, remain: remain, service: service};
+	});
+var $elm$json$Json$Decode$map4 = _Json_map4;
+var $author$project$AnalyzeMonitor$AnalyzeMonitor$singleStatusDecoder = A5(
+	$elm$json$Json$Decode$map4,
+	$author$project$AnalyzeMonitor$Model$ServiceModel,
+	A2($elm$json$Json$Decode$field, 'service', $elm$json$Json$Decode$string),
+	A2($elm$json$Json$Decode$field, 'unanalyzed', $elm$json$Json$Decode$int),
+	A2($elm$json$Json$Decode$field, 'analyzing', $elm$json$Json$Decode$int),
+	A2($elm$json$Json$Decode$field, 'analyzed', $elm$json$Json$Decode$int));
+var $author$project$AnalyzeMonitor$AnalyzeMonitor$statusDecoder = $elm$json$Json$Decode$list($author$project$AnalyzeMonitor$AnalyzeMonitor$singleStatusDecoder);
+var $author$project$AnalyzeMonitor$AnalyzeMonitor$getStatus = $elm$http$Http$request(
+	{
+		body: $elm$http$Http$emptyBody,
+		expect: A2($elm$http$Http$expectJson, $author$project$AnalyzeMonitor$AnalyzeMonitor$GotStatus, $author$project$AnalyzeMonitor$AnalyzeMonitor$statusDecoder),
+		headers: _List_fromArray(
+			[
+				A2($elm$http$Http$header, 'Accept', 'application/json')
+			]),
+		method: 'GET',
+		timeout: $elm$core$Maybe$Nothing,
+		tracker: $elm$core$Maybe$Nothing,
+		url: '/api/db/get_analyze_state/'
 	});
 var $elm$core$List$filter = F2(
 	function (isGood, list) {
@@ -11759,6 +11956,52 @@ var $author$project$Common$ErrorPanel$update = F2(
 			return _Utils_Tuple2(newList, $elm$core$Platform$Cmd$none);
 		}
 	});
+var $author$project$AnalyzeMonitor$AnalyzeMonitor$update = F2(
+	function (msg, rootModel) {
+		switch (msg.$) {
+			case 'Update':
+				return _Utils_Tuple2(rootModel, $author$project$AnalyzeMonitor$AnalyzeMonitor$getStatus);
+			case 'GotStatus':
+				var result = msg.a;
+				if (result.$ === 'Ok') {
+					var statusList = result.a;
+					var model = rootModel.analyzeMonitor;
+					var model_ = _Utils_update(
+						model,
+						{services: statusList});
+					return _Utils_Tuple2(
+						_Utils_update(
+							rootModel,
+							{analyzeMonitor: model_}),
+						$elm$core$Platform$Cmd$none);
+				} else {
+					var error = result.a;
+					var _v2 = A2(
+						$author$project$AnalyzeMonitor$AnalyzeMonitor$update,
+						$author$project$AnalyzeMonitor$AnalyzeMonitor$ErrorMsg(
+							$author$project$Common$ErrorPanel$AddError(
+								{
+									error: $author$project$Common$ErrorPanel$HttpError(error),
+									str: 'Network Error'
+								})),
+						rootModel);
+					var rootModel_ = _v2.a;
+					var cmd_ = _v2.b;
+					return _Utils_Tuple2(rootModel_, cmd_);
+				}
+			default:
+				var subMsg = msg.a;
+				var errorModel = rootModel.errorList;
+				var _v3 = A2($author$project$Common$ErrorPanel$update, subMsg, errorModel);
+				var errorPaneModel = _v3.a;
+				var subMsg_ = _v3.b;
+				return _Utils_Tuple2(
+					_Utils_update(
+						rootModel,
+						{errorList: errorPaneModel}),
+					A2($elm$core$Platform$Cmd$map, $author$project$AnalyzeMonitor$AnalyzeMonitor$ErrorMsg, subMsg_));
+		}
+	});
 var $author$project$Common$Settings$update = F2(
 	function (msg, model) {
 		if (msg.$ === 'GotTimezoneName') {
@@ -11777,14 +12020,8 @@ var $author$project$Common$Settings$update = F2(
 				$elm$core$Platform$Cmd$none);
 		}
 	});
-var $author$project$Common$ErrorPanel$AddError = function (a) {
-	return {$: 'AddError', a: a};
-};
 var $author$project$Upload$Upload$ErrorMsg = function (a) {
 	return {$: 'ErrorMsg', a: a};
-};
-var $author$project$Common$ErrorPanel$HttpError = function (a) {
-	return {$: 'HttpError', a: a};
 };
 var $author$project$Upload$Upload$ImageSelected = F2(
 	function (a, b) {
@@ -12647,7 +12884,6 @@ var $author$project$Visualizer$Model$FaceLocation = F4(
 		return {h: h, w: w, x: x, y: y};
 	});
 var $elm$json$Json$Decode$index = _Json_decodeIndex;
-var $elm$json$Json$Decode$map4 = _Json_map4;
 var $author$project$Visualizer$Model$faceLocationDecoder = A5(
 	$elm$json$Json$Decode$map4,
 	$author$project$Visualizer$Model$FaceLocation,
@@ -14580,18 +14816,6 @@ var $author$project$AnalyzeMonitor$AnalyzeMonitor$indicatorView = F2(
 						]))
 				]));
 	});
-var $author$project$AnalyzeMonitor$Model$serviceToStr = function (service) {
-	switch (service.$) {
-		case 'FaceLocation':
-			return 'face_location';
-		case 'FaceEncodings':
-			return 'face_encodings';
-		case 'AgePrediction':
-			return 'age_prediction';
-		default:
-			return 'sex_detection';
-	}
-};
 var $author$project$AnalyzeMonitor$AnalyzeMonitor$serviceView = function (service) {
 	return A2(
 		$elm$html$Html$div,
@@ -14609,8 +14833,7 @@ var $author$project$AnalyzeMonitor$AnalyzeMonitor$serviceView = function (servic
 					]),
 				_List_fromArray(
 					[
-						$elm$html$Html$text(
-						$author$project$AnalyzeMonitor$Model$serviceToStr(service.service))
+						$elm$html$Html$text(service.service)
 					])),
 				A2($elm$html$Html$hr, _List_Nil, _List_Nil),
 				A2($author$project$AnalyzeMonitor$AnalyzeMonitor$indicatorView, 'Remain :', service.remain),
@@ -15701,15 +15924,6 @@ var $author$project$Main$view = function (rootModel) {
 	}
 };
 var $author$project$Main$main = $elm$browser$Browser$application(
-	{
-		init: $author$project$Main$init,
-		onUrlChange: $author$project$Main$UrlChanged,
-		onUrlRequest: $author$project$Main$LinkClicked,
-		subscriptions: function (_v0) {
-			return $elm$core$Platform$Sub$none;
-		},
-		update: $author$project$Main$update,
-		view: $author$project$Main$view
-	});
+	{init: $author$project$Main$init, onUrlChange: $author$project$Main$UrlChanged, onUrlRequest: $author$project$Main$LinkClicked, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
-	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"},"Common.ErrorPanel.ErrorModel":{"args":[],"type":"{ error : Common.ErrorPanel.Error, str : String.String }"},"Common.Data.Place":{"args":[],"type":"{ name : String.String, latitude : Basics.Float, longitude : Basics.Float }"},"Time.Era":{"args":[],"type":"{ start : Basics.Int, offset : Basics.Int }"},"Visualizer.Model.Face":{"args":[],"type":"{ id : String.String, imageId : String.String, imageUrl : String.String, faceImageB64 : String.String, faceLocation : Visualizer.Model.FaceLocation, faceEncoding : List.List Basics.Float, place : Common.Data.Place, datetime : Time.Posix, sex : Visualizer.Model.Sex }"},"Visualizer.Model.FaceLocation":{"args":[],"type":"{ x : Basics.Int, y : Basics.Int, w : Basics.Int, h : Basics.Int }"},"Visualizer.Model.Person":{"args":[],"type":"List.List Visualizer.Model.Face"}},"unions":{"Main.Msg":{"args":[],"tags":{"LinkClicked":["Browser.UrlRequest"],"UrlChanged":["Url.Url"],"VisualizerMsg":["Visualizer.Visualizer.Msg"],"UploadMsg":["Upload.Upload.Msg"],"AnalyzeMonitorMsg":["AnalyzeMonitor.AnalyzeMonitor.Msg"],"ErrorMsg":["Common.ErrorPanel.Msg"],"SettingsMsg":["Common.Settings.Msg"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"AnalyzeMonitor.AnalyzeMonitor.Msg":{"args":[],"tags":{"Message":[]}},"Common.ErrorPanel.Msg":{"args":[],"tags":{"AddError":["Common.ErrorPanel.ErrorModel"],"DelError":["Basics.Int"]}},"Common.Settings.Msg":{"args":[],"tags":{"GotTimezoneName":["Time.ZoneName"],"GotTimezone":["Time.Zone"]}},"Upload.Upload.Msg":{"args":[],"tags":{"ImageRequested":[],"ImageSelected":["File.File","List.List File.File"],"Upload":[],"Uploaded":["Result.Result Http.Error ()"],"GotPlaces":["Result.Result Http.Error (List.List Common.Data.Place)"],"PlaceSelected":["String.String"],"NewPlaceName":["String.String"],"NewPlaceLongitude":["String.String"],"NewPlaceLatitude":["String.String"],"PlaceSearchInput":["String.String"],"ErrorMsg":["Common.ErrorPanel.Msg"]}},"Visualizer.Visualizer.Msg":{"args":[],"tags":{"ControllerMsg":["Visualizer.Controller.Msg"],"PeopleMsg":["Visualizer.People.Msg"]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Common.ErrorPanel.Error":{"args":[],"tags":{"HttpError":["Http.Error"],"OnlyStr":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"File.File":{"args":[],"tags":{"File":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"List.List":{"args":["a"],"tags":{}},"Visualizer.Controller.Msg":{"args":[],"tags":{"GotPlace":["Result.Result Http.Error (List.List Common.Data.Place)"],"SelectPlace":["String.String"],"DelSelectedPlace":["String.String"],"PlaceSearchInput":["String.String"],"GotSinceTime":["String.String"],"GotUntilTime":["String.String"],"Analyze":[],"Analyzed":["Result.Result Http.Error (List.List Visualizer.Model.Person)"],"ChangeModalState":["Basics.Bool"],"MapMsg":["Visualizer.Map.Msg"],"ErrorMsg":["Common.ErrorPanel.Msg"]}},"Visualizer.People.Msg":{"args":[],"tags":{"Dammy":[]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Time.Zone":{"args":[],"tags":{"Zone":["Basics.Int","List.List Time.Era"]}},"Time.ZoneName":{"args":[],"tags":{"Name":["String.String"],"Offset":["Basics.Int"]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Visualizer.Map.Msg":{"args":[],"tags":{"Update":[]}},"Time.Posix":{"args":[],"tags":{"Posix":["Basics.Int"]}},"Visualizer.Model.Sex":{"args":[],"tags":{"NotKnown":[],"Male":[],"Female":[]}}}}})}});}(this));
+	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"},"Common.ErrorPanel.ErrorModel":{"args":[],"type":"{ error : Common.ErrorPanel.Error, str : String.String }"},"Common.Data.Place":{"args":[],"type":"{ name : String.String, latitude : Basics.Float, longitude : Basics.Float }"},"AnalyzeMonitor.Model.ServiceModel":{"args":[],"type":"{ service : String.String, remain : Basics.Int, analyzing : Basics.Int, analyzed : Basics.Int }"},"Time.Era":{"args":[],"type":"{ start : Basics.Int, offset : Basics.Int }"},"Visualizer.Model.Face":{"args":[],"type":"{ id : String.String, imageId : String.String, imageUrl : String.String, faceImageB64 : String.String, faceLocation : Visualizer.Model.FaceLocation, faceEncoding : List.List Basics.Float, place : Common.Data.Place, datetime : Time.Posix, sex : Visualizer.Model.Sex }"},"Visualizer.Model.FaceLocation":{"args":[],"type":"{ x : Basics.Int, y : Basics.Int, w : Basics.Int, h : Basics.Int }"},"Visualizer.Model.Person":{"args":[],"type":"List.List Visualizer.Model.Face"}},"unions":{"Main.Msg":{"args":[],"tags":{"LinkClicked":["Browser.UrlRequest"],"UrlChanged":["Url.Url"],"VisualizerMsg":["Visualizer.Visualizer.Msg"],"UploadMsg":["Upload.Upload.Msg"],"AnalyzeMonitorMsg":["AnalyzeMonitor.AnalyzeMonitor.Msg"],"ErrorMsg":["Common.ErrorPanel.Msg"],"SettingsMsg":["Common.Settings.Msg"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"AnalyzeMonitor.AnalyzeMonitor.Msg":{"args":[],"tags":{"Update":["Time.Posix"],"GotStatus":["Result.Result Http.Error (List.List AnalyzeMonitor.Model.ServiceModel)"],"ErrorMsg":["Common.ErrorPanel.Msg"]}},"Common.ErrorPanel.Msg":{"args":[],"tags":{"AddError":["Common.ErrorPanel.ErrorModel"],"DelError":["Basics.Int"]}},"Common.Settings.Msg":{"args":[],"tags":{"GotTimezoneName":["Time.ZoneName"],"GotTimezone":["Time.Zone"]}},"Upload.Upload.Msg":{"args":[],"tags":{"ImageRequested":[],"ImageSelected":["File.File","List.List File.File"],"Upload":[],"Uploaded":["Result.Result Http.Error ()"],"GotPlaces":["Result.Result Http.Error (List.List Common.Data.Place)"],"PlaceSelected":["String.String"],"NewPlaceName":["String.String"],"NewPlaceLongitude":["String.String"],"NewPlaceLatitude":["String.String"],"PlaceSearchInput":["String.String"],"ErrorMsg":["Common.ErrorPanel.Msg"]}},"Visualizer.Visualizer.Msg":{"args":[],"tags":{"ControllerMsg":["Visualizer.Controller.Msg"],"PeopleMsg":["Visualizer.People.Msg"]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Common.ErrorPanel.Error":{"args":[],"tags":{"HttpError":["Http.Error"],"OnlyStr":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"File.File":{"args":[],"tags":{"File":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"List.List":{"args":["a"],"tags":{}},"Visualizer.Controller.Msg":{"args":[],"tags":{"GotPlace":["Result.Result Http.Error (List.List Common.Data.Place)"],"SelectPlace":["String.String"],"DelSelectedPlace":["String.String"],"PlaceSearchInput":["String.String"],"GotSinceTime":["String.String"],"GotUntilTime":["String.String"],"Analyze":[],"Analyzed":["Result.Result Http.Error (List.List Visualizer.Model.Person)"],"ChangeModalState":["Basics.Bool"],"MapMsg":["Visualizer.Map.Msg"],"ErrorMsg":["Common.ErrorPanel.Msg"]}},"Visualizer.People.Msg":{"args":[],"tags":{"Dammy":[]}},"Time.Posix":{"args":[],"tags":{"Posix":["Basics.Int"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Time.Zone":{"args":[],"tags":{"Zone":["Basics.Int","List.List Time.Era"]}},"Time.ZoneName":{"args":[],"tags":{"Name":["String.String"],"Offset":["Basics.Int"]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Visualizer.Map.Msg":{"args":[],"tags":{"Update":[]}},"Visualizer.Model.Sex":{"args":[],"tags":{"NotKnown":[],"Male":[],"Female":[]}}}}})}});}(this));
