@@ -44,8 +44,12 @@ nav.navbar {
     height: 2rem;
 }
 
+.navbar-nav {
+    margin: 0 2rem;
+}
+
 .nav-item {
-    padding: 0 2rem;
+    padding: 0 0.5rem;
 }
 
 .nav-item.active {

@@ -25,6 +25,7 @@ import Upload.Model
 import Url
 import Url.Parser
 import Visualizer.Model
+import AnalyzeMonitor.Model
 
 
 
@@ -38,6 +39,7 @@ type alias RootModel =
     , errorList : ErrorPanel.Model
     , visualizer : Visualizer.Model.Model
     , upload : Upload.Model.Model
+    , analyzeMonitor : AnalyzeMonitor.Model.Model
     , settings : Common.Settings.Model
     }
 
@@ -45,3 +47,4 @@ type alias RootModel =
 type Route
     = VisualizerPage
     | UploadPage
+    | AnalyzeMonitor
