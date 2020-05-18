@@ -57,7 +57,7 @@
       ]
     },
     "win": {
-      "icon": "icons/icon.ico",
+      "icon": "icons/gingerbreadman.ico",
       "target": "nsis"
     },
     "linux": {
