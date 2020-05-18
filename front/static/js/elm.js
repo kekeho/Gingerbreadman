@@ -11071,7 +11071,23 @@ var $author$project$Common$Settings$getTimeZoneName = A2($elm$core$Task$perform,
 var $author$project$Common$Settings$getTimezoneWithZoneName = $elm$core$Platform$Cmd$batch(
 	_List_fromArray(
 		[$author$project$Common$Settings$getTimeZoneName, $author$project$Common$Settings$getTimeZone]));
-var $author$project$AnalyzeMonitor$Model$modelInit = {statusText: 'Ready'};
+var $author$project$AnalyzeMonitor$Model$AgePrediction = {$: 'AgePrediction'};
+var $author$project$AnalyzeMonitor$Model$FaceEncodings = {$: 'FaceEncodings'};
+var $author$project$AnalyzeMonitor$Model$FaceLocation = {$: 'FaceLocation'};
+var $author$project$AnalyzeMonitor$Model$ServiceModel = F4(
+	function (service, remain, analyzing, analyzed) {
+		return {analyzed: analyzed, analyzing: analyzing, remain: remain, service: service};
+	});
+var $author$project$AnalyzeMonitor$Model$SexDetection = {$: 'SexDetection'};
+var $author$project$AnalyzeMonitor$Model$modelInit = {
+	services: _List_fromArray(
+		[
+			A4($author$project$AnalyzeMonitor$Model$ServiceModel, $author$project$AnalyzeMonitor$Model$FaceLocation, 1024, 500, 36251),
+			A4($author$project$AnalyzeMonitor$Model$ServiceModel, $author$project$AnalyzeMonitor$Model$FaceEncodings, 324, 500, 12961),
+			A4($author$project$AnalyzeMonitor$Model$ServiceModel, $author$project$AnalyzeMonitor$Model$AgePrediction, 0, 0, 121512),
+			A4($author$project$AnalyzeMonitor$Model$ServiceModel, $author$project$AnalyzeMonitor$Model$SexDetection, 0, 213, 52190)
+		])
+};
 var $elm$time$Time$utc = A2($elm$time$Time$Zone, 0, _List_Nil);
 var $author$project$Common$Settings$modelInit = {
 	timezone: $elm$time$Time$utc,
@@ -14518,17 +14534,111 @@ var $author$project$Main$notFoundView = {
 		]),
 	title: 'Gingerbreadman | 404 Error'
 };
+var $elm$html$Html$h2 = _VirtualDom_node('h2');
+var $elm$html$Html$hr = _VirtualDom_node('hr');
+var $author$project$AnalyzeMonitor$AnalyzeMonitor$indicatorView = F2(
+	function (title, val) {
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('indicator')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('title')
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text(title)
+						])),
+					A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('val')
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text(
+							$elm$core$String$fromInt(val)),
+							A2(
+							$elm$html$Html$div,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('unit')
+								]),
+							_List_fromArray(
+								[
+									$elm$html$Html$text(
+									(val > 1) ? 'items' : 'item')
+								]))
+						]))
+				]));
+	});
+var $author$project$AnalyzeMonitor$Model$serviceToStr = function (service) {
+	switch (service.$) {
+		case 'FaceLocation':
+			return 'face_location';
+		case 'FaceEncodings':
+			return 'face_encodings';
+		case 'AgePrediction':
+			return 'age_prediction';
+		default:
+			return 'sex_detection';
+	}
+};
+var $author$project$AnalyzeMonitor$AnalyzeMonitor$serviceView = function (service) {
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('service pad')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$h2,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('title')
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text(
+						$author$project$AnalyzeMonitor$Model$serviceToStr(service.service))
+					])),
+				A2($elm$html$Html$hr, _List_Nil, _List_Nil),
+				A2($author$project$AnalyzeMonitor$AnalyzeMonitor$indicatorView, 'Remain :', service.remain),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('mini-indicator')
+					]),
+				_List_fromArray(
+					[
+						A2($author$project$AnalyzeMonitor$AnalyzeMonitor$indicatorView, 'Analyzing :', service.analyzing),
+						A2($author$project$AnalyzeMonitor$AnalyzeMonitor$indicatorView, 'Done :', service.analyzed)
+					]))
+			]));
+};
 var $author$project$AnalyzeMonitor$AnalyzeMonitor$view = function (rootModel) {
+	var services = rootModel.analyzeMonitor.services;
 	return {
 		body: _List_fromArray(
 			[
 				A2(
 				$elm$html$Html$div,
-				_List_Nil,
 				_List_fromArray(
 					[
-						$elm$html$Html$text('monitor')
-					]))
+						$elm$html$Html$Attributes$class('horizonal-container analyze-monitor')
+					]),
+				A2($elm$core$List$map, $author$project$AnalyzeMonitor$AnalyzeMonitor$serviceView, services))
 			]),
 		title: 'Analyze Monitor'
 	};
@@ -14613,7 +14723,6 @@ var $author$project$Upload$Upload$filesCountView = function (maybeFiles) {
 			}
 		}());
 };
-var $elm$html$Html$h2 = _VirtualDom_node('h2');
 var $author$project$Upload$Upload$NewPlaceLatitude = function (a) {
 	return {$: 'NewPlaceLatitude', a: a};
 };
@@ -14914,7 +15023,7 @@ var $author$project$Visualizer$Map$mapView = function (mapId) {
 		_List_fromArray(
 			[
 				$elm$html$Html$Attributes$id(mapId),
-				$elm$html$Html$Attributes$class('map')
+				$elm$html$Html$Attributes$class('pad map')
 			]),
 		_List_Nil);
 };
@@ -15514,7 +15623,7 @@ var $author$project$Visualizer$Visualizer$view = function (rootModel) {
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('visualizer')
+						$elm$html$Html$Attributes$class('visualizer horizonal-container')
 					]),
 				_List_fromArray(
 					[

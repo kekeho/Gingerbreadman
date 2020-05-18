@@ -70,7 +70,7 @@ view : RootModel -> Browser.Document Msg
 view rootModel =
     { title = "Visualizer"
     , body =
-        [ div [ class "visualizer" ]
+        [ div [ class "visualizer horizonal-container" ]
             [ div [ class "map-controller-row" ]
                 [ Visualizer.Map.mapView "map"
                 , Visualizer.Controller.view rootModel
