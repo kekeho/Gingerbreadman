@@ -1,6 +1,24 @@
+# Copyright (C) 2020 Hiroki Takemura (kekeho)
+# 
+# This file is part of Gingerbreadman.
+# 
+# Gingerbreadman is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# Gingerbreadman is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with Gingerbreadman.  If not, see <http://www.gnu.org/licenses/>.
+
 from tensorflow import keras
-from tensorflow.keras.models import Sequential
+from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Conv2D, Dense, Dropout, MaxPooling2D, Input, Flatten
+from tensorflow.keras.applications import Xception
 from tensorflow.keras.optimizers import RMSprop
 from tensorflow.keras.callbacks import TensorBoard
 import numpy as np
@@ -9,6 +27,7 @@ import enum
 from glob import glob
 from typing import List
 import random
+import gc
 
 
 class Sex(enum.Enum):
@@ -36,51 +55,73 @@ def get_images(filename: str) -> (Image.Image, Sex):
 
 class SexDetection():    
     def __init__(self):
+        self.base_model = Xception(
+            include_top=False,
+            weights='imagenet',
+            input_shape=(200, 200, 3)
+        )
         self.model = self._model()
 
     def _model(self):
-        model = Sequential()
-        model.add(Conv2D(32, (2, 2), input_shape=(200, 200, 3), activation='relu'))
-        model.add(MaxPooling2D())
-        model.add(Conv2D(24, (2, 2), input_shape=(200, 200, 3), activation='relu'))
-        model.add(MaxPooling2D())
-        model.add(Conv2D(16, (2, 2), activation='relu'))
-        model.add(MaxPooling2D())
-        model.add(Conv2D(8, (2, 2), activation='relu'))
-        model.add(MaxPooling2D())
-        model.add(Conv2D(4, (2, 2), activation='relu'))
-        model.add(MaxPooling2D())
-        model.add(Conv2D(2, (2, 2), activation='relu'))
-        model.add(MaxPooling2D())
-        model.add(Flatten())
-        model.add(Dense(64, activation='relu'))
-        model.add(Dropout(0.5))
-        model.add(Dense(12, activation='relu'))
-        model.add(Dropout(0.5))
-        model.add(Dense(4, activation='relu'))
-        model.add(Dense(2, activation='sigmoid'))
+        x = self.base_model.output
+        x = MaxPooling2D()(x)
+        x = Conv2D(256, (3, 3))(x)
+        x = Flatten()(x)
+        x = Dense(64, activation='relu')(x)
+        x = Dropout(0.5)(x)
+        x = Dense(16, activation='relu')(x)
+        x = Dropout(0.5)(x)
+        x = Dense(4, activation='relu')(x)
+        y = Dense(2, activation='sigmoid')(x)
+
+        model = Model(inputs=self.base_model.input, outputs=y)
+
+        # Freeze
+        for layer in model.layers[:108]:
+            if layer.name.startswith('batch_normalization'):
+                layer.trainable = True
+                continue
+            
+            if layer.name.endswith('bn'):
+                layer.trainable = True
+                continue
+
+            layer.trainable = False
+        
+        for layer in model.layers[108:]:
+            layer.trainable = True
 
         model.compile(optimizer=RMSprop(), loss='binary_crossentropy', metrics=['binary_accuracy'])
         return model
     
-    def load_datasets(self):
-        train_x = []
-        train_y = []
-        for filename in glob('./UTKFace/*'):
-            x, y = get_images(filename)
-            train_x.append(x)
-            train_y.append(sex_to_categorical(y))
-
-        # Shuffle
-        randseed = random.randint(0, 99999)
-        random.seed(randseed)
-        random.shuffle(train_x)
-        random.seed(randseed)
-        random.shuffle(train_y)
-        
-        self.train_x = np.asarray(train_x)
-        self.train_y = np.asarray(train_y)
     
     def train(self):
-        self.model.fit(x=self.train_x, y=self.train_y, validation_split=0.2, epochs=30, callbacks=[TensorBoard()])
-        self.model.save('sex_detection.h5')
+        epoch = 30
+        files = glob('./UTKFace/*')
+        random.shuffle(files)
+
+
+        for ep in range(epoch):
+            train_x = []
+            train_y = []
+            index = 0
+            print('ep:',ep)
+            print(train_x, train_y, index)
+            while index < len(files):
+                x, y = get_images(files[index])
+                train_x.append(x)
+                train_y.append(sex_to_categorical(y))
+                if (index > 0 and (index % 3000 == 0)) or (index == len(files)-1):
+                    train_x = np.array(train_x)
+                    train_y = np.array(train_y)
+                    print(train_x.shape)
+                    self.model.fit(x=train_x, y=train_y, validation_split=0.2, callbacks=[TensorBoard()])
+                    train_x = []
+                    train_y = []
+                    index += 1
+                index += 1
+            del train_x
+            del train_y
+            gc.collect()
+
+        self.model.save('sex_prediction.h5')

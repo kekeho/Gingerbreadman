@@ -1,3 +1,20 @@
+# Copyright (C) 2020 Hiroki Takemura (kekeho)
+# 
+# This file is part of Gingerbreadman.
+# 
+# Gingerbreadman is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# Gingerbreadman is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with Gingerbreadman.  If not, see <http://www.gnu.org/licenses/>.
+
 from tensorflow import keras
 from PIL import Image
 import requests
@@ -20,8 +37,9 @@ def get_image(url: str, location: List[int]) -> Image.Image:
     # preprocess
     pil_image = Image.open(image)
     pil_image = pil_image.convert('RGB')
+    margin = 50  # 50px
     top, right, bottom, left = location
-    croped = pil_image.crop((left, top, right, bottom))
+    croped = pil_image.crop((left-margin, top-margin, right+margin, bottom+margin))
     croped.thumbnail((200, 200))
     preprocessed = Image.new(croped.mode, (200, 200), 255)
     preprocessed.paste(croped)

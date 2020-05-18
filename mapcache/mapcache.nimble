@@ -3,7 +3,7 @@
 version       = "0.1.0"
 author        = "Hiroki.T"
 description   = "Tiny Tile Cache"
-license       = "MIT"
+license       = "GPLv3"
 srcDir        = "src"
 bin           = @["mapcache"]
 

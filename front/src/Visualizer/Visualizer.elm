@@ -1,3 +1,21 @@
+--  Copyright (C) 2020 Hiroki Takemura (kekeho)
+--  
+--  This file is part of Gingerbreadman.
+--  
+-- Gingerbreadman is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+-- 
+-- Gingerbreadman is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+-- 
+-- You should have received a copy of the GNU General Public License
+-- along with Gingerbreadman.  If not, see <http://www.gnu.org/licenses/>.
+
+
 module Visualizer.Visualizer exposing (..)
 
 import Browser
@@ -52,23 +70,15 @@ view : RootModel -> Browser.Document Msg
 view rootModel =
     { title = "Visualizer"
     , body =
-        [ div [ class "visualizer container" ]
-            [ div [ class "row" ]
-                [ div [ class "col-7" ]
-                    -- Map & Controller
-                    [ div [ class "row maprow" ]
-                        [ Visualizer.Map.mapView "map"
-                        ]
-                    , Visualizer.Controller.view rootModel
-                        |> Html.map ControllerMsg
-                    ]
-                , div [ class "col-5" ]
-                    -- People, Traffic...
-                    [ Visualizer.People.view rootModel
-                        |> Html.map PeopleMsg
-                    , Visualizer.Traffic.view rootModel.visualizer
-                    ]
+        [ div [ class "visualizer" ]
+            [ div [ class "map-controller-row" ]
+                [ Visualizer.Map.mapView "map"
+                , Visualizer.Controller.view rootModel
+                    |> Html.map ControllerMsg
                 ]
+            , Visualizer.People.view rootModel
+                |> Html.map PeopleMsg
+            , Visualizer.Traffic.view rootModel.visualizer
             ]
 
         -- MODAL

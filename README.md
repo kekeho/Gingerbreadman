@@ -12,45 +12,13 @@ GUI Tools for Face tacking & Analyze attributes
 
 - nvidia-docker (when GPU environment)
 
-## Let's start
+- npm
 
-Just three steps.
+## Build and Launch
 
-### 1. Clone this repository
+Check at [BUILD.md](BUILD.md)
 
-```sh
-git clone https://github.com/kekeho/gingerbreadman && cd gingerbreadman
-```
 
-### 2. Build
-
-#### CPU
-
-```sh
-docker-compose build
-```
-
-#### GPU
-
-```sh
-docker-compose -f docker-compose-gpu.yml build
-```
-
-### 3. Launch containers
-
-#### CPU
-
-```sh
-docker-compose up
-```
-
-#### GPU
-
-```sh
-docker-compose -f docker-compose-gpu.yml up
-```
-
-and, open browser [http://localhost:8000](http://localhost:8000)
 
 ## Warnings
 
