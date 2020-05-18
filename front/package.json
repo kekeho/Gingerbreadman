@@ -1,0 +1,23 @@
+{
+  "name": "gingerbreadman",
+  "version": "1.0.0",
+  "description": "",
+  "main": "electron.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kekeho/gingerbreadman.git"
+  },
+  "author": "Hiroki.T (kekeho)",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/kekeho/gingerbreadman/issues"
+  },
+  "homepage": "https://github.com/kekeho/gingerbreadman#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "request": "^2.88.2"
+  }
+}
