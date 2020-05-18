@@ -205,26 +205,71 @@ def regist_sex(request):
 def get_unanalyzed_faces_sex(request):
     """Return face parent image and rect of face"""
     if request.method != 'GET':
-        HttpResponseNotAllowed(['GET'])
+        return HttpResponseNotAllowed(['GET'])
     
     # Get unanalyzed faces
     unixstart = datetime.fromtimestamp(0)
     locktime = timezone.now() - timedelta(minutes=10)
-    faces = models.Face.objects.filter(
+    faces = models.Face.objects.filter(  # OR
         service_sex_detection_analyzed=False,
         service_sex_detection_analyzing_startdate__range=(unixstart, locktime),
-        )[:100]  # 100 images per request
+        )[:500]  # 500 images per request
 
     if list(faces) == []:
         return HttpResponseNotFound()
     
-    # Refresh service_face_encoding_analyzing_startdate
+    # Refresh service_sex_detection_analyzing_startdate
     for face in faces:
         face.service_sex_detection_analyzing_startdate = timezone.now()
         face.save()
 
     return JsonResponse([[str(f.id), str(f.image.image.url), get_face_location(f)] for f in faces], safe=False)
 
+
+
+def regist_age(request):
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
+    
+    # [
+    #     {"face_id": models.Face.id,
+    #      "age": 20
+    #     }
+    # ]
+
+    face_list = json.loads(request.body)
+    for face in face_list:
+        id = face['face_id']
+        age = face['age']
+        face = models.Face.objects.get(id=id)
+        face.age = age
+        face.service_age_prediction_analyzed = True
+        face.save()
+    
+    return JsonResponse({'message': 'Done'})
+
+
+def get_unanalyzed_faces_age(request):
+    if request.method != 'GET':
+        HttpResponseNotAllowed(['GET'])
+    
+    # Get unanalyzed faces
+    unixstart = datetime.fromtimestamp(0)
+    locktime = timezone.now() - timedelta(minutes=10)
+    faces = models.Face.objects.filter(  # OR
+        service_age_prediction_analyzed=False,
+        service_age_prediction_analyzing_startdate__range=(unixstart, locktime),
+    )[:500]  # 500 images per request
+
+    if list(faces) == []:
+        return HttpResponseNotFound()
+    
+    # Refresh service_age_prediction_analyzin_startdate
+    for face in faces:
+        face.service_age_prediction_analyzing_startdate = timezone.now()
+        face.save()
+    
+    return JsonResponse([[str(f.id), str(f.image.image.url), get_face_location(f)] for f in faces], safe=False)
 
 
 @csrf_exempt

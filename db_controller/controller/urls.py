@@ -28,5 +28,7 @@ urlpatterns = [
     path('regist_face_encodings/', views.regist_encodings, name='regist_encodings'),
     path('get_unanalyzed_faces_sex/', views.get_unanalyzed_faces_sex),
     path('regist_faces_sex/', views.regist_sex),
+    path('get_unanalyzed_faces_age/', views.get_unanalyzed_faces_age),
+    path('regist_faces_age/', views.regist_age),
     path('get_face_encodings/', views.get_face_encodings, name='get_face_encodings'),
 ]
