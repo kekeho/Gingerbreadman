@@ -16,6 +16,6 @@
 # along with Gingerbreadman.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.contrib import admin
-from .models import Date, Place, Sex, AgeGroup, Image, Face, Person
+from .models import Date, Place, Sex, Image, Face, Person
 
-admin.site.register([Date, Place, Sex, AgeGroup, Image, Face, Person])
+admin.site.register([Date, Place, Sex, Image, Face, Person])

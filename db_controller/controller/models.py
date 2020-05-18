@@ -66,15 +66,6 @@ class Sex(models.Model):
                              MinValueValidator(0), MaxValueValidator(2)])
 
 
-class AgeGroup(models.Model):
-    """Age group column
-    id: Age code
-        n: 10*n ~ 10*n+9
-    """
-    id = models.IntegerField(primary_key=True, validators=[
-                             MinValueValidator(0), MaxValueValidator(9)])
-
-
 class Image(models.Model):
     """Image column
     filename: Photo filename
@@ -120,14 +111,16 @@ class Face(models.Model):
 
     service_face_encoding_analyzing_startdate = models.DateTimeField(null=False, blank=False, default=unixzero)
     service_face_encoding_analyzed = models.BooleanField(default=False)
+    face_encoding = models.TextField(blank=True, null=True)
 
     service_sex_detection_analyzing_startdate = models.DateTimeField(null=False, blank=False, default=unixzero)
     service_sex_detection_analyzed = models.BooleanField(default=False)
-
-    face_encoding = models.TextField(blank=True, null=True)
     sex = models.ForeignKey(Sex, on_delete=models.PROTECT,
                                blank=True, null=True)
-    age = models.ForeignKey(AgeGroup, on_delete=models.PROTECT, null=True)
+
+    service_age_prediction_analyzing_startdate = models.DateTimeField(null=False, blank=False, default=unixzero)
+    service_age_prediction_analyzed = models.BooleanField(default=False)
+    age = models.IntegerField(null=True, blank=True)
 
     # Emotion
     smile = models.FloatField(blank=True, default=0.0)
