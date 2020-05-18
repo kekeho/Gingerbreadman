@@ -12,7 +12,11 @@
     "type": "git",
     "url": "git+https://github.com/kekeho/gingerbreadman.git"
   },
-  "author": "Hiroki.T (kekeho)",
+  "author": {
+    "name": "Hiroki.T (kekeho)",
+    "email": "hirodora@me.com",
+    "url": "https://twitter.com/k3k3h0"
+  },
   "license": "GPL-3.0-or-later",
   "bugs": {
     "url": "https://github.com/kekeho/gingerbreadman/issues"
@@ -53,14 +57,17 @@
       ]
     },
     "win": {
-      "icon": "build/icons/icon.ico",
+      "icon": "icons/icon.ico",
       "target": "nsis"
     },
     "linux": {
-      "icon": "icons/",
+      "icon": "icons/icon.png",
       "target": [
         "deb",
-        "rpm"
+        "rpm",
+        "AppImage",
+        "pacman",
+        "snap"
       ]
     }
   }
