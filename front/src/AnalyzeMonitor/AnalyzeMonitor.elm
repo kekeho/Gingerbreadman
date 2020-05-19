@@ -107,7 +107,7 @@ indicatorView title val =
 
 subscriptions : RootModel -> Sub Msg
 subscriptions _ =
-    Time.every 500 Update
+    Time.every 1000 Update
 
 
 
