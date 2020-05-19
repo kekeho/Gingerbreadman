@@ -24,13 +24,14 @@ import numpy as np
 from urllib.parse import urljoin
 import os
 import time
+import asyncio
 
 
 agemodel = keras.models.load_model('age_prediction.h5')
 
 
 def get_image(url: str, location: List[int]) -> Image.Image:
-    resp = requests.get(url)
+    resp = requests.get(url, timeout=3)
     image = BytesIO(resp.content)
     
     # preprocess
@@ -66,6 +67,8 @@ class AgeAnalyzer():
         self.__get_unanalyzed_urls_ids()  # get unanalyzed faces
         self.images = get_images_with_url(self.unanalyzed_urls, self.known_locations)
 
+        print(f'Got {self.images.shape[0]} images')
+
         self.agelist = None
     
     def __get_unanalyzed_urls_ids(self) -> List[str]:
@@ -81,8 +84,12 @@ class AgeAnalyzer():
             self.unanalyzed_urls.append(normalized_url)
             self.known_locations.append(location)
     
-    def analyze(self):
+    async def analyze(self):
+        if self.images.size == 0:
+            return 0
+
         self.agelist = agemodel.predict(self.images)
+        return self.regist()
 
     def regist(self):
         if len(self.agelist) <= 0:  # Empty
@@ -100,22 +107,40 @@ class AgeAnalyzer():
         return len(data)
 
 
+async def getAnalyzer():
+    analyzer = AgeAnalyzer(
+        os.getenv('NGINX_HOST'), os.getenv('NGINX_PORT'),
+        '/api/db/get_unanalyzed_faces_age/',
+        'api/db/regist_faces_age/',
+    )
+
+    return analyzer
+
+
+
+async def analyze_and_getnext(analyzer: AgeAnalyzer) -> (int, AgeAnalyzer):
+    analyzer_task = asyncio.create_task(analyzer.analyze())
+    next_analyzer_task =  asyncio.create_task(getAnalyzer())
+    count = await analyzer_task
+    next_analyzer = await next_analyzer_task
+
+    return count, next_analyzer
+
+
 def main():
-    while True:
-        analyzer = AgeAnalyzer(
-            os.getenv('NGINX_HOST'), int(os.getenv('NGINX_PORT')),
+    analyzer = AgeAnalyzer(
+            os.getenv('NGINX_HOST'), os.getenv('NGINX_PORT'),
             '/api/db/get_unanalyzed_faces_age/',
             'api/db/regist_faces_age/',
         )
+    loop = asyncio.get_event_loop()
+    while True:
+        n, analyzer = loop.run_until_complete(analyze_and_getnext(analyzer))
 
-        if len(analyzer.unanalyzed_ids) <= 0:
-            time.sleep(5)
-            continue
-
-        analyzer.analyze()
-        count = analyzer.regist()
-
-        print(f'Analyzed {count} images')
+        if analyzer.images.size <= 0:
+            time.sleep(2)
+        else:
+            print(n)
 
 
 if __name__ == "__main__":
