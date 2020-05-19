@@ -17,10 +17,10 @@
 
 
 const express = require('express');
-const expressApp = express();
-
+const url = require('url')
 const request = require('request');
 
+const expressApp = express();
 const electron = require('electron');
 const electronApp = electron.app;
 
@@ -29,8 +29,10 @@ const BrowserWindow = electron.BrowserWindow;
 
 expressApp.use('/static', express.static(__dirname + '/static'));
 expressApp.all('/api/*', function(req, res) {
-    const apiServerUrl = 'http://localhost:8000' + req.url;
-    request[req.method.toLowerCase()](apiServerUrl).pipe(res);
+    const apiServerUrl = url.parse('http://localhost:8000' + req.url).href;
+    const proxy = request[req.method.toLowerCase()](apiServerUrl)
+    req.pipe(proxy);
+    proxy.pipe(res);
 });
 expressApp.get('/', function(req, res) {
     res.sendFile(__dirname + '/index.html');
