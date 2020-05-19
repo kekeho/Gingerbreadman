@@ -1,0 +1,84 @@
+/**
+ * Copyright (C) 2020 Hiroki Takemura (kekeho)
+ * 
+ * This file is part of Gingerbreadman.
+ * 
+ * Gingerbreadman is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * Gingerbreadman is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with Gingerbreadman.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+ .horizonal-container.analyze-monitor {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    overflow-x: scroll;
+    justify-content: center;
+    align-content: flex-start;
+ }
+
+
+.pad.service {
+    min-width: 12rem;
+    max-width: 12rem;
+    max-height: 17rem;
+    padding-bottom: 3rem;
+    margin-bottom: 4rem;
+}
+
+.pad.service hr {
+    align-self: center;
+    width: 70%;
+    margin: 0.7rem 0 1rem 0;
+    border: solid 2.5px #2a65af
+}
+
+.pad.service h2.title {
+    color: black;
+}
+
+
+.indicator .title {
+    margin-bottom: 0.2rem;
+    font-size: 1.2rem;
+    font-weight: 650;
+}
+
+.indicator .val {
+    font-size: 4rem;
+    font-weight: 800;
+}
+
+.mini-indicator {
+    margin-top: 1.2rem;
+}
+
+.mini-indicator .indicator {
+    margin-top: 0.5rem;
+}
+
+.mini-indicator .title {
+    color: #444a4a;
+}
+
+.mini-indicator .indicator .val {
+    font-weight: 800;
+    font-size: 1.5rem;
+}
+
+.indicator .val .unit {
+    display: inline;
+    margin-left: 0.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #1d1d1d;
+}

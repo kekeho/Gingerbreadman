@@ -1,16 +1,21 @@
-version: '3'
+version: '2.3'
 services:
   service_face_location:
-    build: services/face_location
+    build: 
+      context: "services/face_location"
+      dockerfile: "Dockerfile_ARM_GPU"
     volumes:
       - "./services/face_location:/code"
+    runtime: nvidia
     env_file:
       - worker.env
   
   service_face_encoding:
-    build: services/face_encoding
+    build:
+      context: "services/face_encoding"
+      dockerfile: "Dockerfile_ARM_GPU"
+    runtime: nvidia
     volumes:
       - "./services/face_encoding:/code"
     env_file:
       - worker.env
-

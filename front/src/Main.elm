@@ -39,6 +39,8 @@ import Visualizer.Controller
 import Visualizer.Map
 import Visualizer.Model
 import Visualizer.Visualizer
+import AnalyzeMonitor.AnalyzeMonitor
+import AnalyzeMonitor.Model
 
 
 
@@ -51,7 +53,7 @@ main =
         { init = init
         , view = view
         , update = update
-        , subscriptions = \_ -> Sub.none
+        , subscriptions = subscriptions
         , onUrlChange = UrlChanged
         , onUrlRequest = LinkClicked
         }
@@ -70,6 +72,7 @@ init flags url key =
       , errorList = []
       , visualizer = Visualizer.Model.modelInit
       , upload = Upload.Model.modelInit
+      , analyzeMonitor = AnalyzeMonitor.Model.modelInit
       , settings = Common.Settings.modelInit
       }
       -- Command to get all places
@@ -96,6 +99,7 @@ type Msg
     | UrlChanged Url.Url
     | VisualizerMsg Visualizer.Visualizer.Msg
     | UploadMsg Upload.Upload.Msg
+    | AnalyzeMonitorMsg AnalyzeMonitor.AnalyzeMonitor.Msg
     | ErrorMsg Common.ErrorPanel.Msg
     | SettingsMsg Common.Settings.Msg
 
@@ -156,6 +160,15 @@ update msg rootModel =
             ( model_
             , Cmd.map UploadMsg cmd
             )
+        
+        AnalyzeMonitorMsg subMsg ->
+            let
+                ( model_, cmd ) =
+                    AnalyzeMonitor.AnalyzeMonitor.update subMsg rootModel
+            in
+            ( model_
+            , Cmd.map AnalyzeMonitorMsg cmd
+            )
 
         ErrorMsg subMsg ->
             let
@@ -204,6 +217,9 @@ view rootModel =
 
         Just UploadPage ->
             viewPage Upload.Upload.view rootModel UploadMsg
+        
+        Just AnalyzeMonitor ->
+            viewPage AnalyzeMonitor.AnalyzeMonitor.view rootModel AnalyzeMonitorMsg
 
         Nothing ->
             notFoundView
@@ -216,6 +232,7 @@ navbarView model =
             [ Common.Data.gmTitleLogo ]
         , div [ class "nav navbar-nav" ]
             [ a [ class "nav-item active ", href "/upload" ] [ text "Upload" ]
+            , a [ class "nav-item", href "/monitor" ] [ text "Analyze Monitor" ]
             ]
         ]
 
@@ -231,6 +248,16 @@ notFoundView =
 
 
 
+-- SUBSCRIPTIONS
+
+subscriptions : RootModel -> Sub Msg
+subscriptions rootModel =
+    Sub.batch
+        [ Sub.map AnalyzeMonitorMsg ( AnalyzeMonitor.AnalyzeMonitor.subscriptions rootModel)
+        ]
+
+
+
 -- FUNCTIONS
 
 
@@ -239,4 +266,5 @@ routeParser =
     Url.Parser.oneOf
         [ Url.Parser.map VisualizerPage Url.Parser.top
         , Url.Parser.map UploadPage (Url.Parser.s "upload")
+        , Url.Parser.map AnalyzeMonitor (Url.Parser.s "monitor")
         ]

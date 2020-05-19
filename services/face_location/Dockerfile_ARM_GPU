@@ -1,0 +1,36 @@
+FROM nvcr.io/nvidia/l4t-base:r32.4.2
+
+ENV DEBIAN_FRONTEND noninteractive
+
+RUN apt update
+RUN apt install -y python3.7-dev python3.7 python3-pip python3-setuptools build-essential cmake curl gcc g++ make git libopenblas-dev liblapack-dev
+RUN apt install -y libtiff5-dev libjpeg-dev libopenjp2-7-dev zlib1g-dev \
+    libfreetype6-dev liblcms2-dev libwebp-dev tcl8.6-dev tk8.6-dev python3-tk \
+    libharfbuzz-dev libfribidi-dev libxcb1-dev
+
+
+# build dlib
+RUN git clone https://github.com/davisking/dlib
+RUN mkdir /dlib/build
+
+COPY ./libcudnn.so  /usr/lib/aarch64-linux-gnu/libcudnn.so
+ENV CUDA_PATH=/usr/local/cuda-10
+ENV CFLAGS=-I/usr/local/cuda/include
+ENV LDFLAGS=-L/usr/local/cuda/lib64
+
+WORKDIR /dlib/build
+RUN cmake -DUSE_AVX_INSTRUCTIONS=YES -DLIB_USE_CUDA=YES ..
+RUN cmake --build .
+RUN make install
+
+WORKDIR /dlib
+RUN python3.7 setup.py install
+
+
+WORKDIR /
+COPY ./requirements.txt /
+RUN python3.7 -m pip install -r requirements.txt
+
+ENV GB_GPU=True
+WORKDIR /code
+CMD ["python3.7", "face_location.py"]

@@ -30,6 +30,9 @@ from datetime import timedelta
 from . import models
 from . import view_utils
 
+UNIXZERO = datetime.fromtimestamp(0)
+LOCKDELTA = timedelta(minutes=10)
+
 
 def get_face_location(f: models.Face):
     return (
@@ -100,11 +103,10 @@ def get_unanalyzed_face_location_images(request):
         HttpResponseNotAllowed(["GET"])
 
     # Get unanalyzed images
-    unixstart = datetime.fromtimestamp(0)
-    locktime = timezone.now() - timedelta(minutes=10)
+    locktime = timezone.now() - LOCKDELTA
     images = models.Image.objects.filter(
         service_face_location_analyzed=False,
-        service_face_location_analyzing_startdate__range=(unixstart, locktime),
+        service_face_location_analyzing_startdate__range=(UNIXZERO, locktime),
         )[:100]  # 100 images per request
 
     if list(images) == []:
@@ -158,11 +160,10 @@ def get_unanalyzed_face_encoding_faces(request):
         HttpResponseNotAllowed(['GET'])
     
     # Get unanalyzed faces
-    unixstart = datetime.fromtimestamp(0)
-    locktime = timezone.now() - timedelta(minutes=10)
+    locktime = timezone.now() - LOCKDELTA
     faces = models.Face.objects.filter(
         service_face_encoding_analyzed=False,
-        service_face_encoding_analyzing_startdate__range=(unixstart, locktime),
+        service_face_encoding_analyzing_startdate__range=(UNIXZERO, locktime),
         )[:100]  # 100 images per request
 
     if list(faces) == []:
@@ -208,11 +209,10 @@ def get_unanalyzed_faces_sex(request):
         return HttpResponseNotAllowed(['GET'])
     
     # Get unanalyzed faces
-    unixstart = datetime.fromtimestamp(0)
-    locktime = timezone.now() - timedelta(minutes=10)
+    locktime = timezone.now() - LOCKDELTA
     faces = models.Face.objects.filter(  # OR
         service_sex_detection_analyzed=False,
-        service_sex_detection_analyzing_startdate__range=(unixstart, locktime),
+        service_sex_detection_analyzing_startdate__range=(UNIXZERO, locktime),
         )[:500]  # 500 images per request
 
     if list(faces) == []:
@@ -254,11 +254,10 @@ def get_unanalyzed_faces_age(request):
         HttpResponseNotAllowed(['GET'])
     
     # Get unanalyzed faces
-    unixstart = datetime.fromtimestamp(0)
-    locktime = timezone.now() - timedelta(minutes=10)
+    locktime = timezone.now() - LOCKDELTA
     faces = models.Face.objects.filter(  # OR
         service_age_prediction_analyzed=False,
-        service_age_prediction_analyzing_startdate__range=(unixstart, locktime),
+        service_age_prediction_analyzing_startdate__range=(UNIXZERO, locktime),
     )[:500]  # 500 images per request
 
     if list(faces) == []:
@@ -349,10 +348,59 @@ def get_face_encodings(request):
     return JsonResponse(return_faces_info, safe=False)
 
 
-def get_unanalyzed_images_count(request):
+
+def get_analyze_state(request):
     allowed_method = ['GET']
     if request.method not in allowed_method:
         return HttpResponseNotAllowed(allowed_method)
     
-    count = models.Image.objects.filter(service_face_location_analyzed=False).count()
-    return HttpResponse(count)
+    locktime = timezone.now() - LOCKDELTA
+
+    face_loc = {
+        'service': 'face_location',
+        'unanalyzed': models.Image.objects.filter(service_face_location_analyzed=False).count(),
+        'analyzing': models.Image.objects.filter(
+            service_face_location_analyzed=False,
+            service_face_location_analyzing_startdate__range=(locktime, timezone.now()),
+        ).count(),
+        'analyzed': models.Image.objects.filter(service_face_location_analyzed=True).count()
+    }
+
+    face_enc = {
+        'service': 'face_encoding',
+        'unanalyzed': models.Face.objects.filter(service_face_encoding_analyzed=False).count(),
+        'analyzing': models.Face.objects.filter(
+            service_face_encoding_analyzed=False,
+            service_face_encoding_analyzing_startdate__range=(locktime, timezone.now()),
+        ).count(),
+        'analyzed' : models.Face.objects.filter(service_face_encoding_analyzed=True).count()
+    }
+
+    face_sex = {
+        'service': 'sex_detection',
+        'unanalyzed': models.Face.objects.filter(service_sex_detection_analyzed=False).count(),
+        'analyzing': models.Face.objects.filter(
+            service_sex_detection_analyzed=False,
+            service_sex_detection_analyzing_startdate__range=(locktime, timezone.now()),
+        ).count(),
+        'analyzed': models.Face.objects.filter(service_sex_detection_analyzed=True).count()
+    }
+
+    face_age = {
+        'service': 'age_prediction',
+        'unanalyzed': models.Face.objects.filter(service_age_prediction_analyzed=False).count(),
+        'analyzing': models.Face.objects.filter(
+            service_age_prediction_analyzed=False,
+            service_age_prediction_analyzing_startdate__range=(locktime, timezone.now()),
+        ).count(),
+        'analyzed': models.Face.objects.filter(service_age_prediction_analyzed=True).count()
+    }
+
+    return_list = [
+        face_loc,
+        face_enc,
+        face_sex,
+        face_age,
+    ]
+
+    return JsonResponse(return_list, safe=False)

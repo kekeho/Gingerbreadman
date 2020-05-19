@@ -17,15 +17,6 @@
  * along with Gingerbreadman.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.visualizer {
-    max-width: none;
-    display: flex;
-    height: calc(100vh - 10rem);
-    overflow-x: scroll;
-    align-content: flex-start;
-    align-items: flex-start;
-    padding: 2rem 5vw 0 5vw;
-}
 
 .maincontainer {
     padding: 0;
@@ -33,10 +24,6 @@
     width: 100vw;
 }
 
-h2.title {
-    margin: 0;
-    font-size: 1.5rem;
-}
 
 .mainrow {
     padding: 0;
@@ -177,6 +164,7 @@ ul.all-places {
     flex-shrink: 1;
     width: 100%;
     margin: 0 2rem 2rem 0;
+    padding: 0;
     border-radius: 1.5rem;
     height: calc(100vh - 13rem);
     filter: drop-shadow(0.8rem 0.8rem 1rem #999999)
