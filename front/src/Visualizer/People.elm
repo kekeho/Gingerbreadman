@@ -73,8 +73,13 @@ faceView timezone face =
     div [ class "face" ]
         [ img
             [ src face.faceImageB64
-            , title (face.place.name ++ " " ++ sexString face.sex ++ " " ++ localDropSecsStr timezone face.datetime) ] []
+            , title (face.place.name ++ " " ++ sexString face.sex ++ " " ++ ageString face.age ++ " " ++ localDropSecsStr timezone face.datetime) ] []
         ]
+
+
+
+-- FUNCTIONS
+
 
 sexString : Sex -> String
 sexString sex =
@@ -85,3 +90,12 @@ sexString sex =
             "Female"
         NotKnown ->
             "Not Known"
+
+
+ageString : Maybe Float -> String
+ageString age =
+    case age of
+        Nothing ->
+            ""
+        Just val ->
+            String.fromFloat val
