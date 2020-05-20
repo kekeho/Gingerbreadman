@@ -41,6 +41,8 @@ type Msg
     | PlaceSearchInput String
     | GotSinceTime String
     | GotUntilTime String
+    | ValidSinceTime String
+    | ValidUntilTime String
     | Analyze
     | Analyzed (Result Http.Error (List Visualizer.Model.Person))
     | ChangeModalState Bool
@@ -125,8 +127,36 @@ update msg rootModel =
             ( { rootModel | visualizer = { visualizerModel | controller = { controllerModel | placeSearchKeyword = keyword } } }
             , Cmd.none
             )
+        
+        GotSinceTime str ->
+            let
+                inputDateRange = controllerModel.inputDateRange
+            in
+            ( { rootModel | 
+                visualizer = { visualizerModel | 
+                    controller = { controllerModel | 
+                        inputDateRange = { inputDateRange | since = str } 
+                    }
+                } 
+              }
+            , Cmd.none
+            )
+        
+        GotUntilTime str ->
+            let
+                inputDateRange = controllerModel.inputDateRange
+            in
+            ( { rootModel | 
+                visualizer = { visualizerModel | 
+                    controller = { controllerModel | 
+                        inputDateRange = { inputDateRange | until = str } 
+                    }
+                } 
+              }
+            , Cmd.none
+            )
 
-        GotSinceTime iso8601Str ->
+        ValidSinceTime iso8601Str ->
             let
                 normalized =
                     iso8601Str ++ ":00"
@@ -155,7 +185,7 @@ update msg rootModel =
                     , cmd
                     )
 
-        GotUntilTime iso8601Str ->
+        ValidUntilTime iso8601Str ->
             let
                 normalized =
                     iso8601Str ++ ":00"
@@ -364,8 +394,9 @@ dateSelectorView rootModel =
             [ label [] [ text "since" ]
             , input
                 [ type_ "datetime-local"
-                , value (Common.Settings.localDropSecsStr hereTimeZone controllerModel.dateRange.since)
-                , onChange GotSinceTime
+                , value controllerModel.inputDateRange.since
+                , onInput GotSinceTime
+                , onChange ValidSinceTime
                 ]
                 []
             ]
@@ -373,8 +404,9 @@ dateSelectorView rootModel =
             [ label [] [ text "until" ]
             , input
                 [ type_ "datetime-local"
-                , value (Common.Settings.localDropSecsStr hereTimeZone controllerModel.dateRange.until)
-                , onChange GotUntilTime
+                , value controllerModel.inputDateRange.until
+                , onInput GotUntilTime
+                , onChange ValidUntilTime
                 ]
                 []
             ]

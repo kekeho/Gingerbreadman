@@ -46,6 +46,10 @@ controllerModelInit =
         { since = Time.millisToPosix 0
         , until = Time.millisToPosix 0
         }
+    , inputDateRange =
+        { since = "2000-01-01T00:00"
+        , until = "2000-01-01T00:00"
+        }
     , resultPlaces = []
     , resultDateRange =
         { since = Time.millisToPosix 0
@@ -82,6 +86,7 @@ type alias ControllerModel =
     , resultPlaces : List Place
     , placeSearchKeyword : String
     , dateRange : DateRange
+    , inputDateRange : InputDateRange
     , resultDateRange : DateRange
     , modalState : Bool
     }
@@ -153,6 +158,12 @@ type alias TrafficCount =
 type alias DateRange =
     { since : Time.Posix
     , until : Time.Posix
+    }
+
+
+type alias InputDateRange =
+    { since : String
+    , until : String
     }
 
 
