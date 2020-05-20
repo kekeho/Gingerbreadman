@@ -81,9 +81,13 @@ view rootModel =
 serviceView : ServiceModel -> Html Msg
 serviceView service =
     div [ class "service pad" ]
-        [ h2 [ class "title" ] [ text service.service ]
-        , hr [] []
-        , indicatorView "Remain :" service.remain
+        [ div [ class "title-indicator" ]
+            [ h2 [ class "title" ] [ text service.service ]
+            , hr [] []
+            ]
+        , div [ class "main-indicator" ]
+            [ indicatorView "Remain :" service.remain
+            ]
         , div [ class "mini-indicator" ]
             [ indicatorView "Analyzing :" service.analyzing
             , indicatorView "Done :" service.analyzed

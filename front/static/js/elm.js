@@ -10201,17 +10201,35 @@ var $author$project$AnalyzeMonitor$AnalyzeMonitor$serviceView = function (servic
 		_List_fromArray(
 			[
 				A2(
-				$elm$html$Html$h2,
+				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('title')
+						$elm$html$Html$Attributes$class('title-indicator')
 					]),
 				_List_fromArray(
 					[
-						$elm$html$Html$text(service.bQ)
+						A2(
+						$elm$html$Html$h2,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('title')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text(service.bQ)
+							])),
+						A2($elm$html$Html$hr, _List_Nil, _List_Nil)
 					])),
-				A2($elm$html$Html$hr, _List_Nil, _List_Nil),
-				A2($author$project$AnalyzeMonitor$AnalyzeMonitor$indicatorView, 'Remain :', service.bM),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('main-indicator')
+					]),
+				_List_fromArray(
+					[
+						A2($author$project$AnalyzeMonitor$AnalyzeMonitor$indicatorView, 'Remain :', service.bM)
+					])),
 				A2(
 				$elm$html$Html$div,
 				_List_fromArray(
