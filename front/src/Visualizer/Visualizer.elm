@@ -72,9 +72,9 @@ view rootModel =
     , body =
         [ div [ class "visualizer horizonal-container" ]
             [ div [ class "map-controller-row" ]
-                [ Visualizer.Map.mapView "map"
-                , Visualizer.Controller.view rootModel
+                [ Visualizer.Controller.view rootModel
                     |> Html.map ControllerMsg
+                , Visualizer.Map.mapView "map"
                 ]
             , Visualizer.People.view rootModel
                 |> Html.map PeopleMsg

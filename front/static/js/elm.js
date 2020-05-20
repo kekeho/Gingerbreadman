@@ -11308,11 +11308,11 @@ var $author$project$Visualizer$Visualizer$view = function (rootModel) {
 							]),
 						_List_fromArray(
 							[
-								$author$project$Visualizer$Map$mapView('map'),
 								A2(
 								$elm$html$Html$map,
 								$author$project$Visualizer$Visualizer$ControllerMsg,
-								$author$project$Visualizer$Controller$view(rootModel))
+								$author$project$Visualizer$Controller$view(rootModel)),
+								$author$project$Visualizer$Map$mapView('map')
 							])),
 						A2(
 						$elm$html$Html$map,
