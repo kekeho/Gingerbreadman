@@ -70,7 +70,11 @@ port drawTrafficLinePort : List ( TrafficCount, List TrafficCount ) -> Cmd msg
 
 mapView : String -> Html msg
 mapView mapId =
-    div [ id mapId, class "pad map" ] []
+    div [ class "map" ]
+        [ h2 [ class "title" ] [ text "Map" ]
+        , div [ id mapId, class "pad map" ] []
+        ]
+        
 
 
 

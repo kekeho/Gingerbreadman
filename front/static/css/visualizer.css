@@ -128,7 +128,7 @@ ul.all-places {
     box-shadow: inset 0.5rem 0.5rem 1rem #aeaeae,
                 inset -1rem -1rem 0.7rem #f5f5f5;
     border-radius: 2rem;
-    margin-top: 1rem;
+    margin-top: 2rem;
     padding: 1.5rem;
     height: calc(100% - 5.5rem);
 }
@@ -155,19 +155,24 @@ ul.all-places {
 
 /* Map */
 
+.map {
+    width: 100%;
+}
+
 .map-controller-row {
     min-width: 90vw;
     display: flex;
 }
 
-.map#map {
+#map {
+    margin-top: 2rem !important;
     flex-grow: 3;
     flex-shrink: 1;
     width: 100%;
     margin: 0 2rem 2rem 0;
     padding: 0;
     border-radius: 1.5rem;
-    height: calc(100vh - 13rem);
+    height: calc(100vh - 16rem);
     filter: drop-shadow(0.8rem 0.8rem 1rem #999999)
             drop-shadow(-1rem -1rem 0.7rem #ffffff);
 }

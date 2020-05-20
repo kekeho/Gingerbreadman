@@ -10692,10 +10692,29 @@ var $author$project$Visualizer$Map$mapView = function (mapId) {
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$id(mapId),
-				$elm$html$Html$Attributes$class('pad map')
+				$elm$html$Html$Attributes$class('map')
 			]),
-		_List_Nil);
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$h2,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('title')
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Map')
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$id(mapId),
+						$elm$html$Html$Attributes$class('pad map')
+					]),
+				_List_Nil)
+			]));
 };
 var $author$project$Common$Settings$localDropSecsStr = F2(
 	function (hereZone, utcTime) {

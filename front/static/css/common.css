@@ -77,7 +77,7 @@ nav.navbar {
     overflow-x: scroll;
     align-content: flex-start;
     align-items: flex-start;
-    padding: 2rem 5vw 0 5vw;
+    padding: 0.5rem 5vw 0 5vw;
 }
 
 
@@ -87,7 +87,7 @@ nav.navbar {
     margin: 0 4rem 2rem 0;
     padding: 2rem;
     border-radius: 1.5rem;
-    height: calc(100vh - 17rem);
+    height: calc(100vh - 16rem);
     background-color: #ddd7d7;
     filter: drop-shadow(0.8rem 0.8rem 1rem #999999)
             drop-shadow(-0.8rem -0.8rem 0.7rem #ffffff);
