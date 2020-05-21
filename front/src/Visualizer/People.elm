@@ -51,9 +51,9 @@ update msg rootModel =
 
 view : RootModel -> Html Msg
 view rootModel =
-    div [ class "people", id "people" ]
+    div [ class "people column", id "people" ]
         [ h2 [ class "title" ] [ text "People" ] 
-        , div [ class "people-container" ]
+        , div [ class "people-container depression-container" ]
             (List.map (personView rootModel.settings.timezone) rootModel.visualizer.people)
         ]
 

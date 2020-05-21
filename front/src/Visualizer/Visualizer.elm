@@ -27,6 +27,9 @@ import Visualizer.Map
 import Visualizer.Model exposing (Model)
 import Visualizer.People
 import Visualizer.Traffic
+import TypedSvg exposing (svg)
+import TypedSvg.Attributes exposing (viewBox)
+import Visualizer.Graph
 
 
 
@@ -36,6 +39,7 @@ import Visualizer.Traffic
 type Msg
     = ControllerMsg Visualizer.Controller.Msg
     | PeopleMsg Visualizer.People.Msg
+    | GraphMsg Visualizer.Graph.Msg
 
 
 update : Msg -> RootModel -> ( RootModel, Cmd Msg )
@@ -60,7 +64,16 @@ update msg rootModel =
                     Cmd.map PeopleMsg cmd_
             in
             ( rootModel_, cmd )
-
+        
+        GraphMsg subMsg ->
+            let
+                ( rootModel_, cmd_ ) =
+                    Visualizer.Graph.update subMsg rootModel
+                
+                cmd =
+                    Cmd.map GraphMsg cmd_
+            in
+            ( rootModel_, cmd )
 
 
 -- VIEW
@@ -76,6 +89,8 @@ view rootModel =
                     |> Html.map ControllerMsg
                 , Visualizer.Map.mapView "map"
                 ]
+            , Visualizer.Graph.view rootModel
+                |> Html.map GraphMsg
             , Visualizer.People.view rootModel
                 |> Html.map PeopleMsg
             , Visualizer.Traffic.view rootModel.visualizer
