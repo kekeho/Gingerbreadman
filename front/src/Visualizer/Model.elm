@@ -215,7 +215,7 @@ faceDecoder =
         |> P.required "place" placeDecoder
         |> P.required "posix_millisec" datetimeDecoder
         |> P.required "sex" sexDecoder
-        |> P.required "age" (D.maybe D.float)
+        |> P.optional "age" (D.maybe D.float) Nothing
 
 
 faceLocationDecoder : Decoder FaceLocation

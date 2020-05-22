@@ -181,11 +181,12 @@ ul.all-places {
 /* Graph */
 
 .graph-svg {
-    margin: 1.5rem;
     filter: drop-shadow(0.8rem 0.8rem 1rem #999999)
             drop-shadow(-1rem -1rem 0.7rem #ffffff);
+    height: 250px;
+    width: 250px;
 }
 
 .graph.sex {
-    width: 45%;
+    width: 50%;
 }
