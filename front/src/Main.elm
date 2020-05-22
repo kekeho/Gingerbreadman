@@ -1,23 +1,25 @@
 --  Copyright (C) 2020 Hiroki Takemura (kekeho)
---  
+--
 --  This file is part of Gingerbreadman.
---  
+--
 -- Gingerbreadman is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
 -- the Free Software Foundation, either version 3 of the License, or
 -- (at your option) any later version.
--- 
+--
 -- Gingerbreadman is distributed in the hope that it will be useful,
 -- but WITHOUT ANY WARRANTY; without even the implied warranty of
 -- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 -- GNU General Public License for more details.
--- 
+--
 -- You should have received a copy of the GNU General Public License
 -- along with Gingerbreadman.  If not, see <http://www.gnu.org/licenses/>.
 
 
 module Main exposing (main)
 
+import AnalyzeMonitor.AnalyzeMonitor
+import AnalyzeMonitor.Model
 import Browser
 import Browser.Navigation as Nav
 import Common.Data
@@ -39,8 +41,6 @@ import Visualizer.Controller
 import Visualizer.Map
 import Visualizer.Model
 import Visualizer.Visualizer
-import AnalyzeMonitor.AnalyzeMonitor
-import AnalyzeMonitor.Model
 
 
 
@@ -160,7 +160,7 @@ update msg rootModel =
             ( model_
             , Cmd.map UploadMsg cmd
             )
-        
+
         AnalyzeMonitorMsg subMsg ->
             let
                 ( model_, cmd ) =
@@ -217,7 +217,7 @@ view rootModel =
 
         Just UploadPage ->
             viewPage Upload.Upload.view rootModel UploadMsg
-        
+
         Just AnalyzeMonitor ->
             viewPage AnalyzeMonitor.AnalyzeMonitor.view rootModel AnalyzeMonitorMsg
 
@@ -250,10 +250,11 @@ notFoundView =
 
 -- SUBSCRIPTIONS
 
+
 subscriptions : RootModel -> Sub Msg
 subscriptions rootModel =
     Sub.batch
-        [ Sub.map AnalyzeMonitorMsg ( AnalyzeMonitor.AnalyzeMonitor.subscriptions rootModel)
+        [ Sub.map AnalyzeMonitorMsg (AnalyzeMonitor.AnalyzeMonitor.subscriptions rootModel)
         ]
 
 

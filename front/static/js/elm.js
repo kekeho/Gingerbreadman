@@ -12870,9 +12870,9 @@ var $author$project$Visualizer$Graph$labelText = F3(
 					$elm$html$Html$text(txt)
 				]));
 	});
-var $author$project$Visualizer$Graph$h = 250;
-var $author$project$Visualizer$Graph$w = 250;
-var $author$project$Visualizer$Graph$radius = (A2($elm$core$Basics$min, $author$project$Visualizer$Graph$w / 2, $author$project$Visualizer$Graph$h) / 2) - 10;
+var $author$project$Visualizer$Graph$pieW = 250;
+var $author$project$Visualizer$Graph$pieH = 250;
+var $author$project$Visualizer$Graph$radius = (A2($elm$core$Basics$min, $author$project$Visualizer$Graph$pieW / 2, $author$project$Visualizer$Graph$pieH) / 2) - 10;
 var $author$project$Visualizer$Graph$title = F3(
 	function (x, y, txt) {
 		return A2(
@@ -12963,7 +12963,7 @@ var $author$project$Visualizer$Graph$annular = F6(
 					$elm_community$typed_svg$TypedSvg$Attributes$transform(
 					_List_fromArray(
 						[
-							A2($elm_community$typed_svg$TypedSvg$Types$Translate, $author$project$Visualizer$Graph$w / 2, $author$project$Visualizer$Graph$w / 2)
+							A2($elm_community$typed_svg$TypedSvg$Types$Translate, $author$project$Visualizer$Graph$pieW / 2, $author$project$Visualizer$Graph$pieW / 2)
 						]))
 				]),
 			_List_fromArray(
@@ -13140,9 +13140,9 @@ var $author$project$Visualizer$Graph$ageView = function (valList) {
 				_List_fromArray(
 					[
 						$elm$html$Html$Attributes$width(
-						$elm$core$Basics$round($author$project$Visualizer$Graph$w)),
+						$elm$core$Basics$round($author$project$Visualizer$Graph$pieW)),
 						$elm$html$Html$Attributes$height(
-						$elm$core$Basics$round($author$project$Visualizer$Graph$h))
+						$elm$core$Basics$round($author$project$Visualizer$Graph$pieH))
 					]),
 				_List_fromArray(
 					[
@@ -13241,9 +13241,9 @@ var $author$project$Visualizer$Graph$sexView = function (valList) {
 				_List_fromArray(
 					[
 						$elm$html$Html$Attributes$width(
-						$elm$core$Basics$round($author$project$Visualizer$Graph$w)),
+						$elm$core$Basics$round($author$project$Visualizer$Graph$pieW)),
 						$elm$html$Html$Attributes$height(
-						$elm$core$Basics$round($author$project$Visualizer$Graph$h))
+						$elm$core$Basics$round($author$project$Visualizer$Graph$pieH))
 					]),
 				_List_fromArray(
 					[

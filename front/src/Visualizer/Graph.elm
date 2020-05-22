@@ -1,21 +1,19 @@
 module Visualizer.Graph exposing (..)
 
-
 import Array exposing (Array)
 import Color exposing (Color)
+import Html exposing (..)
+import Html.Attributes exposing (..)
 import LowLevel.Command exposing (arcTo, clockwise, largestArc, moveTo)
+import Model exposing (..)
 import Path
 import Shape exposing (Arc, defaultPieConfig)
 import TypedSvg exposing (circle, g, svg, text_)
-import TypedSvg.Attributes exposing (fill, fontSize, fontWeight, stroke, color,transform, textAnchor,viewBox, dy)
+import TypedSvg.Attributes exposing (color, dy, fill, fontSize, fontWeight, stroke, textAnchor, transform, viewBox)
 import TypedSvg.Attributes.InPx exposing (cx, cy, r)
 import TypedSvg.Core exposing (Svg)
-import TypedSvg.Types exposing (Paint(..), Transform(..), AnchorAlignment(..), em)
-import Html exposing (..)
-import Html.Attributes exposing (..)
-
+import TypedSvg.Types exposing (AnchorAlignment(..), Paint(..), Transform(..), em)
 import Visualizer.Model exposing (..)
-import Model exposing (..)
 
 
 type GraphType
@@ -23,21 +21,24 @@ type GraphType
     | Age
 
 
+
 -- UPDATE
 
 
-type Msg =
-    Message
+type Msg
+    = Message
 
 
-update : Msg -> RootModel ->  ( RootModel, Cmd Msg )
+update : Msg -> RootModel -> ( RootModel, Cmd Msg )
 update msg rootModel =
     case msg of
         _ ->
-             ( rootModel, Cmd.none )
+            ( rootModel, Cmd.none )
+
 
 
 -- VIEWS
+
 
 view : RootModel -> Html Msg
 view rootModel =
@@ -50,16 +51,94 @@ view rootModel =
         ]
 
 
+sexColors : Array Color
+sexColors =
+    Array.fromList
+        [ rgba255 77 124 191 1 -- MALE
+        , rgba255 191 77 134 1 -- FEMALE
+        , rgba255 220 220 220 1 -- NotKnown
+        , rgba255 220 220 220 1 -- Empty
+        ]
 
-w : Float
-w = toFloat 250
 
-h : Float
-h = toFloat 250
+sexView : List Float -> Html msg
+sexView valList =
+    let
+        ( valList_, labelVisible ) =
+            if Maybe.withDefault 0 (List.maximum valList) > 0 then
+                ( valList, True )
+
+            else
+                ( [ 0, 0, 0, 1 ], False )
+
+        pieData =
+            valList_ |> Shape.pie { defaultPieConfig | outerRadius = radius, sortingFn = nonSort }
+    in
+    div [ class "graph-svg sex" ]
+        [ svg [ width (round pieW), height (round pieH) ]
+            [ annular Sex sexColors "Sex" pieData valList_ labelVisible ]
+        ]
+
+
+ageColors : Array Color
+ageColors =
+    List.repeat 8
+        [ rgba255 255 255 255 1
+        , rgba255 190 190 190 1
+        ]
+        |> List.concat
+        |> List.append [ rgba255 220 220 220 1 ]
+        -- NotKnown
+        |> Array.fromList
+
+
+ageView : List Float -> Html msg
+ageView valList =
+    let
+        ( valList_, labelVisible ) =
+            if Maybe.withDefault 0 (List.maximum valList) > 0 then
+                ( valList, True )
+
+            else
+                ( List.map (\_ -> 0) (List.range 1 17)
+                    -- 0~5 -> over 80
+                    |> List.append [ 1 ]
+                  -- empty
+                , False
+                )
+
+        pieData =
+            valList_ |> Shape.pie { defaultPieConfig | outerRadius = radius, sortingFn = nonSort }
+    in
+    div [ class "graph-svg age" ]
+        [ svg [ width (round pieW), height (round pieH) ]
+            [ annular Age ageColors "Age" pieData valList_ labelVisible ]
+        ]
+
+
+pieW : Float
+pieW =
+    toFloat 250
+
+
+pieH : Float
+pieH =
+    toFloat 250
+
+
+barW : Float
+barW =
+    toFloat 550
+
+
+barH : Float
+barH =
+    toFloat 300
 
 
 radius : Float
-radius = Basics.min (w/2) h/2-10
+radius =
+    Basics.min (pieW / 2) pieH / 2 - 10
 
 
 title : Float -> Float -> String -> Svg msg
@@ -92,6 +171,7 @@ nonSort : comparable -> comparable -> Order
 nonSort _ _ =
     GT
 
+
 annular : GraphType -> Array Color -> String -> List Arc -> List Float -> Bool -> Svg msg
 annular graphType colorArray titleStr arcs valList labelVisible =
     let
@@ -99,10 +179,12 @@ annular graphType colorArray titleStr arcs valList labelVisible =
             Path.element (Shape.arc { datum | innerRadius = radius * 2 - 10 })
                 [ fill <| Paint <| Maybe.withDefault Color.black <| Array.get index <| colorArray
                 ]
-        makeLabels index (datum, val) =
+
+        makeLabels index ( datum, val ) =
             let
-                (x, y) =
-                    Shape.centroid { datum | innerRadius = radius * 2, outerRadius = radius * 2 + 10}
+                ( x, y ) =
+                    Shape.centroid { datum | innerRadius = radius * 2, outerRadius = radius * 2 + 10 }
+
                 labelT =
                     if labelVisible then
                         case graphType of
@@ -112,89 +194,37 @@ annular graphType colorArray titleStr arcs valList labelVisible =
                                         case index of
                                             0 ->
                                                 "Male"
+
                                             1 ->
                                                 "Female"
+
                                             2 ->
                                                 "Not Known"
+
                                             _ ->
                                                 "ERROR"
                                 in
-                                head ++ " : " ++ String.fromFloat ((val / List.sum valList)*100) ++ "%"
+                                head ++ " : " ++ String.fromFloat ((val / List.sum valList) * 100) ++ "%"
+
                             Age ->
-                                String.fromInt (index*5) ++ "~" ++ String.fromInt ((index+1)*5)
-                                ++ " : " ++ String.fromFloat ((val / List.sum valList)*100) ++ "%"
+                                String.fromInt (index * 5)
+                                    ++ "~"
+                                    ++ String.fromInt ((index + 1) * 5)
+                                    ++ " : "
+                                    ++ String.fromFloat ((val / List.sum valList) * 100)
+                                    ++ "%"
+
                     else
                         ""
             in
             labelText x y labelT
     in
-    g [ transform [ Translate (w/2) (w/2) ] ]
+    g [ transform [ Translate (pieW / 2) (pieW / 2) ] ]
         [ g []
-            ( List.indexedMap makeSlice <| arcs
-            )
-        , g [] (List.indexedMap makeLabels <| List.map2 Tuple.pair arcs valList )
+            (List.indexedMap makeSlice <| arcs)
+        , g [] (List.indexedMap makeLabels <| List.map2 Tuple.pair arcs valList)
         , title 0 0 titleStr
         ]
-
-
-sexColors : Array Color
-sexColors =
-    Array.fromList
-        [ rgba255 77 124 191 1  -- MALE
-        , rgba255 191 77 134 1  -- FEMALE
-        , rgba255 220 220 220 1  -- NotKnown
-        , rgba255 220 220 220 1  -- Empty
-        ] 
-
-
-sexView : List Float -> Html msg
-sexView valList =
-    let
-        (valList_, labelVisible) = 
-            if Maybe.withDefault 0 (List.maximum valList) > 0 then
-                (valList, True)
-            else
-                ([0, 0, 0, 1], False)
-        pieData =
-            valList_ |> Shape.pie { defaultPieConfig | outerRadius = radius, sortingFn = nonSort }
-    in
-    div [ class "graph-svg sex" ]
-        [ svg [ width (round w), height (round h) ]
-            [ annular Sex sexColors "Sex" pieData valList_ labelVisible ]
-        ]
-
-
-ageColors : Array Color
-ageColors =
-    List.repeat 8
-        [ rgba255 255 255 255 1
-        , rgba255 190 190 190 1
-        ] 
-        |> List.concat
-        |> List.append [ rgba255 220 220 220 1 ]  -- NotKnown
-        |> Array.fromList
-
-
-ageView : List Float -> Html msg
-ageView valList =
-    let
-        (valList_, labelVisible) =
-            if Maybe.withDefault 0 (List.maximum valList) > 0 then
-                (valList, True)
-            else
-                ( List.map (\_ -> 0) (List.range 1 17)  -- 0~5 -> over 80
-                    |> List.append [1] -- empty
-                , False
-                )
-        
-        pieData =
-            valList_ |> Shape.pie { defaultPieConfig | outerRadius = radius, sortingFn = nonSort }
-    in
-    div [ class "graph-svg age" ]
-        [ svg [ width (round w), height (round h) ]
-            [ annular Age ageColors "Age" pieData valList_ labelVisible ]
-        ]
-
 
 
 
@@ -207,31 +237,36 @@ sexPer people =
         m =
             List.filter (\p -> sexDetect p == Male) people
                 |> List.length
+
         f =
             List.filter (\p -> sexDetect p == Female) people
                 |> List.length
+
         n =
             List.filter (\p -> sexDetect p == NotKnown) people
                 |> List.length
-        
     in
-    List.map Basics.toFloat [m, f, n]
-
+    List.map Basics.toFloat [ m, f, n ]
 
 
 sexDetect : Person -> Sex
 sexDetect person =
     let
-        m = List.filter (\face -> face.sex == Male) person
-            |> List.length
-        f = List.filter (\face -> face.sex == Female) person
-            |> List.length
+        m =
+            List.filter (\face -> face.sex == Male) person
+                |> List.length
+
+        f =
+            List.filter (\face -> face.sex == Female) person
+                |> List.length
     in
     case compare m f of
         LT ->
             Female
+
         GT ->
             Male
+
         EQ ->
             NotKnown
 
@@ -239,17 +274,26 @@ sexDetect person =
 agePer : List Person -> List Float
 agePer people =
     let
-        averageList = List.map averageAge people
+        averageList =
+            List.map averageAge people
     in
     List.map
-        ( \u -> List.filter (\x -> x >= u-5 && x < u ) averageList |> List.length |> toFloat )
-        ( List.map (\i -> toFloat i*5) (List.range 1 16) ) -- 0~4 -> 75~79
-    |> List.append [ List.filter (\x -> x >= 80) averageList |> List.length |> toFloat ] -- over 80
+        (\u -> List.filter (\x -> x >= u - 5 && x < u) averageList |> List.length |> toFloat)
+        (List.map (\i -> toFloat i * 5) (List.range 1 16))
+        -- 0~4 -> 75~79
+        |> List.append [ List.filter (\x -> x >= 80) averageList |> List.length |> toFloat ]
+
+
+
+-- over 80
+
 
 averageAge : Person -> Float
 averageAge person =
     let
-        ageList = List.filterMap .age person
+        ageList =
+            List.filterMap .age person
+
         average =
             List.sum ageList / toFloat (List.length ageList)
     in
