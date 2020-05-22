@@ -80,12 +80,16 @@ title x y txt =
         [ text txt ]
 
 
-annular : List Arc -> Svg msg
-annular arcs =
+nonSort : comparable -> comparable -> Order
+nonSort _ _ =
+    GT
+
+annular : Array Color -> String -> List Arc -> Svg msg
+annular colorArray titleStr arcs =
     let
         makeSlice index datum =
             Path.element (Shape.arc { datum | innerRadius = radius - 60 })
-                [ fill <| Paint <| Maybe.withDefault Color.black <| Array.get index <| colors
+                [ fill <| Paint <| Maybe.withDefault Color.black <| Array.get index <| colorArray
                 ]
     in
     g [ transform [ Translate radius radius ] ]
