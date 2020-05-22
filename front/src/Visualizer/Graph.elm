@@ -204,14 +204,14 @@ annular graphType colorArray titleStr arcs valList labelVisible =
                                             _ ->
                                                 "ERROR"
                                 in
-                                head ++ " : " ++ String.fromFloat ((val / List.sum valList) * 100) ++ "%"
+                                head ++ " : " ++ String.fromInt (round ((val / List.sum valList) * 100)) ++ "%"
 
                             Age ->
                                 String.fromInt (index * 5)
                                     ++ "~"
                                     ++ String.fromInt ((index + 1) * 5)
                                     ++ " : "
-                                    ++ String.fromFloat ((val / List.sum valList) * 100)
+                                    ++ String.fromInt (round ((val / List.sum valList) * 100))
                                     ++ "%"
 
                     else
