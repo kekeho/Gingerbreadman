@@ -80,7 +80,7 @@ labelText x y txt =
     text_
         [ transform [ Translate x y ]
         , dy (TypedSvg.Types.em 0.5)
-        , textAnchor AnchorEnd
+        , textAnchor AnchorMiddle
         , fontSize (TypedSvg.Types.em 0.8)
         , fontWeight TypedSvg.Types.FontWeightBold
         , fill <| Paint <| rgba255 70 70 70 1

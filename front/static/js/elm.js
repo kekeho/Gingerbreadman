@@ -12668,7 +12668,7 @@ var $elm$core$Array$get = F2(
 			A2($elm$core$Elm$JsArray$unsafeGet, $elm$core$Array$bitMask & index, tail)) : $elm$core$Maybe$Just(
 			A3($elm$core$Array$getHelp, startShift, index, tree)));
 	});
-var $elm_community$typed_svg$TypedSvg$Types$AnchorEnd = 3;
+var $elm_community$typed_svg$TypedSvg$Types$AnchorMiddle = 2;
 var $elm_community$typed_svg$TypedSvg$Types$FontWeightBold = {$: 1};
 var $elm_community$typed_svg$TypedSvg$TypesToStrings$lengthToString = function (length) {
 	switch (length.$) {
@@ -12857,7 +12857,7 @@ var $author$project$Visualizer$Graph$labelText = F3(
 						])),
 					$elm_community$typed_svg$TypedSvg$Attributes$dy(
 					$elm_community$typed_svg$TypedSvg$Types$em(0.5)),
-					$elm_community$typed_svg$TypedSvg$Attributes$textAnchor(3),
+					$elm_community$typed_svg$TypedSvg$Attributes$textAnchor(2),
 					$elm_community$typed_svg$TypedSvg$Attributes$fontSize(
 					$elm_community$typed_svg$TypedSvg$Types$em(0.8)),
 					$elm_community$typed_svg$TypedSvg$Attributes$fontWeight($elm_community$typed_svg$TypedSvg$Types$FontWeightBold),
@@ -12873,7 +12873,6 @@ var $author$project$Visualizer$Graph$labelText = F3(
 var $author$project$Visualizer$Graph$h = 250;
 var $author$project$Visualizer$Graph$w = 250;
 var $author$project$Visualizer$Graph$radius = (A2($elm$core$Basics$min, $author$project$Visualizer$Graph$w / 2, $author$project$Visualizer$Graph$h) / 2) - 10;
-var $elm_community$typed_svg$TypedSvg$Types$AnchorMiddle = 2;
 var $author$project$Visualizer$Graph$title = F3(
 	function (x, y, txt) {
 		return A2(
