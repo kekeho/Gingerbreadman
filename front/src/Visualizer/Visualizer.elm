@@ -104,6 +104,14 @@ view rootModel =
     }
 
 
+-- SUBSCRIPTIONS
+
+
+subscriptions : Sub Msg
+subscriptions =
+    Sub.map GraphMsg Visualizer.Graph.subscriptions
+
+
 
 -- FUNCTIONS
 

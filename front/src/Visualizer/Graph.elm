@@ -1,4 +1,4 @@
-module Visualizer.Graph exposing (..)
+port module Visualizer.Graph exposing (..)
 
 import Array exposing (Array)
 import Axis
@@ -30,14 +30,40 @@ type GraphType
 
 
 type Msg
-    = Message
+    = PlaceClicked String
 
 
 update : Msg -> RootModel -> ( RootModel, Cmd Msg )
 update msg rootModel =
+    let
+        visualizerModel = rootModel.visualizer
+        graphModel = visualizerModel.graph
+        graphFocusPlaces = graphModel.focusPlaces
+        resultAllPlaces = rootModel.visualizer.controller.resultPlaces
+    in
     case msg of
-        _ ->
-            ( rootModel, Cmd.none )
+        PlaceClicked placeName ->
+            case List.filter (\p -> p.name == placeName) resultAllPlaces of
+                [] ->
+                    -- Unknown click
+                    ( rootModel, Cmd.none )
+                _ -> 
+                    -- Remove or Add
+                    let
+                        graphFocusPlaces_ =
+                            case List.filter (\p -> p.name == placeName) graphFocusPlaces of
+                                [] -> -- Add
+                                    graphFocusPlaces ++ List.filter (\p -> p.name == placeName) resultAllPlaces
+                                _ -> -- Remove
+                                    List.filter (\p -> p.name /= placeName) graphFocusPlaces
+                    in
+                    ( { rootModel |
+                        visualizer = { visualizerModel |
+                            graph = {graphModel | 
+                                focusPlaces = graphFocusPlaces_ }}}
+                    , Cmd.none
+                    )
+
 
 
 
@@ -327,6 +353,17 @@ barView rootModel =
     in
     div [ class "graph-svg time" ]
         [ barGraph rootModel.settings.timezone (hourCount timezone rootModel.visualizer.people) ]
+
+
+
+-- SUBSCRIPTIONS
+
+port placeClicked : (String -> msg) -> Sub msg
+
+subscriptions : Sub Msg
+subscriptions =
+    Sub.batch [ placeClicked PlaceClicked ]
+
 
 
 -- FUNCTIONS

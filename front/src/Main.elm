@@ -255,6 +255,7 @@ subscriptions : RootModel -> Sub Msg
 subscriptions rootModel =
     Sub.batch
         [ Sub.map AnalyzeMonitorMsg (AnalyzeMonitor.AnalyzeMonitor.subscriptions rootModel)
+        , Sub.map VisualizerMsg Visualizer.Visualizer.subscriptions
         ]
 
 

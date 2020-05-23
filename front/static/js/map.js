@@ -93,7 +93,11 @@ function placeCircle(position, placeName, count) {
         opacity: 0.8,
         fillColor: '#df3474',
         fillOpacity: 0.3
-    }).bindPopup(placeName + ": " + count + " unique people");
+    }).bindPopup(
+        placeName + ": " + count + " unique people"
+    ).on('click', function(e){
+        app.ports.placeClicked.send(placeName);
+    });
 }
 
 

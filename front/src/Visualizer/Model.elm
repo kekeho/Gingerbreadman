@@ -34,6 +34,7 @@ modelInit =
     { controller = controllerModelInit
     , people = peopleInit
     , traffic = trafficInit
+    , graph = graphInit
     }
 
 
@@ -69,6 +70,10 @@ trafficInit =
     []
 
 
+graphInit : GraphModel
+graphInit =
+    { focusPlaces = [] }
+
 
 -- MODELS
 
@@ -77,6 +82,7 @@ type alias Model =
     { controller : ControllerModel
     , people : List Person
     , traffic : TrafficModel
+    , graph : GraphModel
     }
 
 
@@ -94,6 +100,11 @@ type alias ControllerModel =
 
 type alias TrafficModel =
     List TrafficCount
+
+
+type alias GraphModel =
+    { focusPlaces : List Place
+    }
 
 
 type alias Person =
