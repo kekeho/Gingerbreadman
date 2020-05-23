@@ -200,3 +200,20 @@ ul.all-places {
     filter: drop-shadow(0.6rem 0.6rem 0.4rem #999999)
             drop-shadow(-0.6rem -0.6rem 0.4rem #ffffff);
 }
+
+
+.focus-places {
+    width: 100%;
+    word-wrap: break-word;
+}
+
+.focus-places .name-container {
+    margin-top: 0.5rem;
+}
+
+.focus-places .name-container p {
+    display: inline;
+    margin: 0.2rem 0.5rem;
+    margin: 0.2rem 0.5rem;
+    background-color: #eaeaea;
+}

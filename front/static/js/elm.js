@@ -17681,51 +17681,52 @@ var $elm_community$typed_svg$TypedSvg$Attributes$InPx$width = function (value) {
 	return $elm_community$typed_svg$TypedSvg$Attributes$width(
 		$elm_community$typed_svg$TypedSvg$Types$px(value));
 };
-var $author$project$Visualizer$Graph$ageView = function (valList) {
-	var _v0 = (A2(
-		$elm$core$Maybe$withDefault,
-		0,
-		$elm$core$List$maximum(valList)) > 0) ? _Utils_Tuple2(valList, true) : _Utils_Tuple2(
-		A2(
-			$elm$core$List$append,
-			_List_fromArray(
-				[1]),
+var $author$project$Visualizer$Graph$ageView = F2(
+	function (focusPlaces, valList) {
+		var _v0 = (A2(
+			$elm$core$Maybe$withDefault,
+			0,
+			$elm$core$List$maximum(valList)) > 0) ? _Utils_Tuple2(valList, true) : _Utils_Tuple2(
 			A2(
-				$elm$core$List$map,
-				function (_v1) {
-					return 0;
-				},
-				A2($elm$core$List$range, 1, 17))),
-		false);
-	var valList_ = _v0.a;
-	var labelVisible = _v0.b;
-	var pieData = A2(
-		$gampleman$elm_visualization$Shape$pie,
-		_Utils_update(
-			$gampleman$elm_visualization$Shape$defaultPieConfig,
-			{outerRadius: $author$project$Visualizer$Graph$radius, sortingFn: $author$project$Visualizer$Graph$nonSort}),
-		valList_);
-	return A2(
-		$elm$html$Html$div,
-		_List_fromArray(
-			[
-				$elm$html$Html$Attributes$class('graph-svg age')
-			]),
-		_List_fromArray(
-			[
+				$elm$core$List$append,
+				_List_fromArray(
+					[1]),
 				A2(
-				$elm_community$typed_svg$TypedSvg$svg,
-				_List_fromArray(
-					[
-						$elm_community$typed_svg$TypedSvg$Attributes$InPx$width($author$project$Visualizer$Graph$pieW),
-						$elm_community$typed_svg$TypedSvg$Attributes$InPx$height($author$project$Visualizer$Graph$pieH)
-					]),
-				_List_fromArray(
-					[
-						A6($author$project$Visualizer$Graph$annular, $author$project$Visualizer$Graph$Age, $author$project$Visualizer$Graph$ageColors, 'Age', pieData, valList_, labelVisible)
-					]))
-			]));
-};
+					$elm$core$List$map,
+					function (_v1) {
+						return 0;
+					},
+					A2($elm$core$List$range, 1, 17))),
+			false);
+		var valList_ = _v0.a;
+		var labelVisible = _v0.b;
+		var pieData = A2(
+			$gampleman$elm_visualization$Shape$pie,
+			_Utils_update(
+				$gampleman$elm_visualization$Shape$defaultPieConfig,
+				{outerRadius: $author$project$Visualizer$Graph$radius, sortingFn: $author$project$Visualizer$Graph$nonSort}),
+			valList_);
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('graph-svg age')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm_community$typed_svg$TypedSvg$svg,
+					_List_fromArray(
+						[
+							$elm_community$typed_svg$TypedSvg$Attributes$InPx$width($author$project$Visualizer$Graph$pieW),
+							$elm_community$typed_svg$TypedSvg$Attributes$InPx$height($author$project$Visualizer$Graph$pieH)
+						]),
+					_List_fromArray(
+						[
+							A6($author$project$Visualizer$Graph$annular, $author$project$Visualizer$Graph$Age, $author$project$Visualizer$Graph$ageColors, 'Age', pieData, valList_, labelVisible)
+						]))
+				]));
+	});
 var $gampleman$elm_visualization$Scale$bandwidth = function (_v0) {
 	var scale = _v0.a;
 	return scale.bandwidth;
@@ -18609,22 +18610,23 @@ var $author$project$Visualizer$Graph$hourCount = F2(
 			hours,
 			counts);
 	});
-var $author$project$Visualizer$Graph$barView = function (rootModel) {
-	var timezone = rootModel.settings.timezone;
-	return A2(
-		$elm$html$Html$div,
-		_List_fromArray(
-			[
-				$elm$html$Html$Attributes$class('graph-svg time')
-			]),
-		_List_fromArray(
-			[
-				A2(
-				$author$project$Visualizer$Graph$barGraph,
-				rootModel.settings.timezone,
-				A2($author$project$Visualizer$Graph$hourCount, timezone, rootModel.visualizer.people))
-			]));
-};
+var $author$project$Visualizer$Graph$barView = F2(
+	function (focusPlaces, rootModel) {
+		var timezone = rootModel.settings.timezone;
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('graph-svg time')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$author$project$Visualizer$Graph$barGraph,
+					rootModel.settings.timezone,
+					A2($author$project$Visualizer$Graph$hourCount, timezone, rootModel.visualizer.people))
+				]));
+	});
 var $author$project$Visualizer$Graph$sexDetect = function (person) {
 	var m = $elm$core$List$length(
 		A2(
@@ -18693,44 +18695,46 @@ var $author$project$Visualizer$Graph$sexColors = $elm$core$Array$fromList(
 			A4($author$project$Visualizer$Graph$rgba255, 220, 220, 220, 1),
 			A4($author$project$Visualizer$Graph$rgba255, 220, 220, 220, 1)
 		]));
-var $author$project$Visualizer$Graph$sexView = function (valList) {
-	var _v0 = (A2(
-		$elm$core$Maybe$withDefault,
-		0,
-		$elm$core$List$maximum(valList)) > 0) ? _Utils_Tuple2(valList, true) : _Utils_Tuple2(
-		_List_fromArray(
-			[0, 0, 0, 1]),
-		false);
-	var valList_ = _v0.a;
-	var labelVisible = _v0.b;
-	var pieData = A2(
-		$gampleman$elm_visualization$Shape$pie,
-		_Utils_update(
-			$gampleman$elm_visualization$Shape$defaultPieConfig,
-			{outerRadius: $author$project$Visualizer$Graph$radius, sortingFn: $author$project$Visualizer$Graph$nonSort}),
-		valList_);
-	return A2(
-		$elm$html$Html$div,
-		_List_fromArray(
-			[
-				$elm$html$Html$Attributes$class('graph-svg sex')
-			]),
-		_List_fromArray(
-			[
-				A2(
-				$elm_community$typed_svg$TypedSvg$svg,
-				_List_fromArray(
-					[
-						$elm_community$typed_svg$TypedSvg$Attributes$InPx$width($author$project$Visualizer$Graph$pieW),
-						$elm_community$typed_svg$TypedSvg$Attributes$InPx$height($author$project$Visualizer$Graph$pieH)
-					]),
-				_List_fromArray(
-					[
-						A6($author$project$Visualizer$Graph$annular, $author$project$Visualizer$Graph$Sex, $author$project$Visualizer$Graph$sexColors, 'Sex', pieData, valList_, labelVisible)
-					]))
-			]));
-};
+var $author$project$Visualizer$Graph$sexView = F2(
+	function (focusPlaces, valList) {
+		var _v0 = (A2(
+			$elm$core$Maybe$withDefault,
+			0,
+			$elm$core$List$maximum(valList)) > 0) ? _Utils_Tuple2(valList, true) : _Utils_Tuple2(
+			_List_fromArray(
+				[0, 0, 0, 1]),
+			false);
+		var valList_ = _v0.a;
+		var labelVisible = _v0.b;
+		var pieData = A2(
+			$gampleman$elm_visualization$Shape$pie,
+			_Utils_update(
+				$gampleman$elm_visualization$Shape$defaultPieConfig,
+				{outerRadius: $author$project$Visualizer$Graph$radius, sortingFn: $author$project$Visualizer$Graph$nonSort}),
+			valList_);
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('graph-svg sex')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm_community$typed_svg$TypedSvg$svg,
+					_List_fromArray(
+						[
+							$elm_community$typed_svg$TypedSvg$Attributes$InPx$width($author$project$Visualizer$Graph$pieW),
+							$elm_community$typed_svg$TypedSvg$Attributes$InPx$height($author$project$Visualizer$Graph$pieH)
+						]),
+					_List_fromArray(
+						[
+							A6($author$project$Visualizer$Graph$annular, $author$project$Visualizer$Graph$Sex, $author$project$Visualizer$Graph$sexColors, 'Sex', pieData, valList_, labelVisible)
+						]))
+				]));
+	});
 var $author$project$Visualizer$Graph$view = function (rootModel) {
+	var focusPlaces = rootModel.visualizer.graph.focusPlaces;
 	return A2(
 		$elm$html$Html$div,
 		_List_fromArray(
@@ -18758,11 +18762,43 @@ var $author$project$Visualizer$Graph$view = function (rootModel) {
 					]),
 				_List_fromArray(
 					[
-						$author$project$Visualizer$Graph$sexView(
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('focus-places')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Focus: '),
+								_Utils_eq(focusPlaces, _List_Nil) ? $elm$html$Html$text('All') : A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('name-container')
+									]),
+								A2(
+									$elm$core$List$map,
+									function (p) {
+										return A2(
+											$elm$html$Html$p,
+											_List_Nil,
+											_List_fromArray(
+												[
+													$elm$html$Html$text(p.name)
+												]));
+									},
+									focusPlaces))
+							])),
+						A2(
+						$author$project$Visualizer$Graph$sexView,
+						focusPlaces,
 						$author$project$Visualizer$Graph$sexPer(rootModel.visualizer.people)),
-						$author$project$Visualizer$Graph$ageView(
+						A2(
+						$author$project$Visualizer$Graph$ageView,
+						focusPlaces,
 						$author$project$Visualizer$Graph$agePer(rootModel.visualizer.people)),
-						$author$project$Visualizer$Graph$barView(rootModel)
+						A2($author$project$Visualizer$Graph$barView, focusPlaces, rootModel)
 					]))
 			]));
 };

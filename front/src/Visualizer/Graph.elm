@@ -3,6 +3,7 @@ port module Visualizer.Graph exposing (..)
 import Array exposing (Array)
 import Axis
 import Color exposing (Color)
+import Common.Data exposing (Place)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import LowLevel.Command exposing (arcTo, clockwise, largestArc, moveTo)
@@ -72,12 +73,22 @@ update msg rootModel =
 
 view : RootModel -> Html Msg
 view rootModel =
+    let
+        focusPlaces = rootModel.visualizer.graph.focusPlaces
+    in
     div [ class "graph column", id "graph" ]
         [ h2 [ class "title" ] [ text "Graph" ]
         , div [ class "graph-container depression-container" ]
-            [ sexView <| sexPer rootModel.visualizer.people
-            , ageView <| agePer rootModel.visualizer.people
-            , barView rootModel
+            [ div [ class "focus-places" ] 
+                [ text "Focus: "
+                , if focusPlaces == [] then
+                    text "All"
+                  else
+                    div [ class "name-container" ] (List.map (\p -> Html.p [] [ text p.name]) focusPlaces)
+                ]
+            , sexView focusPlaces <| sexPer rootModel.visualizer.people
+            , ageView focusPlaces <| agePer rootModel.visualizer.people
+            , barView focusPlaces <| rootModel
             ]
         ]
 
@@ -92,8 +103,8 @@ sexColors =
         ]
 
 
-sexView : List Float -> Html msg
-sexView valList =
+sexView : List Place -> List Float -> Html msg
+sexView focusPlaces  valList =
     let
         ( valList_, labelVisible ) =
             if Maybe.withDefault 0 (List.maximum valList) > 0 then
@@ -114,7 +125,7 @@ sexView valList =
         ]
 
 
-ageColors : Array Color
+ageColors :  Array Color
 ageColors =
     List.repeat 8
         [ rgba255 229 223 223 1
@@ -126,8 +137,8 @@ ageColors =
         |> Array.fromList
 
 
-ageView : List Float -> Html msg
-ageView valList =
+ageView : List Place -> List Float -> Html msg
+ageView focusPlaces valList =
     let
         ( valList_, labelVisible ) =
             if Maybe.withDefault 0 (List.maximum valList) > 0 then
@@ -346,8 +357,8 @@ barGraph timezone model =
         ]
 
 
-barView : RootModel -> Html Msg
-barView rootModel =
+barView : List Place -> RootModel -> Html Msg
+barView focusPlaces rootModel =
     let
         timezone = rootModel.settings.timezone
     in
