@@ -6,6 +6,7 @@ import Color exposing (Color)
 import Common.Data exposing (Place)
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (onClick)
 import LowLevel.Command exposing (arcTo, clockwise, largestArc, moveTo)
 import Model exposing (..)
 import Path
@@ -32,6 +33,7 @@ type GraphType
 
 type Msg
     = PlaceClicked String
+    | RemoveFocusPlace Place
 
 
 update : Msg -> RootModel -> ( RootModel, Cmd Msg )
@@ -65,8 +67,17 @@ update msg rootModel =
                     , Cmd.none
                     )
 
-
-
+        RemoveFocusPlace place ->
+            let
+                graphFocusPlaces_ =
+                    List.filter ((/=) place) graphFocusPlaces
+            in
+            ( { rootModel |
+                visualizer = { visualizerModel |
+                    graph = { graphModel | 
+                        focusPlaces = graphFocusPlaces_ }}}
+            , Cmd.none
+            )
 
 -- VIEWS
 
@@ -84,7 +95,8 @@ view rootModel =
                 , if focusPlaces == [] then
                     text "All"
                   else
-                    div [ class "name-container" ] (List.map (\p -> Html.p [] [ text p.name]) focusPlaces)
+                    div [ class "name-container" ] 
+                        (List.map (\p -> Html.p [ onClick (RemoveFocusPlace p) ] [ text (p.name ++ " ×")]) focusPlaces)
                 ]
             , sexView focusPlaces <| sexPer rootModel.visualizer.people
             , ageView focusPlaces <| agePer rootModel.visualizer.people

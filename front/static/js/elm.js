@@ -14687,41 +14687,62 @@ var $author$project$Visualizer$Graph$update = F2(
 		var resultAllPlaces = rootModel.visualizer.controller.resultPlaces;
 		var graphModel = visualizerModel.graph;
 		var graphFocusPlaces = graphModel.focusPlaces;
-		var placeName = msg.a;
-		var _v1 = A2(
-			$elm$core$List$filter,
-			function (p) {
-				return _Utils_eq(p.name, placeName);
-			},
-			resultAllPlaces);
-		if (!_v1.b) {
-			return _Utils_Tuple2(rootModel, $elm$core$Platform$Cmd$none);
-		} else {
-			var graphFocusPlaces_ = function () {
-				var _v2 = A2(
-					$elm$core$List$filter,
-					function (p) {
-						return _Utils_eq(p.name, placeName);
-					},
-					graphFocusPlaces);
-				if (!_v2.b) {
-					return _Utils_ap(
-						graphFocusPlaces,
-						A2(
-							$elm$core$List$filter,
-							function (p) {
-								return _Utils_eq(p.name, placeName);
-							},
-							resultAllPlaces));
-				} else {
-					return A2(
+		if (msg.$ === 'PlaceClicked') {
+			var placeName = msg.a;
+			var _v1 = A2(
+				$elm$core$List$filter,
+				function (p) {
+					return _Utils_eq(p.name, placeName);
+				},
+				resultAllPlaces);
+			if (!_v1.b) {
+				return _Utils_Tuple2(rootModel, $elm$core$Platform$Cmd$none);
+			} else {
+				var graphFocusPlaces_ = function () {
+					var _v2 = A2(
 						$elm$core$List$filter,
 						function (p) {
-							return !_Utils_eq(p.name, placeName);
+							return _Utils_eq(p.name, placeName);
 						},
 						graphFocusPlaces);
-				}
-			}();
+					if (!_v2.b) {
+						return _Utils_ap(
+							graphFocusPlaces,
+							A2(
+								$elm$core$List$filter,
+								function (p) {
+									return _Utils_eq(p.name, placeName);
+								},
+								resultAllPlaces));
+					} else {
+						return A2(
+							$elm$core$List$filter,
+							function (p) {
+								return !_Utils_eq(p.name, placeName);
+							},
+							graphFocusPlaces);
+					}
+				}();
+				return _Utils_Tuple2(
+					_Utils_update(
+						rootModel,
+						{
+							visualizer: _Utils_update(
+								visualizerModel,
+								{
+									graph: _Utils_update(
+										graphModel,
+										{focusPlaces: graphFocusPlaces_})
+								})
+						}),
+					$elm$core$Platform$Cmd$none);
+			}
+		} else {
+			var place = msg.a;
+			var graphFocusPlaces_ = A2(
+				$elm$core$List$filter,
+				$elm$core$Basics$neq(place),
+				graphFocusPlaces);
 			return _Utils_Tuple2(
 				_Utils_update(
 					rootModel,
@@ -15589,6 +15610,9 @@ var $author$project$Visualizer$Controller$view = function (rootModel) {
 							]))
 					]))
 			]));
+};
+var $author$project$Visualizer$Graph$RemoveFocusPlace = function (a) {
+	return {$: 'RemoveFocusPlace', a: a};
 };
 var $elm$core$List$sum = function (numbers) {
 	return A3($elm$core$List$foldl, $elm$core$Basics$add, 0, numbers);
@@ -18782,10 +18806,14 @@ var $author$project$Visualizer$Graph$view = function (rootModel) {
 									function (p) {
 										return A2(
 											$elm$html$Html$p,
-											_List_Nil,
 											_List_fromArray(
 												[
-													$elm$html$Html$text(p.name)
+													$elm$html$Html$Events$onClick(
+													$author$project$Visualizer$Graph$RemoveFocusPlace(p))
+												]),
+											_List_fromArray(
+												[
+													$elm$html$Html$text(p.name + ' ×')
 												]));
 									},
 									focusPlaces))
@@ -19390,4 +19418,4 @@ var $author$project$Main$view = function (rootModel) {
 var $author$project$Main$main = $elm$browser$Browser$application(
 	{init: $author$project$Main$init, onUrlChange: $author$project$Main$UrlChanged, onUrlRequest: $author$project$Main$LinkClicked, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
-	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"},"Common.ErrorPanel.ErrorModel":{"args":[],"type":"{ error : Common.ErrorPanel.Error, str : String.String }"},"Common.Data.Place":{"args":[],"type":"{ name : String.String, latitude : Basics.Float, longitude : Basics.Float }"},"AnalyzeMonitor.Model.ServiceModel":{"args":[],"type":"{ service : String.String, remain : Basics.Int, analyzing : Basics.Int, analyzed : Basics.Int }"},"Visualizer.Model.Age":{"args":[],"type":"Basics.Float"},"Time.Era":{"args":[],"type":"{ start : Basics.Int, offset : Basics.Int }"},"Visualizer.Model.Face":{"args":[],"type":"{ id : String.String, imageId : String.String, imageUrl : String.String, faceImageB64 : String.String, faceLocation : Visualizer.Model.FaceLocation, faceEncoding : List.List Basics.Float, place : Common.Data.Place, datetime : Time.Posix, sex : Visualizer.Model.Sex, age : Maybe.Maybe Visualizer.Model.Age }"},"Visualizer.Model.FaceLocation":{"args":[],"type":"{ x : Basics.Int, y : Basics.Int, w : Basics.Int, h : Basics.Int }"},"Visualizer.Model.Person":{"args":[],"type":"List.List Visualizer.Model.Face"}},"unions":{"Main.Msg":{"args":[],"tags":{"LinkClicked":["Browser.UrlRequest"],"UrlChanged":["Url.Url"],"VisualizerMsg":["Visualizer.Visualizer.Msg"],"UploadMsg":["Upload.Upload.Msg"],"AnalyzeMonitorMsg":["AnalyzeMonitor.AnalyzeMonitor.Msg"],"ErrorMsg":["Common.ErrorPanel.Msg"],"SettingsMsg":["Common.Settings.Msg"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"AnalyzeMonitor.AnalyzeMonitor.Msg":{"args":[],"tags":{"Update":["Time.Posix"],"GotStatus":["Result.Result Http.Error (List.List AnalyzeMonitor.Model.ServiceModel)"],"ErrorMsg":["Common.ErrorPanel.Msg"]}},"Common.ErrorPanel.Msg":{"args":[],"tags":{"AddError":["Common.ErrorPanel.ErrorModel"],"DelError":["Basics.Int"]}},"Common.Settings.Msg":{"args":[],"tags":{"GotTimezoneName":["Time.ZoneName"],"GotTimezone":["Time.Zone"]}},"Upload.Upload.Msg":{"args":[],"tags":{"ImageRequested":[],"ImageSelected":["File.File","List.List File.File"],"Upload":[],"Uploaded":["Result.Result Http.Error ()"],"GotPlaces":["Result.Result Http.Error (List.List Common.Data.Place)"],"PlaceSelected":["String.String"],"NewPlaceName":["String.String"],"NewPlaceLongitude":["String.String"],"NewPlaceLatitude":["String.String"],"PlaceSearchInput":["String.String"],"ErrorMsg":["Common.ErrorPanel.Msg"]}},"Visualizer.Visualizer.Msg":{"args":[],"tags":{"ControllerMsg":["Visualizer.Controller.Msg"],"PeopleMsg":["Visualizer.People.Msg"],"GraphMsg":["Visualizer.Graph.Msg"]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Common.ErrorPanel.Error":{"args":[],"tags":{"HttpError":["Http.Error"],"OnlyStr":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"File.File":{"args":[],"tags":{"File":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"List.List":{"args":["a"],"tags":{}},"Visualizer.Controller.Msg":{"args":[],"tags":{"GotPlace":["Result.Result Http.Error (List.List Common.Data.Place)"],"SelectPlace":["String.String"],"DelSelectedPlace":["String.String"],"PlaceSearchInput":["String.String"],"GotSinceTime":["String.String"],"GotUntilTime":["String.String"],"ValidSinceTime":["String.String"],"ValidUntilTime":["String.String"],"Analyze":[],"Analyzed":["Result.Result Http.Error (List.List Visualizer.Model.Person)"],"ChangeModalState":["Basics.Bool"],"MapMsg":["Visualizer.Map.Msg"],"ErrorMsg":["Common.ErrorPanel.Msg"]}},"Visualizer.Graph.Msg":{"args":[],"tags":{"PlaceClicked":["String.String"]}},"Visualizer.People.Msg":{"args":[],"tags":{"Dammy":[]}},"Time.Posix":{"args":[],"tags":{"Posix":["Basics.Int"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Time.Zone":{"args":[],"tags":{"Zone":["Basics.Int","List.List Time.Era"]}},"Time.ZoneName":{"args":[],"tags":{"Name":["String.String"],"Offset":["Basics.Int"]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Visualizer.Map.Msg":{"args":[],"tags":{"Update":[]}},"Visualizer.Model.Sex":{"args":[],"tags":{"NotKnown":[],"Male":[],"Female":[]}}}}})}});}(this));
+	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Url.Url":{"args":[],"type":"{ protocol : Url.Protocol, host : String.String, port_ : Maybe.Maybe Basics.Int, path : String.String, query : Maybe.Maybe String.String, fragment : Maybe.Maybe String.String }"},"Common.ErrorPanel.ErrorModel":{"args":[],"type":"{ error : Common.ErrorPanel.Error, str : String.String }"},"Common.Data.Place":{"args":[],"type":"{ name : String.String, latitude : Basics.Float, longitude : Basics.Float }"},"AnalyzeMonitor.Model.ServiceModel":{"args":[],"type":"{ service : String.String, remain : Basics.Int, analyzing : Basics.Int, analyzed : Basics.Int }"},"Visualizer.Model.Age":{"args":[],"type":"Basics.Float"},"Time.Era":{"args":[],"type":"{ start : Basics.Int, offset : Basics.Int }"},"Visualizer.Model.Face":{"args":[],"type":"{ id : String.String, imageId : String.String, imageUrl : String.String, faceImageB64 : String.String, faceLocation : Visualizer.Model.FaceLocation, faceEncoding : List.List Basics.Float, place : Common.Data.Place, datetime : Time.Posix, sex : Visualizer.Model.Sex, age : Maybe.Maybe Visualizer.Model.Age }"},"Visualizer.Model.FaceLocation":{"args":[],"type":"{ x : Basics.Int, y : Basics.Int, w : Basics.Int, h : Basics.Int }"},"Visualizer.Model.Person":{"args":[],"type":"List.List Visualizer.Model.Face"}},"unions":{"Main.Msg":{"args":[],"tags":{"LinkClicked":["Browser.UrlRequest"],"UrlChanged":["Url.Url"],"VisualizerMsg":["Visualizer.Visualizer.Msg"],"UploadMsg":["Upload.Upload.Msg"],"AnalyzeMonitorMsg":["AnalyzeMonitor.AnalyzeMonitor.Msg"],"ErrorMsg":["Common.ErrorPanel.Msg"],"SettingsMsg":["Common.Settings.Msg"]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Maybe.Maybe":{"args":["a"],"tags":{"Just":["a"],"Nothing":[]}},"AnalyzeMonitor.AnalyzeMonitor.Msg":{"args":[],"tags":{"Update":["Time.Posix"],"GotStatus":["Result.Result Http.Error (List.List AnalyzeMonitor.Model.ServiceModel)"],"ErrorMsg":["Common.ErrorPanel.Msg"]}},"Common.ErrorPanel.Msg":{"args":[],"tags":{"AddError":["Common.ErrorPanel.ErrorModel"],"DelError":["Basics.Int"]}},"Common.Settings.Msg":{"args":[],"tags":{"GotTimezoneName":["Time.ZoneName"],"GotTimezone":["Time.Zone"]}},"Upload.Upload.Msg":{"args":[],"tags":{"ImageRequested":[],"ImageSelected":["File.File","List.List File.File"],"Upload":[],"Uploaded":["Result.Result Http.Error ()"],"GotPlaces":["Result.Result Http.Error (List.List Common.Data.Place)"],"PlaceSelected":["String.String"],"NewPlaceName":["String.String"],"NewPlaceLongitude":["String.String"],"NewPlaceLatitude":["String.String"],"PlaceSearchInput":["String.String"],"ErrorMsg":["Common.ErrorPanel.Msg"]}},"Visualizer.Visualizer.Msg":{"args":[],"tags":{"ControllerMsg":["Visualizer.Controller.Msg"],"PeopleMsg":["Visualizer.People.Msg"],"GraphMsg":["Visualizer.Graph.Msg"]}},"Url.Protocol":{"args":[],"tags":{"Http":[],"Https":[]}},"String.String":{"args":[],"tags":{"String":[]}},"Browser.UrlRequest":{"args":[],"tags":{"Internal":["Url.Url"],"External":["String.String"]}},"Common.ErrorPanel.Error":{"args":[],"tags":{"HttpError":["Http.Error"],"OnlyStr":[]}},"Http.Error":{"args":[],"tags":{"BadUrl":["String.String"],"Timeout":[],"NetworkError":[],"BadStatus":["Basics.Int"],"BadBody":["String.String"]}},"File.File":{"args":[],"tags":{"File":[]}},"Basics.Float":{"args":[],"tags":{"Float":[]}},"List.List":{"args":["a"],"tags":{}},"Visualizer.Controller.Msg":{"args":[],"tags":{"GotPlace":["Result.Result Http.Error (List.List Common.Data.Place)"],"SelectPlace":["String.String"],"DelSelectedPlace":["String.String"],"PlaceSearchInput":["String.String"],"GotSinceTime":["String.String"],"GotUntilTime":["String.String"],"ValidSinceTime":["String.String"],"ValidUntilTime":["String.String"],"Analyze":[],"Analyzed":["Result.Result Http.Error (List.List Visualizer.Model.Person)"],"ChangeModalState":["Basics.Bool"],"MapMsg":["Visualizer.Map.Msg"],"ErrorMsg":["Common.ErrorPanel.Msg"]}},"Visualizer.Graph.Msg":{"args":[],"tags":{"PlaceClicked":["String.String"],"RemoveFocusPlace":["Common.Data.Place"]}},"Visualizer.People.Msg":{"args":[],"tags":{"Dammy":[]}},"Time.Posix":{"args":[],"tags":{"Posix":["Basics.Int"]}},"Result.Result":{"args":["error","value"],"tags":{"Ok":["value"],"Err":["error"]}},"Time.Zone":{"args":[],"tags":{"Zone":["Basics.Int","List.List Time.Era"]}},"Time.ZoneName":{"args":[],"tags":{"Name":["String.String"],"Offset":["Basics.Int"]}},"Basics.Bool":{"args":[],"tags":{"True":[],"False":[]}},"Visualizer.Map.Msg":{"args":[],"tags":{"Update":[]}},"Visualizer.Model.Sex":{"args":[],"tags":{"NotKnown":[],"Male":[],"Female":[]}}}}})}});}(this));
