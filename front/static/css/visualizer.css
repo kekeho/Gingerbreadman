@@ -18,6 +18,10 @@
  */
 
 
+ svg {
+     overflow: visible;
+ }
+
 .maincontainer {
     padding: 0;
     margin: 0;
@@ -187,6 +191,12 @@ ul.all-places {
     width: 250px;
 }
 
-.graph.sex {
+.graph-svg.sex {
     width: 50%;
+}
+
+.graph-svg.time {
+    width: 100%;
+    filter: drop-shadow(0.6rem 0.6rem 0.4rem #999999)
+            drop-shadow(-0.6rem -0.6rem 0.4rem #ffffff);
 }

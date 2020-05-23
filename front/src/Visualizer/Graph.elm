@@ -1,16 +1,20 @@
 module Visualizer.Graph exposing (..)
 
 import Array exposing (Array)
+import Axis
 import Color exposing (Color)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import LowLevel.Command exposing (arcTo, clockwise, largestArc, moveTo)
 import Model exposing (..)
 import Path
+import Scale exposing (BandConfig, BandScale, ContinuousScale, defaultBandConfig)
 import Shape exposing (Arc, defaultPieConfig)
-import TypedSvg exposing (circle, g, svg, text_)
+import Time
+import Time.Extra
+import TypedSvg exposing (circle, g, svg, text_, rect)
 import TypedSvg.Attributes exposing (color, dy, fill, fontSize, fontWeight, stroke, textAnchor, transform, viewBox)
-import TypedSvg.Attributes.InPx exposing (cx, cy, r)
+import TypedSvg.Attributes.InPx exposing (cx, cy, r, x, y, height, width)
 import TypedSvg.Core exposing (Svg)
 import TypedSvg.Types exposing (AnchorAlignment(..), Paint(..), Transform(..), em)
 import Visualizer.Model exposing (..)
@@ -47,6 +51,7 @@ view rootModel =
         , div [ class "graph-container depression-container" ]
             [ sexView <| sexPer rootModel.visualizer.people
             , ageView <| agePer rootModel.visualizer.people
+            , barView rootModel
             ]
         ]
 
@@ -75,7 +80,10 @@ sexView valList =
             valList_ |> Shape.pie { defaultPieConfig | outerRadius = radius, sortingFn = nonSort }
     in
     div [ class "graph-svg sex" ]
-        [ svg [ width (round pieW), height (round pieH) ]
+        [ svg
+            [ TypedSvg.Attributes.InPx.width pieW
+            , TypedSvg.Attributes.InPx.height pieH
+            ]
             [ annular Sex sexColors "Sex" pieData valList_ labelVisible ]
         ]
 
@@ -83,7 +91,7 @@ sexView valList =
 ageColors : Array Color
 ageColors =
     List.repeat 8
-        [ rgba255 255 255 255 1
+        [ rgba255 229 223 223 1
         , rgba255 190 190 190 1
         ]
         |> List.concat
@@ -111,10 +119,15 @@ ageView valList =
             valList_ |> Shape.pie { defaultPieConfig | outerRadius = radius, sortingFn = nonSort }
     in
     div [ class "graph-svg age" ]
-        [ svg [ width (round pieW), height (round pieH) ]
+        [ svg
+            [ TypedSvg.Attributes.InPx.width pieW
+            , TypedSvg.Attributes.InPx.height pieH
+            ]
             [ annular Age ageColors "Age" pieData valList_ labelVisible ]
         ]
 
+
+-- PIE
 
 pieW : Float
 pieW =
@@ -124,16 +137,6 @@ pieW =
 pieH : Float
 pieH =
     toFloat 250
-
-
-barW : Float
-barW =
-    toFloat 550
-
-
-barH : Float
-barH =
-    toFloat 300
 
 
 radius : Float
@@ -227,6 +230,104 @@ annular graphType colorArray titleStr arcs valList labelVisible =
         ]
 
 
+-- BAR
+
+barW : Float
+barW =
+    toFloat 550
+
+
+barH : Float
+barH =
+    toFloat 300
+
+
+barPadding : Float
+barPadding =
+    toFloat 20
+
+
+hourFormat : Time.Zone -> Time.Posix -> String
+hourFormat timezone time =
+    Time.Extra.posixToParts timezone time
+        |> .hour
+        |> String.fromInt
+
+
+xScale : List (Time.Posix, Float) -> BandScale Time.Posix
+xScale model =
+    List.map Tuple.first model
+        |> Scale.band { defaultBandConfig | paddingInner = 0.1, paddingOuter = 0.2 } ( 0, barW - 2 * barPadding )
+
+
+yScale : Float -> Scale.ContinuousScale Float
+yScale max =
+    Scale.linear ( barH - 2 * barPadding, 0 ) ( 0, max )
+
+
+xAxis : Time.Zone -> List (Time.Posix, Float) -> Svg msg
+xAxis timezone model =
+    Axis.bottom [] (Scale.toRenderable (hourFormat timezone) (xScale model))
+
+yAxis : List (Time.Posix, Float) -> Svg msg
+yAxis model =
+    let
+        maxVal =
+            List.map Tuple.second model
+                |> List.maximum
+                |> Maybe.withDefault 0
+    in
+    Axis.left [] (yScale maxVal)
+
+
+bar : Time.Zone -> BandScale Time.Posix -> Float -> (Time.Posix, Float) -> Svg msg
+bar timezone scale max (date, value) =
+    g [ TypedSvg.Attributes.class [ "bar" ] ]
+        [ rect
+            [ x <| Scale.convert scale date
+            , y <| Scale.convert (yScale max) value
+            , TypedSvg.Attributes.InPx.width <| Scale.bandwidth scale
+            , TypedSvg.Attributes.InPx.height <| barH - Scale.convert (yScale max) value - 2 * barPadding
+            , fill <| Paint <| rgba255 219 213 213 1
+            , TypedSvg.Attributes.InPx.rx 6
+            , TypedSvg.Attributes.InPx.ry 6
+            ]
+            []
+        , text_
+            [ x <| Scale.convert (Scale.toRenderable (hourFormat timezone) scale) date
+            , y <| Scale.convert (yScale max) value - 5
+            , textAnchor AnchorMiddle
+            , fill <| Paint <| rgba255 70 70 70 1
+            ]
+            [ text <| String.fromFloat value ]
+        ]
+
+
+barGraph : Time.Zone -> List (Time.Posix, Float) -> Svg msg
+barGraph timezone model =
+    let
+        maxVal =
+            List.map Tuple.second model
+                |> List.maximum
+                |> Maybe.withDefault 0
+    in
+    svg [ viewBox 0 0 barW barH ]
+        [ g [ transform [Translate (barPadding - 1) (barH - barPadding) ] ] [ xAxis timezone model ]
+        , g [ transform [Translate (barPadding - 1) barPadding ] ] [ yAxis model ]
+        , g
+            [ transform [ Translate barPadding barPadding ], TypedSvg.Attributes.class [ "series" ] ]
+            (List.map (bar timezone (xScale model) maxVal) model)
+        ]
+
+
+barView : RootModel -> Html Msg
+barView rootModel =
+    let
+        timezone = rootModel.settings.timezone
+    in
+    div [ class "graph-svg time" ]
+        [ barGraph rootModel.settings.timezone (hourCount timezone rootModel.visualizer.people) ]
+
 
 -- FUNCTIONS
 
@@ -281,11 +382,7 @@ agePer people =
         (\u -> List.filter (\x -> x >= u - 5 && x < u) averageList |> List.length |> toFloat)
         (List.map (\i -> toFloat i * 5) (List.range 1 16))
         -- 0~4 -> 75~79
-        |> List.append [ List.filter (\x -> x >= 80) averageList |> List.length |> toFloat ]
-
-
-
--- over 80
+        |> List.append [ List.filter (\x -> x >= 80) averageList |> List.length |> toFloat ] -- over 80
 
 
 averageAge : Person -> Float
@@ -298,6 +395,40 @@ averageAge person =
             List.sum ageList / toFloat (List.length ageList)
     in
     average
+
+
+
+
+hourCount : Time.Zone -> List Person -> List (Time.Posix, Float)
+hourCount timezone people =
+    -- #TODO: なんか処理が冗長な気がするから, 寝不足でない時にリファクタリングする
+    let
+        times : List Int
+        times =
+            List.map (List.map .datetime) people
+                |> List.concat
+                |> List.map (Time.Extra.posixToParts timezone)
+                |> List.map .hour
+        
+        hours =
+            List.range 0 23
+        
+        counts =
+            List.map (\hour -> (List.filter (\t -> t == hour) times) |> List.length) hours
+    in
+    List.map2 (\h c -> (hourToPosix timezone h, toFloat c)) hours counts
+
+
+
+hourToPosix : Time.Zone -> Int -> Time.Posix
+hourToPosix timezone hour =
+    let
+        unixzero = Time.millisToPosix 0
+        unixzeroParts =
+            Time.Extra.posixToParts timezone unixzero
+                
+    in
+    Time.Extra.partsToPosix timezone {unixzeroParts | hour = hour }
 
 
 rgba255 : Int -> Int -> Int -> Float -> Color
