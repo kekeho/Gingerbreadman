@@ -72,7 +72,9 @@ trafficInit =
 
 graphInit : GraphModel
 graphInit =
-    { focusPlaces = [] }
+    { focusPlaces = [] 
+    , focusSex = []
+    }
 
 
 -- MODELS
@@ -104,6 +106,7 @@ type alias TrafficModel =
 
 type alias GraphModel =
     { focusPlaces : List Place
+    , focusSex : List Sex
     }
 
 

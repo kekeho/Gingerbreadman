@@ -34,6 +34,7 @@ type GraphType
 type Msg
     = PlaceClicked String
     | RemoveFocusPlace Place
+    | SexFocus (Maybe Sex)
 
 
 update : Msg -> RootModel -> ( RootModel, Cmd Msg )
@@ -42,6 +43,8 @@ update msg rootModel =
         visualizerModel = rootModel.visualizer
         graphModel = visualizerModel.graph
         graphFocusPlaces = graphModel.focusPlaces
+
+        graphFocusSex = graphModel.focusSex
         resultAllPlaces = rootModel.visualizer.controller.resultPlaces
     in
     case msg of
@@ -78,6 +81,28 @@ update msg rootModel =
                         focusPlaces = graphFocusPlaces_ }}}
             , Cmd.none
             )
+        
+        SexFocus maybeSex ->
+            case maybeSex of
+                Just sex ->
+                    let
+                        graphFocusSex_ =
+                            -- Add or Remove
+                            if not (List.member sex graphFocusSex) then sex :: graphFocusSex else List.filter ((/=) sex) graphFocusSex
+                    in
+                    ( { rootModel 
+                        | visualizer = { visualizerModel 
+                            | graph = { graphModel | focusSex = graphFocusSex_ }
+                        }
+                      }
+                    , Cmd.none
+                    )
+                Nothing ->
+                    ( rootModel, Cmd.none )
+
+
+
+
 
 -- VIEWS
 
@@ -86,17 +111,22 @@ view : RootModel -> Html Msg
 view rootModel =
     let
         focusPlaces = rootModel.visualizer.graph.focusPlaces
+        focusSex = rootModel.visualizer.graph.focusSex
         people = rootModel.visualizer.people
 
-        filteredPeopleFaces : List Person
-        filteredPeopleFaces =
-            case focusPlaces of
-                [] ->
-                    -- all
-                    people
-                _ ->
-                    List.map (personFacesFilterdByPlaces focusPlaces) people
-                        |> List.filter (\p -> not (List.isEmpty p))
+        filterList =
+            [personFacesFilterByPlaces focusPlaces, personFacesFilterBySex focusSex ]
+        allFilter =
+            personFacesFilter filterList
+        
+        withoutSexFilter =
+            personFacesFilter [personFacesFilterByPlaces focusPlaces]
+        filteredPeople =
+            List.map allFilter people
+                |> List.filter ((/=) [])
+        withoutSexFilteredPeople =
+            List.map withoutSexFilter people
+                |> List.filter ((/=) [])
     in
     div [ class "graph column", id "graph" ]
         [ h2 [ class "title" ] [ text "Graph" ]
@@ -109,25 +139,29 @@ view rootModel =
                     div [ class "name-container" ] 
                         (List.map (\p -> Html.p [ onClick (RemoveFocusPlace p) ] [ text (p.name ++ " ×")]) focusPlaces)
                 ]
-            , sexView <| sexPer filteredPeopleFaces
-            , ageView <| agePer filteredPeopleFaces
-            , barView filteredPeopleFaces rootModel
+            , sexView focusSex <| sexPer withoutSexFilteredPeople
+            , ageView <| agePer people
+            , barView filteredPeople rootModel
             ]
         ]
 
 
-sexColors : Array Color
-sexColors =
+sexColors : List Sex -> Array Color
+sexColors focusList =
+    let
+        focusList_ =
+            if focusList == [] then [Male, Female, NotKnown] else focusList
+    in
     Array.fromList
-        [ rgba255 77 124 191 1 -- MALE
-        , rgba255 191 77 134 1 -- FEMALE
-        , rgba255 220 220 220 1 -- NotKnown
+        [ rgba255 77 124 191 (if List.member Male focusList_  then 1 else 0.3)  -- MALE
+        , rgba255 191 77 134 (if List.member Female focusList_  then 1 else 0.3) -- FEMALE
+        , rgba255 220 220 220 (if List.member NotKnown focusList_  then 1 else 0.3) -- NotKnown
         , rgba255 220 220 220 1 -- Empty
         ]
 
 
-sexView : List Float -> Html msg
-sexView valList =
+sexView : List Sex -> List Float -> Html Msg
+sexView focusSex valList =
     let
         ( valList_, labelVisible ) =
             if Maybe.withDefault 0 (List.maximum valList) > 0 then
@@ -144,7 +178,7 @@ sexView valList =
             [ TypedSvg.Attributes.InPx.width pieW
             , TypedSvg.Attributes.InPx.height pieH
             ]
-            [ annular Sex sexColors "Sex" pieData valList_ labelVisible ]
+            [ annular Sex (sexColors focusSex) "Sex" pieData valList_ labelVisible ]
         ]
 
 
@@ -160,7 +194,7 @@ ageColors =
         |> Array.fromList
 
 
-ageView : List Float -> Html msg
+ageView : List Float -> Html Msg
 ageView valList =
     let
         ( valList_, labelVisible ) =
@@ -232,15 +266,37 @@ labelText x y txt =
 
 nonSort : comparable -> comparable -> Order
 nonSort _ _ =
-    LT
+    GT
 
 
-annular : GraphType -> Array Color -> String -> List Arc -> List Float -> Bool -> Svg msg
+annular : GraphType -> Array Color -> String -> List Arc -> List Float -> Bool -> Svg Msg
 annular graphType colorArray titleStr arcs valList labelVisible =
     let
+        clickEvent index =
+            case graphType of
+                _ ->  -- TODO: Sex or Age
+                    
+                    let
+                        sex =
+                            case index of
+                                0 ->
+                                    Just Male
+
+                                1 ->
+                                    Just Female
+
+                                2 ->
+                                    Just NotKnown
+
+                                _ ->
+                                    Nothing
+                    in
+                    onClick (SexFocus sex)
+
         makeSlice index datum =
             Path.element (Shape.arc { datum | innerRadius = radius * 2 - 10 })
                 [ fill <| Paint <| Maybe.withDefault Color.black <| Array.get index <| colorArray
+                , clickEvent index
                 ]
 
         makeLabels index ( datum, val ) =
@@ -417,6 +473,7 @@ sexPer people =
         n =
             List.filter (\p -> sexDetect p == NotKnown) people
                 |> List.length
+
     in
     List.map Basics.toFloat [ m, f, n ]
 
@@ -502,9 +559,33 @@ hourToPosix timezone hour =
     Time.Extra.partsToPosix timezone {unixzeroParts | hour = hour }
 
 
-personFacesFilterdByPlaces : List Place -> Person -> List Face
-personFacesFilterdByPlaces places person =
-    List.filter (\face -> List.member face.place places ) person
+personFacesFilter : List (Person -> List Face) -> Person -> List Face
+personFacesFilter filterList person =
+    case filterList of
+        [] ->
+            person
+        
+        filter :: tail ->
+            personFacesFilter tail (filter person)
+
+
+personFacesFilterByPlaces : List Place -> Person -> List Face
+personFacesFilterByPlaces places person =
+    case places of
+        [] ->
+            person
+
+        _ ->
+            (List.filter (\face -> List.member face.place places) person)
+
+personFacesFilterBySex : List Sex -> Person -> List Face
+personFacesFilterBySex sexlist person =
+    case sexlist of 
+        [] ->
+            person
+        
+        _ ->
+            List.filter (\face -> List.member face.sex sexlist) person
 
 
 rgba255 : Int -> Int -> Int -> Float -> Color
