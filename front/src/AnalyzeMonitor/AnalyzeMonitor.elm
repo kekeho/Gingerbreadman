@@ -88,7 +88,11 @@ serviceView service =
     div [ class "service pad" ]
         [ div [ class "title-indicator" ]
             [ h2 [ class "title" ] [ text service.service ]
-            , hr [] []
+            , let
+                (val_, max_)  =
+                    if service.analyzing == 0 && service.remain == 0 then (1, 1) else (service.analyzing, service.remain)
+             in
+             progress [ value <| String.fromInt val_, Html.Attributes.max <| String.fromInt max_ ] []
             ]
         , div [ class "main-indicator" ]
             [ indicatorView "Remain :" service.remain
