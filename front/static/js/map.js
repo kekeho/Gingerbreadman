@@ -20,8 +20,8 @@
 
 var map = null;
 var tileLayer = null;
-var placeMarkerList = null;
-var trafficLineList = null;
+var placeMarkerList = null;  // place marker list
+var trafficLineList = null;  // traffic line list
 var layers = null;
 
 function initMap (mapId) {
@@ -86,19 +86,23 @@ app.ports.drawTrafficLinePort.subscribe(function(traffic_list){
 
 
 function placeCircle(position, placeName, count) {
-    let size = Math.log10(count) * 20  // logarithmic display 
-    return L.circle(position, size, {
+    let size = Math.max(Math.log2(count), 50); // logarithmic display 
+    return L.marker(position, {
         color: '#ff3474',
         weight: 3,
         opacity: 0.8,
         fillColor: '#df3474',
         fillOpacity: 0.3
-    }).bindPopup(placeName + ": " + count + " unique people");
+    }).bindPopup(
+        placeName + ": " + count + " unique people"
+    ).on('click', function(e){
+        app.ports.placeClicked.send(placeName);
+    });
 }
 
 
 function trafficLine(position1, position2, p1name, p2name, p1ToP2Count, p2ToP1Count) {
-    let weight = p1ToP2Count + p2ToP1Count;
+    let weight = Math.max(Math.log2(p1ToP2Count + p2ToP1Count), 10);
     let p1ToP2Str = p1name + " -> " + p2name + ": " + p1ToP2Count + " counts / ";
     let p2ToP1Str = p2name + " -> " + p1name + ": " + p2ToP1Count + " counts";
     return L.polyline([

@@ -1,17 +1,17 @@
 --  Copyright (C) 2020 Hiroki Takemura (kekeho)
---  
+--
 --  This file is part of Gingerbreadman.
---  
+--
 -- Gingerbreadman is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
 -- the Free Software Foundation, either version 3 of the License, or
 -- (at your option) any later version.
--- 
+--
 -- Gingerbreadman is distributed in the hope that it will be useful,
 -- but WITHOUT ANY WARRANTY; without even the implied warranty of
 -- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 -- GNU General Public License for more details.
--- 
+--
 -- You should have received a copy of the GNU General Public License
 -- along with Gingerbreadman.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -34,6 +34,7 @@ modelInit =
     { controller = controllerModelInit
     , people = peopleInit
     , traffic = trafficInit
+    , graph = graphInit
     }
 
 
@@ -45,6 +46,10 @@ controllerModelInit =
     , dateRange =
         { since = Time.millisToPosix 0
         , until = Time.millisToPosix 0
+        }
+    , inputDateRange =
+        { since = "2000-01-01T00:00"
+        , until = "2000-01-01T00:00"
         }
     , resultPlaces = []
     , resultDateRange =
@@ -65,6 +70,12 @@ trafficInit =
     []
 
 
+graphInit : GraphModel
+graphInit =
+    { focusPlaces = [] 
+    , focusSex = []
+    }
+
 
 -- MODELS
 
@@ -73,6 +84,7 @@ type alias Model =
     { controller : ControllerModel
     , people : List Person
     , traffic : TrafficModel
+    , graph : GraphModel
     }
 
 
@@ -82,6 +94,7 @@ type alias ControllerModel =
     , resultPlaces : List Place
     , placeSearchKeyword : String
     , dateRange : DateRange
+    , inputDateRange : InputDateRange
     , resultDateRange : DateRange
     , modalState : Bool
     }
@@ -89,6 +102,12 @@ type alias ControllerModel =
 
 type alias TrafficModel =
     List TrafficCount
+
+
+type alias GraphModel =
+    { focusPlaces : List Place
+    , focusSex : List Sex
+    }
 
 
 type alias Person =
@@ -105,7 +124,8 @@ type alias Face =
     , place : Place
     , datetime : Time.Posix
     , sex : Sex
-    -- , age : Maybe Float
+    , age : Maybe Age
+
     -- , emotion : Maybe Emotion
     }
 
@@ -122,6 +142,10 @@ type Sex
     = NotKnown
     | Male
     | Female
+
+
+type alias Age =
+    Float
 
 
 type Emotion
@@ -153,6 +177,12 @@ type alias TrafficCount =
 type alias DateRange =
     { since : Time.Posix
     , until : Time.Posix
+    }
+
+
+type alias InputDateRange =
+    { since : String
+    , until : String
     }
 
 
@@ -201,6 +231,7 @@ faceDecoder =
         |> P.required "place" placeDecoder
         |> P.required "posix_millisec" datetimeDecoder
         |> P.required "sex" sexDecoder
+        |> P.optional "age" (D.maybe D.float) Nothing
 
 
 faceLocationDecoder : Decoder FaceLocation
@@ -214,7 +245,7 @@ faceLocationDecoder =
 
 sexDecoder : Decoder Sex
 sexDecoder =
-    D.map intToSex D.int 
+    D.map intToSex D.int
 
 
 intToSex : Int -> Sex
@@ -222,7 +253,9 @@ intToSex val =
     case val of
         1 ->
             Male
+
         2 ->
             Female
+
         _ ->
             NotKnown

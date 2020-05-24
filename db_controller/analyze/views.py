@@ -92,6 +92,7 @@ def grouping(request):
             }
             face_dict['posix_millisec'] = int(face.image.datetime.timestamp() * 1e3)
             face_dict['sex'] = face.sex.id
+            face_dict['age'] = face.age
 
             with BytesIO() as img_fp:
                 image = Image.open(face.image.image.file)

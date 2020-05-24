@@ -22,17 +22,22 @@
     flex-wrap: wrap;
     flex-direction: column;
     overflow-x: scroll;
-    justify-content: center;
+    justify-content: flex-start;
     align-content: flex-start;
+    padding: 2rem 0 0 4rem;
  }
 
 
 .pad.service {
-    min-width: 12rem;
-    max-width: 12rem;
-    max-height: 17rem;
-    padding-bottom: 3rem;
-    margin-bottom: 4rem;
+    display: flex;
+    flex-wrap: wrap;
+    min-width: 18rem;
+    max-width: 18rem;
+    max-height: 10rem;
+    padding: 2.5rem 2.5rem;
+    margin-bottom: 2rem;
+    margin-right: 2rem;
+    justify-content: space-between;
 }
 
 .pad.service hr {
@@ -44,6 +49,10 @@
 
 .pad.service h2.title {
     color: black;
+}
+
+.pad.service .title-indicator {
+    width: 100%;
 }
 
 
@@ -59,11 +68,7 @@
 }
 
 .mini-indicator {
-    margin-top: 1.2rem;
-}
-
-.mini-indicator .indicator {
-    margin-top: 0.5rem;
+    margin-left: 1.2rem;
 }
 
 .mini-indicator .title {

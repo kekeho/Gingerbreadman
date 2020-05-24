@@ -1,17 +1,17 @@
 --  Copyright (C) 2020 Hiroki Takemura (kekeho)
---  
+--
 --  This file is part of Gingerbreadman.
---  
+--
 -- Gingerbreadman is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
 -- the Free Software Foundation, either version 3 of the License, or
 -- (at your option) any later version.
--- 
+--
 -- Gingerbreadman is distributed in the hope that it will be useful,
 -- but WITHOUT ANY WARRANTY; without even the implied warranty of
 -- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 -- GNU General Public License for more details.
--- 
+--
 -- You should have received a copy of the GNU General Public License
 -- along with Gingerbreadman.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -41,6 +41,8 @@ type Msg
     | PlaceSearchInput String
     | GotSinceTime String
     | GotUntilTime String
+    | ValidSinceTime String
+    | ValidUntilTime String
     | Analyze
     | Analyzed (Result Http.Error (List Visualizer.Model.Person))
     | ChangeModalState Bool
@@ -126,7 +128,41 @@ update msg rootModel =
             , Cmd.none
             )
 
-        GotSinceTime iso8601Str ->
+        GotSinceTime str ->
+            let
+                inputDateRange =
+                    controllerModel.inputDateRange
+            in
+            ( { rootModel
+                | visualizer =
+                    { visualizerModel
+                        | controller =
+                            { controllerModel
+                                | inputDateRange = { inputDateRange | since = str }
+                            }
+                    }
+              }
+            , Cmd.none
+            )
+
+        GotUntilTime str ->
+            let
+                inputDateRange =
+                    controllerModel.inputDateRange
+            in
+            ( { rootModel
+                | visualizer =
+                    { visualizerModel
+                        | controller =
+                            { controllerModel
+                                | inputDateRange = { inputDateRange | until = str }
+                            }
+                    }
+              }
+            , Cmd.none
+            )
+
+        ValidSinceTime iso8601Str ->
             let
                 normalized =
                     iso8601Str ++ ":00"
@@ -155,7 +191,7 @@ update msg rootModel =
                     , cmd
                     )
 
-        GotUntilTime iso8601Str ->
+        ValidUntilTime iso8601Str ->
             let
                 normalized =
                     iso8601Str ++ ":00"
@@ -364,8 +400,9 @@ dateSelectorView rootModel =
             [ label [] [ text "since" ]
             , input
                 [ type_ "datetime-local"
-                , value (Common.Settings.localDropSecsStr hereTimeZone controllerModel.dateRange.since)
-                , onChange GotSinceTime
+                , value controllerModel.inputDateRange.since
+                , onInput GotSinceTime
+                , onChange ValidSinceTime
                 ]
                 []
             ]
@@ -373,8 +410,9 @@ dateSelectorView rootModel =
             [ label [] [ text "until" ]
             , input
                 [ type_ "datetime-local"
-                , value (Common.Settings.localDropSecsStr hereTimeZone controllerModel.dateRange.until)
-                , onChange GotUntilTime
+                , value controllerModel.inputDateRange.until
+                , onInput GotUntilTime
+                , onChange ValidUntilTime
                 ]
                 []
             ]

@@ -1,17 +1,17 @@
 --  Copyright (C) 2020 Hiroki Takemura (kekeho)
---  
+--
 --  This file is part of Gingerbreadman.
---  
+--
 -- Gingerbreadman is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
 -- the Free Software Foundation, either version 3 of the License, or
 -- (at your option) any later version.
--- 
+--
 -- Gingerbreadman is distributed in the hope that it will be useful,
 -- but WITHOUT ANY WARRANTY; without even the implied warranty of
 -- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 -- GNU General Public License for more details.
--- 
+--
 -- You should have received a copy of the GNU General Public License
 -- along with Gingerbreadman.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -22,7 +22,10 @@ import Browser
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Model exposing (RootModel)
+import TypedSvg exposing (svg)
+import TypedSvg.Attributes exposing (viewBox)
 import Visualizer.Controller
+import Visualizer.Graph
 import Visualizer.Map
 import Visualizer.Model exposing (Model)
 import Visualizer.People
@@ -36,6 +39,7 @@ import Visualizer.Traffic
 type Msg
     = ControllerMsg Visualizer.Controller.Msg
     | PeopleMsg Visualizer.People.Msg
+    | GraphMsg Visualizer.Graph.Msg
 
 
 update : Msg -> RootModel -> ( RootModel, Cmd Msg )
@@ -61,6 +65,16 @@ update msg rootModel =
             in
             ( rootModel_, cmd )
 
+        GraphMsg subMsg ->
+            let
+                ( rootModel_, cmd_ ) =
+                    Visualizer.Graph.update subMsg rootModel
+
+                cmd =
+                    Cmd.map GraphMsg cmd_
+            in
+            ( rootModel_, cmd )
+
 
 
 -- VIEW
@@ -72,10 +86,12 @@ view rootModel =
     , body =
         [ div [ class "visualizer horizonal-container" ]
             [ div [ class "map-controller-row" ]
-                [ Visualizer.Map.mapView "map"
-                , Visualizer.Controller.view rootModel
+                [ Visualizer.Controller.view rootModel
                     |> Html.map ControllerMsg
+                , Visualizer.Map.mapView "map"
                 ]
+            , Visualizer.Graph.view rootModel
+                |> Html.map GraphMsg
             , Visualizer.People.view rootModel
                 |> Html.map PeopleMsg
             , Visualizer.Traffic.view rootModel.visualizer
@@ -86,6 +102,14 @@ view rootModel =
             |> Html.map ControllerMsg
         ]
     }
+
+
+-- SUBSCRIPTIONS
+
+
+subscriptions : Sub Msg
+subscriptions =
+    Sub.map GraphMsg Visualizer.Graph.subscriptions
 
 
 

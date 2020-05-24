@@ -784,11 +784,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.ad.H === region.aq.H)
+	if (region.cT.bb === region.di.bb)
 	{
-		return 'on line ' + region.ad.H;
+		return 'on line ' + region.cT.bb;
 	}
-	return 'on lines ' + region.ad.H + ' through ' + region.aq.H;
+	return 'on lines ' + region.cT.bb + ' through ' + region.di.bb;
 }
 
 
@@ -1857,9 +1857,9 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.bB,
-		impl.b_,
-		impl.bV,
+		impl.fb,
+		impl.f$,
+		impl.fO,
 		function() { return function() {} }
 	);
 });
@@ -2659,9 +2659,9 @@ var _VirtualDom_mapEventTuple = F2(function(func, tuple)
 var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
-		v: func(record.v),
-		ae: record.ae,
-		Z: record.Z
+		al: func(record.al),
+		cU: record.cU,
+		cC: record.cC
 	}
 });
 
@@ -2929,11 +2929,11 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 		// 3 = Custom
 
 		var value = result.a;
-		var message = !tag ? value : tag < 3 ? value.a : value.v;
-		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.ae;
+		var message = !tag ? value : tag < 3 ? value.a : value.al;
+		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.cU;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
-			(tag == 2 ? value.b : tag == 3 && value.Z) && event.preventDefault(),
+			(tag == 2 ? value.b : tag == 3 && value.cC) && event.preventDefault(),
 			eventNode
 		);
 		var tagger;
@@ -3883,11 +3883,11 @@ var _Browser_element = _Debugger_element || F4(function(impl, flagDecoder, debug
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.bB,
-		impl.b_,
-		impl.bV,
+		impl.fb,
+		impl.f$,
+		impl.fO,
 		function(sendToApp, initialModel) {
-			var view = impl.b1;
+			var view = impl.f2;
 			/**/
 			var domNode = args['node'];
 			//*/
@@ -3919,12 +3919,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.bB,
-		impl.b_,
-		impl.bV,
+		impl.fb,
+		impl.f$,
+		impl.fO,
 		function(sendToApp, initialModel) {
-			var divertHrefToApp = impl.ac && impl.ac(sendToApp)
-			var view = impl.b1;
+			var divertHrefToApp = impl.cL && impl.cL(sendToApp)
+			var view = impl.f2;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
 			var currNode = _VirtualDom_virtualize(bodyNode);
@@ -3932,12 +3932,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 			{
 				_VirtualDom_divertHrefToApp = divertHrefToApp;
 				var doc = view(model);
-				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.ak);
+				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.c8);
 				var patches = _VirtualDom_diff(currNode, nextNode);
 				bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
 				currNode = nextNode;
 				_VirtualDom_divertHrefToApp = 0;
-				(title !== doc.bX) && (_VirtualDom_doc.title = title = doc.bX);
+				(title !== doc.fS) && (_VirtualDom_doc.title = title = doc.fS);
 			});
 		}
 	);
@@ -3993,12 +3993,12 @@ function _Browser_makeAnimator(model, draw)
 
 function _Browser_application(impl)
 {
-	var onUrlChange = impl.bG;
-	var onUrlRequest = impl.bH;
+	var onUrlChange = impl.fn;
+	var onUrlRequest = impl.fo;
 	var key = function() { key.a(onUrlChange(_Browser_getUrl())); };
 
 	return _Browser_document({
-		ac: function(sendToApp)
+		cL: function(sendToApp)
 		{
 			key.a = sendToApp;
 			_Browser_window.addEventListener('popstate', key);
@@ -4014,9 +4014,9 @@ function _Browser_application(impl)
 					var next = $elm$url$Url$fromString(href).a;
 					sendToApp(onUrlRequest(
 						(next
-							&& curr.aT === next.aT
-							&& curr.az === next.az
-							&& curr.aO.a === next.aO.a
+							&& curr.d$ === next.d$
+							&& curr.ds === next.ds
+							&& curr.dW.a === next.dW.a
 						)
 							? $elm$browser$Browser$Internal(next)
 							: $elm$browser$Browser$External(href)
@@ -4024,13 +4024,13 @@ function _Browser_application(impl)
 				}
 			});
 		},
-		bB: function(flags)
+		fb: function(flags)
 		{
-			return A3(impl.bB, flags, _Browser_getUrl(), key);
+			return A3(impl.fb, flags, _Browser_getUrl(), key);
 		},
-		b1: impl.b1,
-		b_: impl.b_,
-		bV: impl.bV
+		f2: impl.f2,
+		f$: impl.f$,
+		fO: impl.fO
 	});
 }
 
@@ -4096,17 +4096,17 @@ var _Browser_decodeEvent = F2(function(decoder, event)
 function _Browser_visibilityInfo()
 {
 	return (typeof _VirtualDom_doc.hidden !== 'undefined')
-		? { bw: 'hidden', bk: 'visibilitychange' }
+		? { e4: 'hidden', eH: 'visibilitychange' }
 		:
 	(typeof _VirtualDom_doc.mozHidden !== 'undefined')
-		? { bw: 'mozHidden', bk: 'mozvisibilitychange' }
+		? { e4: 'mozHidden', eH: 'mozvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.msHidden !== 'undefined')
-		? { bw: 'msHidden', bk: 'msvisibilitychange' }
+		? { e4: 'msHidden', eH: 'msvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.webkitHidden !== 'undefined')
-		? { bw: 'webkitHidden', bk: 'webkitvisibilitychange' }
-		: { bw: 'hidden', bk: 'visibilitychange' };
+		? { e4: 'webkitHidden', eH: 'webkitvisibilitychange' }
+		: { e4: 'hidden', eH: 'visibilitychange' };
 }
 
 
@@ -4187,12 +4187,12 @@ var _Browser_call = F2(function(functionName, id)
 function _Browser_getViewport()
 {
 	return {
-		a0: _Browser_getScene(),
-		bb: {
-			b6: _Browser_window.pageXOffset,
-			b7: _Browser_window.pageYOffset,
-			be: _Browser_doc.documentElement.clientWidth,
-			ax: _Browser_doc.documentElement.clientHeight
+		ea: _Browser_getScene(),
+		er: {
+			f7: _Browser_window.pageXOffset,
+			gc: _Browser_window.pageYOffset,
+			eu: _Browser_doc.documentElement.clientWidth,
+			dr: _Browser_doc.documentElement.clientHeight
 		}
 	};
 }
@@ -4202,8 +4202,8 @@ function _Browser_getScene()
 	var body = _Browser_doc.body;
 	var elem = _Browser_doc.documentElement;
 	return {
-		be: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
-		ax: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
+		eu: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
+		dr: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
 	};
 }
 
@@ -4226,15 +4226,15 @@ function _Browser_getViewportOf(id)
 	return _Browser_withNode(id, function(node)
 	{
 		return {
-			a0: {
-				be: node.scrollWidth,
-				ax: node.scrollHeight
+			ea: {
+				eu: node.scrollWidth,
+				dr: node.scrollHeight
 			},
-			bb: {
-				b6: node.scrollLeft,
-				b7: node.scrollTop,
-				be: node.clientWidth,
-				ax: node.clientHeight
+			er: {
+				f7: node.scrollLeft,
+				gc: node.scrollTop,
+				eu: node.clientWidth,
+				dr: node.clientHeight
 			}
 		};
 	});
@@ -4264,18 +4264,18 @@ function _Browser_getElement(id)
 		var x = _Browser_window.pageXOffset;
 		var y = _Browser_window.pageYOffset;
 		return {
-			a0: _Browser_getScene(),
-			bb: {
-				b6: x,
-				b7: y,
-				be: _Browser_doc.documentElement.clientWidth,
-				ax: _Browser_doc.documentElement.clientHeight
+			ea: _Browser_getScene(),
+			er: {
+				f7: x,
+				gc: y,
+				eu: _Browser_doc.documentElement.clientWidth,
+				dr: _Browser_doc.documentElement.clientHeight
 			},
-			bn: {
-				b6: x + rect.left,
-				b7: y + rect.top,
-				be: rect.width,
-				ax: rect.height
+			eR: {
+				f7: x + rect.left,
+				gc: y + rect.top,
+				eu: rect.width,
+				dr: rect.height
 			}
 		};
 	});
@@ -4366,25 +4366,25 @@ var _Http_toTask = F3(function(router, toTask, request)
 	return _Scheduler_binding(function(callback)
 	{
 		function done(response) {
-			callback(toTask(request.bp.a(response)));
+			callback(toTask(request.eV.a(response)));
 		}
 
 		var xhr = new XMLHttpRequest();
 		xhr.addEventListener('error', function() { done($elm$http$Http$NetworkError_); });
 		xhr.addEventListener('timeout', function() { done($elm$http$Http$Timeout_); });
-		xhr.addEventListener('load', function() { done(_Http_toResponse(request.bp.b, xhr)); });
-		$elm$core$Maybe$isJust(request.bY) && _Http_track(router, xhr, request.bY.a);
+		xhr.addEventListener('load', function() { done(_Http_toResponse(request.eV.b, xhr)); });
+		$elm$core$Maybe$isJust(request.fZ) && _Http_track(router, xhr, request.fZ.a);
 
 		try {
-			xhr.open(request.bF, request.b0, true);
+			xhr.open(request.fi, request.f1, true);
 		} catch (e) {
-			return done($elm$http$Http$BadUrl_(request.b0));
+			return done($elm$http$Http$BadUrl_(request.f1));
 		}
 
 		_Http_configureRequest(xhr, request);
 
-		request.ak.a && xhr.setRequestHeader('Content-Type', request.ak.a);
-		xhr.send(request.ak.b);
+		request.c8.a && xhr.setRequestHeader('Content-Type', request.c8.a);
+		xhr.send(request.c8.b);
 
 		return function() { xhr.c = true; xhr.abort(); };
 	});
@@ -4395,13 +4395,13 @@ var _Http_toTask = F3(function(router, toTask, request)
 
 function _Http_configureRequest(xhr, request)
 {
-	for (var headers = request.bv; headers.b; headers = headers.b) // WHILE_CONS
+	for (var headers = request.e2; headers.b; headers = headers.b) // WHILE_CONS
 	{
 		xhr.setRequestHeader(headers.a.a, headers.a.b);
 	}
-	xhr.timeout = request.bW.a || 0;
-	xhr.responseType = request.bp.d;
-	xhr.withCredentials = request.bg;
+	xhr.timeout = request.fR.a || 0;
+	xhr.responseType = request.eV.d;
+	xhr.withCredentials = request.ez;
 }
 
 
@@ -4422,10 +4422,10 @@ function _Http_toResponse(toBody, xhr)
 function _Http_toMetadata(xhr)
 {
 	return {
-		b0: xhr.responseURL,
-		bS: xhr.status,
-		bT: xhr.statusText,
-		bv: _Http_parseHeaders(xhr.getAllResponseHeaders())
+		f1: xhr.responseURL,
+		fK: xhr.status,
+		fL: xhr.statusText,
+		e2: _Http_parseHeaders(xhr.getAllResponseHeaders())
 	};
 }
 
@@ -4520,15 +4520,15 @@ function _Http_track(router, xhr, tracker)
 	xhr.upload.addEventListener('progress', function(event) {
 		if (xhr.c) { return; }
 		_Scheduler_rawSpawn(A2($elm$core$Platform$sendToSelf, router, _Utils_Tuple2(tracker, $elm$http$Http$Sending({
-			bP: event.loaded,
-			a5: event.total
+			fH: event.loaded,
+			eg: event.total
 		}))));
 	});
 	xhr.addEventListener('progress', function(event) {
 		if (xhr.c) { return; }
 		_Scheduler_rawSpawn(A2($elm$core$Platform$sendToSelf, router, _Utils_Tuple2(tracker, $elm$http$Http$Receiving({
-			bL: event.loaded,
-			a5: event.lengthComputable ? $elm$core$Maybe$Just(event.total) : $elm$core$Maybe$Nothing
+			fy: event.loaded,
+			eg: event.lengthComputable ? $elm$core$Maybe$Just(event.total) : $elm$core$Maybe$Nothing
 		}))));
 	});
 }
@@ -5305,25 +5305,25 @@ var $elm$core$Array$treeFromBuilder = F2(
 	});
 var $elm$core$Array$builderToArray = F2(
 	function (reverseNodeList, builder) {
-		if (!builder.e) {
+		if (!builder.k) {
 			return A4(
 				$elm$core$Array$Array_elm_builtin,
-				$elm$core$Elm$JsArray$length(builder.g),
+				$elm$core$Elm$JsArray$length(builder.o),
 				$elm$core$Array$shiftStep,
 				$elm$core$Elm$JsArray$empty,
-				builder.g);
+				builder.o);
 		} else {
-			var treeLen = builder.e * $elm$core$Array$branchFactor;
+			var treeLen = builder.k * $elm$core$Array$branchFactor;
 			var depth = $elm$core$Basics$floor(
 				A2($elm$core$Basics$logBase, $elm$core$Array$branchFactor, treeLen - 1));
-			var correctNodeList = reverseNodeList ? $elm$core$List$reverse(builder.h) : builder.h;
-			var tree = A2($elm$core$Array$treeFromBuilder, correctNodeList, builder.e);
+			var correctNodeList = reverseNodeList ? $elm$core$List$reverse(builder.p) : builder.p;
+			var tree = A2($elm$core$Array$treeFromBuilder, correctNodeList, builder.k);
 			return A4(
 				$elm$core$Array$Array_elm_builtin,
-				$elm$core$Elm$JsArray$length(builder.g) + treeLen,
+				$elm$core$Elm$JsArray$length(builder.o) + treeLen,
 				A2($elm$core$Basics$max, 5, depth * $elm$core$Array$shiftStep),
 				tree,
-				builder.g);
+				builder.o);
 		}
 	});
 var $elm$core$Basics$idiv = _Basics_idiv;
@@ -5336,7 +5336,7 @@ var $elm$core$Array$initializeHelp = F5(
 				return A2(
 					$elm$core$Array$builderToArray,
 					false,
-					{h: nodeList, e: (len / $elm$core$Array$branchFactor) | 0, g: tail});
+					{p: nodeList, k: (len / $elm$core$Array$branchFactor) | 0, o: tail});
 			} else {
 				var leaf = $elm$core$Array$Leaf(
 					A3($elm$core$Elm$JsArray$initialize, $elm$core$Array$branchFactor, fromIndex, fn));
@@ -5403,7 +5403,7 @@ var $elm$url$Url$Http = 0;
 var $elm$url$Url$Https = 1;
 var $elm$url$Url$Url = F6(
 	function (protocol, host, port_, path, query, fragment) {
-		return {aw: fragment, az: host, aJ: path, aO: port_, aT: protocol, aU: query};
+		return {dq: fragment, ds: host, dR: path, dW: port_, d$: protocol, d0: query};
 	});
 var $elm$core$String$contains = _String_contains;
 var $elm$core$String$length = _String_length;
@@ -5712,41 +5712,43 @@ var $author$project$Common$Settings$getTimezoneWithZoneName = $elm$core$Platform
 	_List_fromArray(
 		[$author$project$Common$Settings$getTimeZoneName, $author$project$Common$Settings$getTimeZone]));
 var $elm$core$Platform$Cmd$map = _Platform_map;
-var $author$project$AnalyzeMonitor$Model$modelInit = {a4: _List_Nil};
+var $author$project$AnalyzeMonitor$Model$modelInit = {ef: _List_Nil};
 var $elm$time$Time$utc = A2($elm$time$Time$Zone, 0, _List_Nil);
 var $author$project$Common$Settings$modelInit = {
-	af: $elm$time$Time$utc,
-	ag: $elm$time$Time$Name('UTC')
+	cX: $elm$time$Time$utc,
+	cY: $elm$time$Time$Name('UTC')
 };
 var $author$project$Upload$Model$modelInit = {
-	aH: {bD: 0.0, bE: 0.0, aG: ''},
-	aL: _List_Nil,
-	aM: '',
-	aN: $elm$core$Maybe$Nothing,
-	a1: $elm$core$Maybe$Nothing,
-	a2: $elm$core$Maybe$Nothing,
-	ba: $elm$core$Maybe$Nothing
+	dO: {fe: 0.0, ff: 0.0, dN: ''},
+	dT: _List_Nil,
+	dU: '',
+	dV: $elm$core$Maybe$Nothing,
+	ec: $elm$core$Maybe$Nothing,
+	ed: $elm$core$Maybe$Nothing,
+	ep: $elm$core$Maybe$Nothing
 };
 var $elm$time$Time$Posix = $elm$core$Basics$identity;
 var $elm$time$Time$millisToPosix = $elm$core$Basics$identity;
 var $author$project$Visualizer$Model$controllerModelInit = {
-	q: {
-		N: $elm$time$Time$millisToPosix(0),
-		O: $elm$time$Time$millisToPosix(0)
+	aw: {
+		bg: $elm$time$Time$millisToPosix(0),
+		bp: $elm$time$Time$millisToPosix(0)
 	},
-	aE: false,
-	Y: '',
-	aN: _List_Nil,
-	_: {
-		N: $elm$time$Time$millisToPosix(0),
-		O: $elm$time$Time$millisToPosix(0)
+	aK: {bg: '2000-01-01T00:00', bp: '2000-01-01T00:00'},
+	dJ: false,
+	cB: '',
+	dV: _List_Nil,
+	cF: {
+		bg: $elm$time$Time$millisToPosix(0),
+		bp: $elm$time$Time$millisToPosix(0)
 	},
-	a_: _List_Nil,
-	s: _List_Nil
+	d6: _List_Nil,
+	aa: _List_Nil
 };
+var $author$project$Visualizer$Model$graphInit = {bx: _List_Nil, b0: _List_Nil};
 var $author$project$Visualizer$Model$peopleInit = _List_Nil;
 var $author$project$Visualizer$Model$trafficInit = _List_Nil;
-var $author$project$Visualizer$Model$modelInit = {i: $author$project$Visualizer$Model$controllerModelInit, bJ: $author$project$Visualizer$Model$peopleInit, bZ: $author$project$Visualizer$Model$trafficInit};
+var $author$project$Visualizer$Model$modelInit = {n: $author$project$Visualizer$Model$controllerModelInit, aI: $author$project$Visualizer$Model$graphInit, fu: $author$project$Visualizer$Model$peopleInit, f_: $author$project$Visualizer$Model$trafficInit};
 var $elm$browser$Browser$Navigation$pushUrl = _Browser_pushUrl;
 var $elm$url$Url$addPort = F2(
 	function (maybePort, starter) {
@@ -5770,7 +5772,7 @@ var $elm$url$Url$addPrefixed = F3(
 	});
 var $elm$url$Url$toString = function (url) {
 	var http = function () {
-		var _v0 = url.aT;
+		var _v0 = url.d$;
 		if (!_v0) {
 			return 'http://';
 		} else {
@@ -5780,22 +5782,22 @@ var $elm$url$Url$toString = function (url) {
 	return A3(
 		$elm$url$Url$addPrefixed,
 		'#',
-		url.aw,
+		url.dq,
 		A3(
 			$elm$url$Url$addPrefixed,
 			'?',
-			url.aU,
+			url.d0,
 			_Utils_ap(
 				A2(
 					$elm$url$Url$addPort,
-					url.aO,
-					_Utils_ap(http, url.az)),
-				url.aJ)));
+					url.dW,
+					_Utils_ap(http, url.ds)),
+				url.dR)));
 };
 var $author$project$Main$init = F3(
 	function (flags, url, key) {
 		return _Utils_Tuple2(
-			{P: $author$project$AnalyzeMonitor$Model$modelInit, ar: _List_Nil, aD: key, bO: 0, ab: $author$project$Common$Settings$modelInit, b$: $author$project$Upload$Model$modelInit, b0: url, b2: $author$project$Visualizer$Model$modelInit},
+			{bO: $author$project$AnalyzeMonitor$Model$modelInit, dk: _List_Nil, dB: key, fC: 0, cK: $author$project$Common$Settings$modelInit, f0: $author$project$Upload$Model$modelInit, f1: url, f3: $author$project$Visualizer$Model$modelInit},
 			$elm$core$Platform$Cmd$batch(
 				_List_fromArray(
 					[
@@ -5809,6 +5811,9 @@ var $author$project$Main$init = F3(
 var $author$project$Main$AnalyzeMonitorMsg = function (a) {
 	return {$: 4, a: a};
 };
+var $author$project$Main$VisualizerMsg = function (a) {
+	return {$: 2, a: a};
+};
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$map = _Platform_map;
 var $author$project$AnalyzeMonitor$AnalyzeMonitor$Update = function (a) {
@@ -5820,7 +5825,7 @@ var $elm$time$Time$Every = F2(
 	});
 var $elm$time$Time$State = F2(
 	function (taggers, processes) {
-		return {aS: processes, a8: taggers};
+		return {d_: processes, el: taggers};
 	});
 var $elm$core$Dict$RBEmpty_elm_builtin = {$: -2};
 var $elm$core$Dict$empty = $elm$core$Dict$RBEmpty_elm_builtin;
@@ -6101,7 +6106,7 @@ var $elm$time$Time$spawnHelp = F3(
 	});
 var $elm$time$Time$onEffects = F3(
 	function (router, subs, _v0) {
-		var processes = _v0.aS;
+		var processes = _v0.d_;
 		var rightStep = F3(
 			function (_v6, id, _v7) {
 				var spawns = _v7.a;
@@ -6168,7 +6173,7 @@ var $elm$time$Time$onEffects = F3(
 var $elm$time$Time$now = _Time_now($elm$time$Time$millisToPosix);
 var $elm$time$Time$onSelfMsg = F3(
 	function (router, interval, state) {
-		var _v0 = A2($elm$core$Dict$get, interval, state.a8);
+		var _v0 = A2($elm$core$Dict$get, interval, state.el);
 		if (_v0.$ === 1) {
 			return $elm$core$Task$succeed(state);
 		} else {
@@ -6217,6 +6222,20 @@ var $elm$time$Time$every = F2(
 var $author$project$AnalyzeMonitor$AnalyzeMonitor$subscriptions = function (_v0) {
 	return A2($elm$time$Time$every, 1000, $author$project$AnalyzeMonitor$AnalyzeMonitor$Update);
 };
+var $author$project$Visualizer$Visualizer$GraphMsg = function (a) {
+	return {$: 2, a: a};
+};
+var $author$project$Visualizer$Graph$PlaceClicked = function (a) {
+	return {$: 0, a: a};
+};
+var $elm$json$Json$Decode$string = _Json_decodeString;
+var $author$project$Visualizer$Graph$placeClicked = _Platform_incomingPort('placeClicked', $elm$json$Json$Decode$string);
+var $author$project$Visualizer$Graph$subscriptions = $elm$core$Platform$Sub$batch(
+	_List_fromArray(
+		[
+			$author$project$Visualizer$Graph$placeClicked($author$project$Visualizer$Graph$PlaceClicked)
+		]));
+var $author$project$Visualizer$Visualizer$subscriptions = A2($elm$core$Platform$Sub$map, $author$project$Visualizer$Visualizer$GraphMsg, $author$project$Visualizer$Graph$subscriptions);
 var $author$project$Main$subscriptions = function (rootModel) {
 	return $elm$core$Platform$Sub$batch(
 		_List_fromArray(
@@ -6224,7 +6243,8 @@ var $author$project$Main$subscriptions = function (rootModel) {
 				A2(
 				$elm$core$Platform$Sub$map,
 				$author$project$Main$AnalyzeMonitorMsg,
-				$author$project$AnalyzeMonitor$AnalyzeMonitor$subscriptions(rootModel))
+				$author$project$AnalyzeMonitor$AnalyzeMonitor$subscriptions(rootModel)),
+				A2($elm$core$Platform$Sub$map, $author$project$Main$VisualizerMsg, $author$project$Visualizer$Visualizer$subscriptions)
 			]));
 };
 var $author$project$Main$ErrorMsg = function (a) {
@@ -6232,9 +6252,6 @@ var $author$project$Main$ErrorMsg = function (a) {
 };
 var $author$project$Main$UploadMsg = function (a) {
 	return {$: 3, a: a};
-};
-var $author$project$Main$VisualizerMsg = function (a) {
-	return {$: 2, a: a};
 };
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $author$project$Visualizer$Map$clearMap = _Platform_outgoingPort('clearMap', $elm$json$Json$Encode$string);
@@ -6691,7 +6708,7 @@ var $elm$http$Http$resolve = F2(
 			case 3:
 				var metadata = response.a;
 				return $elm$core$Result$Err(
-					$elm$http$Http$BadStatus(metadata.bS));
+					$elm$http$Http$BadStatus(metadata.fK));
 			default:
 				var body = response.b;
 				return A2(
@@ -6721,12 +6738,11 @@ var $elm$http$Http$header = $elm$http$Http$Header;
 var $elm$json$Json$Decode$list = _Json_decodeList;
 var $author$project$Common$Data$Place = F3(
 	function (name, latitude, longitude) {
-		return {bD: latitude, bE: longitude, aG: name};
+		return {fe: latitude, ff: longitude, dN: name};
 	});
 var $elm$json$Json$Decode$field = _Json_decodeField;
 var $elm$json$Json$Decode$float = _Json_decodeFloat;
 var $elm$json$Json$Decode$map3 = _Json_map3;
-var $elm$json$Json$Decode$string = _Json_decodeString;
 var $author$project$Common$Data$placeDecoder = A4(
 	$elm$json$Json$Decode$map3,
 	$author$project$Common$Data$Place,
@@ -6739,7 +6755,7 @@ var $elm$http$Http$Request = function (a) {
 };
 var $elm$http$Http$State = F2(
 	function (reqs, subs) {
-		return {aW: reqs, a7: subs};
+		return {d2: reqs, ek: subs};
 	});
 var $elm$http$Http$init = $elm$core$Task$succeed(
 	A2($elm$http$Http$State, $elm$core$Dict$empty, _List_Nil));
@@ -6781,7 +6797,7 @@ var $elm$http$Http$updateReqs = F3(
 					return A2(
 						$elm$core$Task$andThen,
 						function (pid) {
-							var _v4 = req.bY;
+							var _v4 = req.fZ;
 							if (_v4.$ === 1) {
 								return A3($elm$http$Http$updateReqs, router, otherCmds, reqs);
 							} else {
@@ -6811,7 +6827,7 @@ var $elm$http$Http$onEffects = F4(
 				return $elm$core$Task$succeed(
 					A2($elm$http$Http$State, reqs, subs));
 			},
-			A3($elm$http$Http$updateReqs, router, cmds, state.aW));
+			A3($elm$http$Http$updateReqs, router, cmds, state.d2));
 	});
 var $elm$core$List$maybeCons = F3(
 	function (f, mx, xs) {
@@ -6854,7 +6870,7 @@ var $elm$http$Http$onSelfMsg = F3(
 				A2(
 					$elm$core$List$filterMap,
 					A3($elm$http$Http$maybeSend, router, tracker, progress),
-					state.a7)));
+					state.ek)));
 	});
 var $elm$http$Http$Cancel = function (a) {
 	return {$: 0, a: a};
@@ -6868,14 +6884,14 @@ var $elm$http$Http$cmdMap = F2(
 			var r = cmd.a;
 			return $elm$http$Http$Request(
 				{
-					bg: r.bg,
-					ak: r.ak,
-					bp: A2(_Http_mapExpect, func, r.bp),
-					bv: r.bv,
-					bF: r.bF,
-					bW: r.bW,
-					bY: r.bY,
-					b0: r.b0
+					ez: r.ez,
+					c8: r.c8,
+					eV: A2(_Http_mapExpect, func, r.eV),
+					e2: r.e2,
+					fi: r.fi,
+					fR: r.fR,
+					fZ: r.fZ,
+					f1: r.f1
 				});
 		}
 	});
@@ -6898,20 +6914,20 @@ var $elm$http$Http$subscription = _Platform_leaf('Http');
 var $elm$http$Http$request = function (r) {
 	return $elm$http$Http$command(
 		$elm$http$Http$Request(
-			{bg: false, ak: r.ak, bp: r.bp, bv: r.bv, bF: r.bF, bW: r.bW, bY: r.bY, b0: r.b0}));
+			{ez: false, c8: r.c8, eV: r.eV, e2: r.e2, fi: r.fi, fR: r.fR, fZ: r.fZ, f1: r.f1}));
 };
 var $author$project$Upload$Upload$getPlaces = $elm$http$Http$request(
 	{
-		ak: $elm$http$Http$emptyBody,
-		bp: A2($elm$http$Http$expectJson, $author$project$Upload$Upload$GotPlaces, $author$project$Common$Data$placesDecoder),
-		bv: _List_fromArray(
+		c8: $elm$http$Http$emptyBody,
+		eV: A2($elm$http$Http$expectJson, $author$project$Upload$Upload$GotPlaces, $author$project$Common$Data$placesDecoder),
+		e2: _List_fromArray(
 			[
 				A2($elm$http$Http$header, 'Accept', 'application/json')
 			]),
-		bF: 'GET',
-		bW: $elm$core$Maybe$Nothing,
-		bY: $elm$core$Maybe$Nothing,
-		b0: '/api/db/get_places_all/'
+		fi: 'GET',
+		fR: $elm$core$Maybe$Nothing,
+		fZ: $elm$core$Maybe$Nothing,
+		f1: '/api/db/get_places_all/'
 	});
 var $elm$browser$Browser$Navigation$load = _Browser_load;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
@@ -6923,16 +6939,16 @@ var $author$project$Visualizer$Controller$GotPlace = function (a) {
 };
 var $author$project$Visualizer$Controller$getPlaces = $elm$http$Http$request(
 	{
-		ak: $elm$http$Http$emptyBody,
-		bp: A2($elm$http$Http$expectJson, $author$project$Visualizer$Controller$GotPlace, $author$project$Common$Data$placesDecoder),
-		bv: _List_fromArray(
+		c8: $elm$http$Http$emptyBody,
+		eV: A2($elm$http$Http$expectJson, $author$project$Visualizer$Controller$GotPlace, $author$project$Common$Data$placesDecoder),
+		e2: _List_fromArray(
 			[
 				A2($elm$http$Http$header, 'Accept', 'application/json')
 			]),
-		bF: 'GET',
-		bW: $elm$core$Maybe$Nothing,
-		bY: $elm$core$Maybe$Nothing,
-		b0: '/api/db/get_places_all/'
+		fi: 'GET',
+		fR: $elm$core$Maybe$Nothing,
+		fZ: $elm$core$Maybe$Nothing,
+		f1: '/api/db/get_places_all/'
 	});
 var $author$project$Visualizer$Map$initMap = _Platform_outgoingPort('initMap', $elm$json$Json$Encode$string);
 var $author$project$Visualizer$Visualizer$onLoad = $elm$core$Platform$Cmd$batch(
@@ -6943,7 +6959,7 @@ var $author$project$Visualizer$Visualizer$onLoad = $elm$core$Platform$Cmd$batch(
 		]));
 var $elm$url$Url$Parser$State = F5(
 	function (visited, unvisited, params, frag, value) {
-		return {y: frag, z: params, x: unvisited, t: value, B: visited};
+		return {ay: frag, az: params, at: unvisited, ac: value, aE: visited};
 	});
 var $elm$url$Url$Parser$getFirstMatch = function (states) {
 	getFirstMatch:
@@ -6953,12 +6969,12 @@ var $elm$url$Url$Parser$getFirstMatch = function (states) {
 		} else {
 			var state = states.a;
 			var rest = states.b;
-			var _v1 = state.x;
+			var _v1 = state.at;
 			if (!_v1.b) {
-				return $elm$core$Maybe$Just(state.t);
+				return $elm$core$Maybe$Just(state.ac);
 			} else {
 				if ((_v1.a === '') && (!_v1.b.b)) {
-					return $elm$core$Maybe$Just(state.t);
+					return $elm$core$Maybe$Just(state.ac);
 				} else {
 					var $temp$states = rest;
 					states = $temp$states;
@@ -7055,9 +7071,9 @@ var $elm$url$Url$Parser$parse = F2(
 				A5(
 					$elm$url$Url$Parser$State,
 					_List_Nil,
-					$elm$url$Url$Parser$preparePath(url.aJ),
-					$elm$url$Url$Parser$prepareQuery(url.aU),
-					url.aw,
+					$elm$url$Url$Parser$preparePath(url.dR),
+					$elm$url$Url$Parser$prepareQuery(url.d0),
+					url.dq,
 					$elm$core$Basics$identity)));
 	});
 var $author$project$Model$AnalyzeMonitor = 2;
@@ -7065,11 +7081,11 @@ var $author$project$Model$UploadPage = 1;
 var $elm$url$Url$Parser$Parser = $elm$core$Basics$identity;
 var $elm$url$Url$Parser$mapState = F2(
 	function (func, _v0) {
-		var visited = _v0.B;
-		var unvisited = _v0.x;
-		var params = _v0.z;
-		var frag = _v0.y;
-		var value = _v0.t;
+		var visited = _v0.aE;
+		var unvisited = _v0.at;
+		var params = _v0.az;
+		var frag = _v0.ay;
+		var value = _v0.ac;
 		return A5(
 			$elm$url$Url$Parser$State,
 			visited,
@@ -7082,11 +7098,11 @@ var $elm$url$Url$Parser$map = F2(
 	function (subValue, _v0) {
 		var parseArg = _v0;
 		return function (_v1) {
-			var visited = _v1.B;
-			var unvisited = _v1.x;
-			var params = _v1.z;
-			var frag = _v1.y;
-			var value = _v1.t;
+			var visited = _v1.aE;
+			var unvisited = _v1.at;
+			var params = _v1.az;
+			var frag = _v1.ay;
+			var value = _v1.ac;
 			return A2(
 				$elm$core$List$map,
 				$elm$url$Url$Parser$mapState(value),
@@ -7123,11 +7139,11 @@ var $elm$url$Url$Parser$oneOf = function (parsers) {
 };
 var $elm$url$Url$Parser$s = function (str) {
 	return function (_v0) {
-		var visited = _v0.B;
-		var unvisited = _v0.x;
-		var params = _v0.z;
-		var frag = _v0.y;
-		var value = _v0.t;
+		var visited = _v0.aE;
+		var unvisited = _v0.at;
+		var params = _v0.az;
+		var frag = _v0.ay;
+		var value = _v0.ac;
 		if (!unvisited.b) {
 			return _List_Nil;
 		} else {
@@ -7177,7 +7193,7 @@ var $author$project$AnalyzeMonitor$AnalyzeMonitor$GotStatus = function (a) {
 };
 var $author$project$AnalyzeMonitor$Model$ServiceModel = F4(
 	function (service, remain, analyzing, analyzed) {
-		return {bh: analyzed, bi: analyzing, bM: remain, bQ: service};
+		return {eB: analyzed, bP: analyzing, cE: remain, fI: service};
 	});
 var $elm$json$Json$Decode$int = _Json_decodeInt;
 var $elm$json$Json$Decode$map4 = _Json_map4;
@@ -7191,16 +7207,16 @@ var $author$project$AnalyzeMonitor$AnalyzeMonitor$singleStatusDecoder = A5(
 var $author$project$AnalyzeMonitor$AnalyzeMonitor$statusDecoder = $elm$json$Json$Decode$list($author$project$AnalyzeMonitor$AnalyzeMonitor$singleStatusDecoder);
 var $author$project$AnalyzeMonitor$AnalyzeMonitor$getStatus = $elm$http$Http$request(
 	{
-		ak: $elm$http$Http$emptyBody,
-		bp: A2($elm$http$Http$expectJson, $author$project$AnalyzeMonitor$AnalyzeMonitor$GotStatus, $author$project$AnalyzeMonitor$AnalyzeMonitor$statusDecoder),
-		bv: _List_fromArray(
+		c8: $elm$http$Http$emptyBody,
+		eV: A2($elm$http$Http$expectJson, $author$project$AnalyzeMonitor$AnalyzeMonitor$GotStatus, $author$project$AnalyzeMonitor$AnalyzeMonitor$statusDecoder),
+		e2: _List_fromArray(
 			[
 				A2($elm$http$Http$header, 'Accept', 'application/json')
 			]),
-		bF: 'GET',
-		bW: $elm$core$Maybe$Nothing,
-		bY: $elm$core$Maybe$Nothing,
-		b0: '/api/db/get_analyze_state/'
+		fi: 'GET',
+		fR: $elm$core$Maybe$Nothing,
+		fZ: $elm$core$Maybe$Nothing,
+		f1: '/api/db/get_analyze_state/'
 	});
 var $elm$core$List$filter = F2(
 	function (isGood, list) {
@@ -7254,14 +7270,14 @@ var $author$project$AnalyzeMonitor$AnalyzeMonitor$update = F2(
 				var result = msg.a;
 				if (!result.$) {
 					var statusList = result.a;
-					var model = rootModel.P;
+					var model = rootModel.bO;
 					var model_ = _Utils_update(
 						model,
-						{a4: statusList});
+						{ef: statusList});
 					return _Utils_Tuple2(
 						_Utils_update(
 							rootModel,
-							{P: model_}),
+							{bO: model_}),
 						$elm$core$Platform$Cmd$none);
 				} else {
 					var error = result.a;
@@ -7270,8 +7286,8 @@ var $author$project$AnalyzeMonitor$AnalyzeMonitor$update = F2(
 						$author$project$AnalyzeMonitor$AnalyzeMonitor$ErrorMsg(
 							$author$project$Common$ErrorPanel$AddError(
 								{
-									bo: $author$project$Common$ErrorPanel$HttpError(error),
-									bU: 'Network Error'
+									eU: $author$project$Common$ErrorPanel$HttpError(error),
+									fN: 'Network Error'
 								})),
 						rootModel);
 					var rootModel_ = _v2.a;
@@ -7280,14 +7296,14 @@ var $author$project$AnalyzeMonitor$AnalyzeMonitor$update = F2(
 				}
 			default:
 				var subMsg = msg.a;
-				var errorModel = rootModel.ar;
+				var errorModel = rootModel.dk;
 				var _v3 = A2($author$project$Common$ErrorPanel$update, subMsg, errorModel);
 				var errorPaneModel = _v3.a;
 				var subMsg_ = _v3.b;
 				return _Utils_Tuple2(
 					_Utils_update(
 						rootModel,
-						{ar: errorPaneModel}),
+						{dk: errorPaneModel}),
 					A2($elm$core$Platform$Cmd$map, $author$project$AnalyzeMonitor$AnalyzeMonitor$ErrorMsg, subMsg_));
 		}
 	});
@@ -7298,14 +7314,14 @@ var $author$project$Common$Settings$update = F2(
 			return _Utils_Tuple2(
 				_Utils_update(
 					model,
-					{ag: zonename}),
+					{cY: zonename}),
 				$elm$core$Platform$Cmd$none);
 		} else {
 			var timezone = msg.a;
 			return _Utils_Tuple2(
 				_Utils_update(
 					model,
-					{af: timezone}),
+					{cX: timezone}),
 				$elm$core$Platform$Cmd$none);
 		}
 	});
@@ -7376,7 +7392,7 @@ var $elm$http$Http$multipartBody = function (parts) {
 };
 var $elm$http$Http$post = function (r) {
 	return $elm$http$Http$request(
-		{ak: r.ak, bp: r.bp, bv: _List_Nil, bF: 'POST', bW: $elm$core$Maybe$Nothing, bY: $elm$core$Maybe$Nothing, b0: r.b0});
+		{c8: r.c8, eV: r.eV, e2: _List_Nil, fi: 'POST', fR: $elm$core$Maybe$Nothing, fZ: $elm$core$Maybe$Nothing, f1: r.f1});
 };
 var $elm$http$Http$stringPart = _Http_pair;
 var $elm$core$String$toFloat = _String_toFloat;
@@ -7388,9 +7404,9 @@ var $author$project$Upload$Upload$update = F2(
 			var modelMap = function (m1) {
 				return _Utils_update(
 					rootModel,
-					{b$: m1});
+					{f0: m1});
 			};
-			var model = rootModel.b$;
+			var model = rootModel.f0;
 			switch (msg.$) {
 				case 0:
 					return _Utils_Tuple2(
@@ -7408,34 +7424,34 @@ var $author$project$Upload$Upload$update = F2(
 							_Utils_update(
 								model,
 								{
-									a1: $elm$core$Maybe$Just(
+									ec: $elm$core$Maybe$Just(
 										A2($elm$core$List$cons, fstFile, files))
 								})),
 						$elm$core$Platform$Cmd$none);
 				case 2:
 					var newModel = _Utils_update(
 						model,
-						{ba: $elm$core$Maybe$Nothing});
+						{ep: $elm$core$Maybe$Nothing});
 					var newRootModel = _Utils_update(
 						rootModel,
-						{b$: newModel});
-					var _v1 = model.a1;
+						{f0: newModel});
+					var _v1 = model.ec;
 					if (_v1.$ === 1) {
 						var $temp$msg = $author$project$Upload$Upload$ErrorMsg(
 							$author$project$Common$ErrorPanel$AddError(
-								{bo: $author$project$Common$ErrorPanel$OnlyStr, bU: 'NO IMAGE'})),
+								{eU: $author$project$Common$ErrorPanel$OnlyStr, fN: 'NO IMAGE'})),
 							$temp$rootModel = newRootModel;
 						msg = $temp$msg;
 						rootModel = $temp$rootModel;
 						continue update;
 					} else {
 						var files = _v1.a;
-						var _v2 = model.a2;
+						var _v2 = model.ed;
 						if (_v2.$ === 1) {
-							if (model.aH.aG === '') {
+							if (model.dO.dN === '') {
 								var $temp$msg = $author$project$Upload$Upload$ErrorMsg(
 									$author$project$Common$ErrorPanel$AddError(
-										{bo: $author$project$Common$ErrorPanel$OnlyStr, bU: 'NO SELECTED PLACE'})),
+										{eU: $author$project$Common$ErrorPanel$OnlyStr, fN: 'NO SELECTED PLACE'})),
 									$temp$rootModel = newRootModel;
 								msg = $temp$msg;
 								rootModel = $temp$rootModel;
@@ -7445,25 +7461,25 @@ var $author$project$Upload$Upload$update = F2(
 									newRootModel,
 									$elm$http$Http$post(
 										{
-											ak: $elm$http$Http$multipartBody(
+											c8: $elm$http$Http$multipartBody(
 												A2(
 													$elm$core$List$cons,
 													A2($elm$http$Http$stringPart, 'place_selected', ''),
 													A2(
 														$elm$core$List$cons,
-														A2($elm$http$Http$stringPart, 'place_new', model.aH.aG),
+														A2($elm$http$Http$stringPart, 'place_new', model.dO.dN),
 														A2(
 															$elm$core$List$cons,
 															A2(
 																$elm$http$Http$stringPart,
 																'new_latitude',
-																$elm$core$String$fromFloat(model.aH.bD)),
+																$elm$core$String$fromFloat(model.dO.fe)),
 															A2(
 																$elm$core$List$cons,
 																A2(
 																	$elm$http$Http$stringPart,
 																	'new_longitude',
-																	$elm$core$String$fromFloat(model.aH.bE)),
+																	$elm$core$String$fromFloat(model.dO.ff)),
 																_Utils_ap(
 																	A2(
 																		$elm$core$List$map,
@@ -7481,8 +7497,8 @@ var $author$project$Upload$Upload$update = F2(
 																					$elm$file$File$lastModified(f)));
 																		},
 																		files))))))),
-											bp: $elm$http$Http$expectWhatever($author$project$Upload$Upload$Uploaded),
-											b0: '/api/db/regist_images/'
+											eV: $elm$http$Http$expectWhatever($author$project$Upload$Upload$Uploaded),
+											f1: '/api/db/regist_images/'
 										}));
 							}
 						} else {
@@ -7491,25 +7507,25 @@ var $author$project$Upload$Upload$update = F2(
 								newRootModel,
 								$elm$http$Http$post(
 									{
-										ak: $elm$http$Http$multipartBody(
+										c8: $elm$http$Http$multipartBody(
 											A2(
 												$elm$core$List$cons,
-												A2($elm$http$Http$stringPart, 'place_selected', selectedPlace.aG),
+												A2($elm$http$Http$stringPart, 'place_selected', selectedPlace.dN),
 												A2(
 													$elm$core$List$cons,
-													A2($elm$http$Http$stringPart, 'place_new', model.aH.aG),
+													A2($elm$http$Http$stringPart, 'place_new', model.dO.dN),
 													A2(
 														$elm$core$List$cons,
 														A2(
 															$elm$http$Http$stringPart,
 															'new_latitude',
-															$elm$core$String$fromFloat(model.aH.bD)),
+															$elm$core$String$fromFloat(model.dO.fe)),
 														A2(
 															$elm$core$List$cons,
 															A2(
 																$elm$http$Http$stringPart,
 																'new_longitude',
-																$elm$core$String$fromFloat(model.aH.bE)),
+																$elm$core$String$fromFloat(model.dO.ff)),
 															_Utils_ap(
 																A2(
 																	$elm$core$List$map,
@@ -7527,8 +7543,8 @@ var $author$project$Upload$Upload$update = F2(
 																				$elm$file$File$lastModified(f)));
 																	},
 																	files))))))),
-										bp: $elm$http$Http$expectWhatever($author$project$Upload$Upload$Uploaded),
-										b0: '/api/db/regist_images/'
+										eV: $elm$http$Http$expectWhatever($author$project$Upload$Upload$Uploaded),
+										f1: '/api/db/regist_images/'
 									}));
 						}
 					}
@@ -7540,8 +7556,8 @@ var $author$project$Upload$Upload$update = F2(
 								_Utils_update(
 									model,
 									{
-										a1: $elm$core$Maybe$Nothing,
-										ba: $elm$core$Maybe$Just('Uploaded')
+										ec: $elm$core$Maybe$Nothing,
+										ep: $elm$core$Maybe$Just('Uploaded')
 									})),
 							$elm$core$Platform$Cmd$none);
 					} else {
@@ -7549,8 +7565,8 @@ var $author$project$Upload$Upload$update = F2(
 						var $temp$msg = $author$project$Upload$Upload$ErrorMsg(
 							$author$project$Common$ErrorPanel$AddError(
 								{
-									bo: $author$project$Common$ErrorPanel$HttpError(error),
-									bU: 'Failed to upload images'
+									eU: $author$project$Common$ErrorPanel$HttpError(error),
+									fN: 'Failed to upload images'
 								})),
 							$temp$rootModel = rootModel;
 						msg = $temp$msg;
@@ -7566,9 +7582,9 @@ var $author$project$Upload$Upload$update = F2(
 								_Utils_update(
 									model,
 									{
-										aL: places,
-										aN: $elm$core$Maybe$Just(places),
-										a2: $elm$core$List$head(places)
+										dT: places,
+										dV: $elm$core$Maybe$Just(places),
+										ed: $elm$core$List$head(places)
 									})),
 							$elm$core$Platform$Cmd$none);
 					} else {
@@ -7578,34 +7594,34 @@ var $author$project$Upload$Upload$update = F2(
 							$author$project$Upload$Upload$ErrorMsg(
 								$author$project$Common$ErrorPanel$AddError(
 									{
-										bo: $author$project$Common$ErrorPanel$HttpError(error),
-										bU: 'Failed to load location tags'
+										eU: $author$project$Common$ErrorPanel$HttpError(error),
+										fN: 'Failed to load location tags'
 									})),
 							rootModel);
 						var newRootModel = _v5.a;
 						var cmd = _v5.b;
-						var newModel = newRootModel.b$;
+						var newModel = newRootModel.f0;
 						return _Utils_Tuple2(
 							_Utils_update(
 								newRootModel,
 								{
-									b$: _Utils_update(
+									f0: _Utils_update(
 										newModel,
-										{aL: _List_Nil, aN: $elm$core$Maybe$Nothing})
+										{dT: _List_Nil, dV: $elm$core$Maybe$Nothing})
 								}),
 							cmd);
 					}
 				case 5:
 					var placeString = msg.a;
 					var place = function () {
-						var _v6 = model.aN;
+						var _v6 = model.dV;
 						if (!_v6.$) {
 							var places = _v6.a;
 							return $elm$core$List$head(
 								A2(
 									$elm$core$List$filter,
 									function (p) {
-										return _Utils_eq(p.aG, placeString);
+										return _Utils_eq(p.dN, placeString);
 									},
 									places));
 						} else {
@@ -7616,24 +7632,24 @@ var $author$project$Upload$Upload$update = F2(
 						modelMap(
 							_Utils_update(
 								model,
-								{a2: place})),
+								{ed: place})),
 						$elm$core$Platform$Cmd$none);
 				case 6:
 					var name = msg.a;
-					var newPlace = model.aH;
+					var newPlace = model.dO;
 					return _Utils_Tuple2(
 						modelMap(
 							_Utils_update(
 								model,
 								{
-									aH: _Utils_update(
+									dO: _Utils_update(
 										newPlace,
-										{aG: name})
+										{dN: name})
 								})),
 						$elm$core$Platform$Cmd$none);
 				case 8:
 					var latitude = msg.a;
-					var newPlace = model.aH;
+					var newPlace = model.dO;
 					var lat = function () {
 						var _v7 = $elm$core$String$toFloat(latitude);
 						if (!_v7.$) {
@@ -7648,14 +7664,14 @@ var $author$project$Upload$Upload$update = F2(
 							_Utils_update(
 								model,
 								{
-									aH: _Utils_update(
+									dO: _Utils_update(
 										newPlace,
-										{bD: lat})
+										{fe: lat})
 								})),
 						$elm$core$Platform$Cmd$none);
 				case 7:
 					var longitude = msg.a;
-					var newPlace = model.aH;
+					var newPlace = model.dO;
 					var lon = function () {
 						var _v8 = $elm$core$String$toFloat(longitude);
 						if (!_v8.$) {
@@ -7670,16 +7686,16 @@ var $author$project$Upload$Upload$update = F2(
 							_Utils_update(
 								model,
 								{
-									aH: _Utils_update(
+									dO: _Utils_update(
 										newPlace,
-										{bE: lon})
+										{ff: lon})
 								})),
 						$elm$core$Platform$Cmd$none);
 				case 9:
 					var keyword = msg.a;
 					var lowerKeyword = $elm$core$String$toLower(keyword);
 					var filteredPlaces = function () {
-						var _v9 = model.aN;
+						var _v9 = model.dV;
 						if (!_v9.$) {
 							var places = _v9.a;
 							return A2(
@@ -7688,7 +7704,7 @@ var $author$project$Upload$Upload$update = F2(
 									return A2(
 										$elm$core$String$contains,
 										lowerKeyword,
-										$elm$core$String$toLower(p.aG));
+										$elm$core$String$toLower(p.dN));
 								},
 								places);
 						} else {
@@ -7699,17 +7715,17 @@ var $author$project$Upload$Upload$update = F2(
 						modelMap(
 							_Utils_update(
 								model,
-								{aL: filteredPlaces, aM: keyword})),
+								{dT: filteredPlaces, dU: keyword})),
 						$elm$core$Platform$Cmd$none);
 				default:
 					var subMsg = msg.a;
-					var _v10 = A2($author$project$Common$ErrorPanel$update, subMsg, rootModel.ar);
+					var _v10 = A2($author$project$Common$ErrorPanel$update, subMsg, rootModel.dk);
 					var model_ = _v10.a;
 					var cmd = _v10.b;
 					return _Utils_Tuple2(
 						_Utils_update(
 							rootModel,
-							{ar: model_}),
+							{dk: model_}),
 						A2($elm$core$Platform$Cmd$map, $author$project$Upload$Upload$ErrorMsg, cmd));
 			}
 		}
@@ -7718,17 +7734,17 @@ var $author$project$Visualizer$Visualizer$PeopleMsg = function (a) {
 	return {$: 1, a: a};
 };
 var $author$project$Visualizer$Controller$ChangeModalState = function (a) {
-	return {$: 8, a: a};
-};
-var $author$project$Visualizer$Controller$ErrorMsg = function (a) {
 	return {$: 10, a: a};
 };
+var $author$project$Visualizer$Controller$ErrorMsg = function (a) {
+	return {$: 12, a: a};
+};
 var $author$project$Visualizer$Controller$MapMsg = function (a) {
-	return {$: 9, a: a};
+	return {$: 11, a: a};
 };
 var $author$project$Visualizer$Map$Update = 0;
 var $author$project$Visualizer$Controller$Analyzed = function (a) {
-	return {$: 7, a: a};
+	return {$: 9, a: a};
 };
 var $elm$url$Url$Builder$toQueryPair = function (_v0) {
 	var key = _v0.a;
@@ -7790,7 +7806,7 @@ var $elm$time$Time$toAdjustedMinutesHelp = F3(
 			} else {
 				var era = eras.a;
 				var olderEras = eras.b;
-				if (_Utils_cmp(era.ad, posixMinutes) < 0) {
+				if (_Utils_cmp(era.cT, posixMinutes) < 0) {
 					return posixMinutes + era.b;
 				} else {
 					var $temp$defaultOffset = defaultOffset,
@@ -7831,15 +7847,15 @@ var $elm$time$Time$toCivil = function (minutes) {
 	var month = mp + ((mp < 10) ? 3 : (-9));
 	var year = yearOfEra + (era * 400);
 	return {
-		ap: (dayOfYear - ((((153 * mp) + 2) / 5) | 0)) + 1,
-		aF: month,
-		bf: year + ((month <= 2) ? 1 : 0)
+		de: (dayOfYear - ((((153 * mp) + 2) / 5) | 0)) + 1,
+		dK: month,
+		ew: year + ((month <= 2) ? 1 : 0)
 	};
 };
 var $elm$time$Time$toDay = F2(
 	function (zone, time) {
 		return $elm$time$Time$toCivil(
-			A2($elm$time$Time$toAdjustedMinutes, zone, time)).ap;
+			A2($elm$time$Time$toAdjustedMinutes, zone, time)).de;
 	});
 var $elm$core$Basics$modBy = _Basics_modBy;
 var $elm$time$Time$toHour = F2(
@@ -7881,7 +7897,7 @@ var $elm$time$Time$Sep = 8;
 var $elm$time$Time$toMonth = F2(
 	function (zone, time) {
 		var _v0 = $elm$time$Time$toCivil(
-			A2($elm$time$Time$toAdjustedMinutes, zone, time)).aF;
+			A2($elm$time$Time$toAdjustedMinutes, zone, time)).dK;
 		switch (_v0) {
 			case 1:
 				return 0;
@@ -7957,7 +7973,7 @@ var $elm$time$Time$toSecond = F2(
 var $elm$time$Time$toYear = F2(
 	function (zone, time) {
 		return $elm$time$Time$toCivil(
-			A2($elm$time$Time$toAdjustedMinutes, zone, time)).bf;
+			A2($elm$time$Time$toAdjustedMinutes, zone, time)).ew;
 	});
 var $rtfeldman$elm_iso8601_date_strings$Iso8601$fromTime = function (time) {
 	return A2(
@@ -8199,30 +8215,47 @@ var $author$project$Visualizer$Controller$groupingQuery = function (controllerMo
 			A2(
 			$elm$url$Url$Builder$string,
 			'datetime-from',
-			$author$project$Common$Settings$dropSecsStr(controllerModel.q.N)),
+			$author$project$Common$Settings$dropSecsStr(controllerModel.aw.bg)),
 			A2(
 			$elm$url$Url$Builder$string,
 			'datetime-to',
-			$author$project$Common$Settings$dropSecsStr(controllerModel.q.O))
+			$author$project$Common$Settings$dropSecsStr(controllerModel.aw.bp))
 		]);
-	return $elm$core$List$isEmpty(controllerModel.s) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
+	return $elm$core$List$isEmpty(controllerModel.aa) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
 		_Utils_ap(
 			timeQuery,
 			A2(
 				$elm$core$List$map,
 				function (p) {
-					return A2($elm$url$Url$Builder$string, 'places', p.aG);
+					return A2($elm$url$Url$Builder$string, 'places', p.dN);
 				},
-				controllerModel.s)));
+				controllerModel.aa)));
 };
-var $author$project$Visualizer$Model$Face = F9(
-	function (id, imageId, imageUrl, faceImageB64, faceLocation, faceEncoding, place, datetime, sex) {
-		return {ao: datetime, br: faceEncoding, bs: faceImageB64, bt: faceLocation, bx: id, by: imageId, bz: imageUrl, bK: place, bR: sex};
-	});
+var $author$project$Visualizer$Model$Face = function (id) {
+	return function (imageId) {
+		return function (imageUrl) {
+			return function (faceImageB64) {
+				return function (faceLocation) {
+					return function (faceEncoding) {
+						return function (place) {
+							return function (datetime) {
+								return function (sex) {
+									return function (age) {
+										return {ey: age, eN: datetime, eY: faceEncoding, eZ: faceImageB64, e_: faceLocation, e5: id, e6: imageId, e7: imageUrl, fv: place, cM: sex};
+									};
+								};
+							};
+						};
+					};
+				};
+			};
+		};
+	};
+};
 var $author$project$Common$Data$datetimeDecoder = A2($elm$json$Json$Decode$map, $elm$time$Time$millisToPosix, $elm$json$Json$Decode$int);
 var $author$project$Visualizer$Model$FaceLocation = F4(
 	function (x, y, w, h) {
-		return {bu: h, b3: w, b6: x, b7: y};
+		return {e1: h, f4: w, f7: x, gc: y};
 	});
 var $elm$json$Json$Decode$index = _Json_decodeIndex;
 var $author$project$Visualizer$Model$faceLocationDecoder = A5(
@@ -8232,7 +8265,64 @@ var $author$project$Visualizer$Model$faceLocationDecoder = A5(
 	A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$int),
 	A2($elm$json$Json$Decode$index, 2, $elm$json$Json$Decode$int),
 	A2($elm$json$Json$Decode$index, 3, $elm$json$Json$Decode$int));
+var $elm$json$Json$Decode$oneOf = _Json_oneOf;
+var $elm$json$Json$Decode$maybe = function (decoder) {
+	return $elm$json$Json$Decode$oneOf(
+		_List_fromArray(
+			[
+				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, decoder),
+				$elm$json$Json$Decode$succeed($elm$core$Maybe$Nothing)
+			]));
+};
 var $NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$custom = $elm$json$Json$Decode$map2($elm$core$Basics$apR);
+var $elm$json$Json$Decode$andThen = _Json_andThen;
+var $elm$json$Json$Decode$decodeValue = _Json_run;
+var $elm$json$Json$Decode$fail = _Json_fail;
+var $elm$json$Json$Decode$null = _Json_decodeNull;
+var $elm$json$Json$Decode$value = _Json_decodeValue;
+var $NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$optionalDecoder = F3(
+	function (pathDecoder, valDecoder, fallback) {
+		var nullOr = function (decoder) {
+			return $elm$json$Json$Decode$oneOf(
+				_List_fromArray(
+					[
+						decoder,
+						$elm$json$Json$Decode$null(fallback)
+					]));
+		};
+		var handleResult = function (input) {
+			var _v0 = A2($elm$json$Json$Decode$decodeValue, pathDecoder, input);
+			if (!_v0.$) {
+				var rawValue = _v0.a;
+				var _v1 = A2(
+					$elm$json$Json$Decode$decodeValue,
+					nullOr(valDecoder),
+					rawValue);
+				if (!_v1.$) {
+					var finalResult = _v1.a;
+					return $elm$json$Json$Decode$succeed(finalResult);
+				} else {
+					var finalErr = _v1.a;
+					return $elm$json$Json$Decode$fail(
+						$elm$json$Json$Decode$errorToString(finalErr));
+				}
+			} else {
+				return $elm$json$Json$Decode$succeed(fallback);
+			}
+		};
+		return A2($elm$json$Json$Decode$andThen, handleResult, $elm$json$Json$Decode$value);
+	});
+var $NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$optional = F4(
+	function (key, valDecoder, fallback, decoder) {
+		return A2(
+			$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$custom,
+			A3(
+				$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$optionalDecoder,
+				A2($elm$json$Json$Decode$field, key, $elm$json$Json$Decode$value),
+				valDecoder,
+				fallback),
+			decoder);
+	});
 var $NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required = F3(
 	function (key, valDecoder, decoder) {
 		return A2(
@@ -8254,43 +8344,48 @@ var $author$project$Visualizer$Model$intToSex = function (val) {
 	}
 };
 var $author$project$Visualizer$Model$sexDecoder = A2($elm$json$Json$Decode$map, $author$project$Visualizer$Model$intToSex, $elm$json$Json$Decode$int);
-var $author$project$Visualizer$Model$faceDecoder = A3(
-	$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-	'sex',
-	$author$project$Visualizer$Model$sexDecoder,
+var $author$project$Visualizer$Model$faceDecoder = A4(
+	$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$optional,
+	'age',
+	$elm$json$Json$Decode$maybe($elm$json$Json$Decode$float),
+	$elm$core$Maybe$Nothing,
 	A3(
 		$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-		'posix_millisec',
-		$author$project$Common$Data$datetimeDecoder,
+		'sex',
+		$author$project$Visualizer$Model$sexDecoder,
 		A3(
 			$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-			'place',
-			$author$project$Common$Data$placeDecoder,
+			'posix_millisec',
+			$author$project$Common$Data$datetimeDecoder,
 			A3(
 				$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-				'face_encoding',
-				$elm$json$Json$Decode$list($elm$json$Json$Decode$float),
+				'place',
+				$author$project$Common$Data$placeDecoder,
 				A3(
 					$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-					'face_location',
-					$author$project$Visualizer$Model$faceLocationDecoder,
+					'face_encoding',
+					$elm$json$Json$Decode$list($elm$json$Json$Decode$float),
 					A3(
 						$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-						'face_image',
-						$elm$json$Json$Decode$string,
+						'face_location',
+						$author$project$Visualizer$Model$faceLocationDecoder,
 						A3(
 							$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-							'image_url',
+							'face_image',
 							$elm$json$Json$Decode$string,
 							A3(
 								$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-								'image_id',
+								'image_url',
 								$elm$json$Json$Decode$string,
 								A3(
 									$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
-									'id',
+									'image_id',
 									$elm$json$Json$Decode$string,
-									$elm$json$Json$Decode$succeed($author$project$Visualizer$Model$Face))))))))));
+									A3(
+										$NoRedInk$elm_json_decode_pipeline$Json$Decode$Pipeline$required,
+										'id',
+										$elm$json$Json$Decode$string,
+										$elm$json$Json$Decode$succeed($author$project$Visualizer$Model$Face)))))))))));
 var $author$project$Visualizer$Model$personDecoder = $elm$json$Json$Decode$list($author$project$Visualizer$Model$faceDecoder);
 var $author$project$Visualizer$Model$peopleDecoder = A2(
 	$elm$json$Json$Decode$field,
@@ -8300,17 +8395,17 @@ var $author$project$Visualizer$Controller$analyze = function (rootModel) {
 	var path = $elm$url$Url$Builder$absolute(
 		_List_fromArray(
 			['api', 'analyze', 'grouping']));
-	var errorList = rootModel.ar;
-	var controllerModel = rootModel.b2.i;
+	var errorList = rootModel.dk;
+	var controllerModel = rootModel.f3.n;
 	var _v0 = $author$project$Visualizer$Controller$groupingQuery(controllerModel);
 	if (_v0.$ === 1) {
 		return _Utils_Tuple2(
 			_Utils_update(
 				rootModel,
 				{
-					ar: A2(
+					dk: A2(
 						$elm$core$List$cons,
-						{bo: $author$project$Common$ErrorPanel$OnlyStr, bU: 'Please select places'},
+						{eU: $author$project$Common$ErrorPanel$OnlyStr, fN: 'Please select places'},
 						errorList)
 				}),
 			$elm$core$Platform$Cmd$none);
@@ -8320,22 +8415,22 @@ var $author$project$Visualizer$Controller$analyze = function (rootModel) {
 			rootModel,
 			$elm$http$Http$request(
 				{
-					ak: $elm$http$Http$emptyBody,
-					bp: A2($elm$http$Http$expectJson, $author$project$Visualizer$Controller$Analyzed, $author$project$Visualizer$Model$peopleDecoder),
-					bv: _List_fromArray(
+					c8: $elm$http$Http$emptyBody,
+					eV: A2($elm$http$Http$expectJson, $author$project$Visualizer$Controller$Analyzed, $author$project$Visualizer$Model$peopleDecoder),
+					e2: _List_fromArray(
 						[
 							A2($elm$http$Http$header, 'Accept', 'application/json')
 						]),
-					bF: 'GET',
-					bW: $elm$core$Maybe$Nothing,
-					bY: $elm$core$Maybe$Nothing,
-					b0: path(query)
+					fi: 'GET',
+					fR: $elm$core$Maybe$Nothing,
+					fZ: $elm$core$Maybe$Nothing,
+					f1: path(query)
 				}));
 	}
 };
 var $author$project$Visualizer$Model$TrafficCount = F2(
 	function (traffic, count) {
-		return {an: count, bZ: traffic};
+		return {dd: count, f_: traffic};
 	});
 var $author$project$Visualizer$Traffic$h = F3(
 	function (traffic, trafficList, trafficCountList) {
@@ -8385,10 +8480,10 @@ var $author$project$Visualizer$Traffic$personTrafficList = function (person) {
 			var _v1 = A2($author$project$Visualizer$Traffic$listIndex, 1, person);
 			if (!_v1.$) {
 				var nextFace = _v1.a;
-				if (!_Utils_eq(face.bK, nextFace.bK)) {
+				if (!_Utils_eq(face.fv, nextFace.fv)) {
 					return A2(
 						$elm$core$List$cons,
-						_Utils_Tuple2(face.bK, nextFace.bK),
+						_Utils_Tuple2(face.fv, nextFace.fv),
 						$author$project$Visualizer$Traffic$personTrafficList(
 							A2($elm$core$List$drop, 1, person)));
 				} else {
@@ -8410,20 +8505,20 @@ var $author$project$Visualizer$Model$sortWithTime = function (person) {
 		$elm$core$List$map,
 		function (f) {
 			return {
-				au: f,
-				aP: $elm$time$Time$posixToMillis(f.ao)
+				dn: f,
+				dX: $elm$time$Time$posixToMillis(f.eN)
 			};
 		},
 		person);
 	var sortedFaces = A2(
 		$elm$core$List$map,
 		function (t) {
-			return t.au;
+			return t.dn;
 		},
 		A2(
 			$elm$core$List$sortBy,
 			function ($) {
-				return $.aP;
+				return $.dX;
 			},
 			times));
 	return sortedFaces;
@@ -8516,7 +8611,7 @@ var $elm$parser$Parser$Advanced$AddRight = F2(
 	});
 var $elm$parser$Parser$Advanced$DeadEnd = F4(
 	function (row, col, problem, contextStack) {
-		return {am: col, bl: contextStack, aQ: problem, a$: row};
+		return {db: col, eL: contextStack, dY: problem, d8: row};
 	});
 var $elm$parser$Parser$Advanced$Empty = {$: 0};
 var $elm$parser$Parser$Advanced$fromState = F2(
@@ -8524,7 +8619,7 @@ var $elm$parser$Parser$Advanced$fromState = F2(
 		return A2(
 			$elm$parser$Parser$Advanced$AddRight,
 			$elm$parser$Parser$Advanced$Empty,
-			A4($elm$parser$Parser$Advanced$DeadEnd, s.a$, s.am, x, s.c));
+			A4($elm$parser$Parser$Advanced$DeadEnd, s.d8, s.db, x, s.d));
 	});
 var $elm$parser$Parser$Advanced$end = function (x) {
 	return function (s) {
@@ -8548,7 +8643,7 @@ var $elm$parser$Parser$Advanced$chompWhileHelp = F5(
 					$elm$parser$Parser$Advanced$Good,
 					_Utils_cmp(s0.b, offset) < 0,
 					0,
-					{am: col, c: s0.c, d: s0.d, b: offset, a$: row, a: s0.a});
+					{db: col, d: s0.d, i: s0.i, b: offset, d8: row, a: s0.a});
 			} else {
 				if (_Utils_eq(newOffset, -2)) {
 					var $temp$isGood = isGood,
@@ -8580,7 +8675,7 @@ var $elm$parser$Parser$Advanced$chompWhileHelp = F5(
 	});
 var $elm$parser$Parser$Advanced$chompWhile = function (isGood) {
 	return function (s) {
-		return A5($elm$parser$Parser$Advanced$chompWhileHelp, isGood, s.b, s.a$, s.am, s);
+		return A5($elm$parser$Parser$Advanced$chompWhileHelp, isGood, s.b, s.d8, s.db, s);
 	};
 };
 var $elm$parser$Parser$chompWhile = $elm$parser$Parser$Advanced$chompWhile;
@@ -8765,11 +8860,11 @@ var $elm$parser$Parser$Advanced$chompIf = F2(
 				$elm$parser$Parser$Advanced$Good,
 				true,
 				0,
-				{am: 1, c: s.c, d: s.d, b: s.b + 1, a$: s.a$ + 1, a: s.a}) : A3(
+				{db: 1, d: s.d, i: s.i, b: s.b + 1, d8: s.d8 + 1, a: s.a}) : A3(
 				$elm$parser$Parser$Advanced$Good,
 				true,
 				0,
-				{am: s.am + 1, c: s.c, d: s.d, b: newOffset, a$: s.a$, a: s.a}));
+				{db: s.db + 1, d: s.d, i: s.i, b: newOffset, d8: s.d8, a: s.a}));
 		};
 	});
 var $elm$parser$Parser$chompIf = function (isGood) {
@@ -8905,7 +9000,7 @@ var $elm$parser$Parser$Advanced$token = function (_v0) {
 	var expecting = _v0.b;
 	var progress = !$elm$core$String$isEmpty(str);
 	return function (s) {
-		var _v1 = A5($elm$parser$Parser$Advanced$isSubString, str, s.b, s.a$, s.am, s.a);
+		var _v1 = A5($elm$parser$Parser$Advanced$isSubString, str, s.b, s.d8, s.db, s.a);
 		var newOffset = _v1.a;
 		var newRow = _v1.b;
 		var newCol = _v1.c;
@@ -8916,7 +9011,7 @@ var $elm$parser$Parser$Advanced$token = function (_v0) {
 			$elm$parser$Parser$Advanced$Good,
 			progress,
 			0,
-			{am: newCol, c: s.c, d: s.d, b: newOffset, a$: newRow, a: s.a});
+			{db: newCol, d: s.d, i: s.i, b: newOffset, d8: newRow, a: s.a});
 	};
 };
 var $elm$parser$Parser$Advanced$symbol = $elm$parser$Parser$Advanced$token;
@@ -9153,10 +9248,10 @@ var $rtfeldman$elm_iso8601_date_strings$Iso8601$iso8601 = A2(
 	$rtfeldman$elm_iso8601_date_strings$Iso8601$monthYearDayInMs);
 var $elm$parser$Parser$DeadEnd = F3(
 	function (row, col, problem) {
-		return {am: col, aQ: problem, a$: row};
+		return {db: col, dY: problem, d8: row};
 	});
 var $elm$parser$Parser$problemToDeadEnd = function (p) {
-	return A3($elm$parser$Parser$DeadEnd, p.a$, p.am, p.aQ);
+	return A3($elm$parser$Parser$DeadEnd, p.d8, p.db, p.dY);
 };
 var $elm$parser$Parser$Advanced$bagToList = F2(
 	function (bag, list) {
@@ -9188,7 +9283,7 @@ var $elm$parser$Parser$Advanced$run = F2(
 	function (_v0, src) {
 		var parse = _v0;
 		var _v1 = parse(
-			{am: 1, c: _List_Nil, d: 1, b: 0, a$: 1, a: src});
+			{db: 1, d: _List_Nil, i: 1, b: 0, d8: 1, a: src});
 		if (!_v1.$) {
 			var value = _v1.b;
 			return $elm$core$Result$Ok(value);
@@ -9383,13 +9478,13 @@ var $author$project$Visualizer$Map$drawPlaceCirclePort = _Platform_outgoingPort(
 								[
 									_Utils_Tuple2(
 									'latitude',
-									$elm$json$Json$Encode$float($.bD)),
+									$elm$json$Json$Encode$float($.fe)),
 									_Utils_Tuple2(
 									'longitude',
-									$elm$json$Json$Encode$float($.bE)),
+									$elm$json$Json$Encode$float($.ff)),
 									_Utils_Tuple2(
 									'name',
-									$elm$json$Json$Encode$string($.aG))
+									$elm$json$Json$Encode$string($.dN))
 								]));
 					}(a),
 						$elm$json$Json$Encode$int(b)
@@ -9407,7 +9502,7 @@ var $author$project$Visualizer$Map$personPlacesNoDuplicate = function (person) {
 		A2(
 			$elm$core$List$map,
 			function ($) {
-				return $.bK;
+				return $.fv;
 			},
 			person));
 };
@@ -9480,7 +9575,7 @@ var $author$project$Visualizer$Map$bidirectionalTrafficList = function (trafficC
 		var same = A2(
 			$elm$core$List$filter,
 			function (t) {
-				return _Utils_eq(x.bZ.a, t.bZ.b) && _Utils_eq(x.bZ.b, t.bZ.a);
+				return _Utils_eq(x.f_.a, t.f_.b) && _Utils_eq(x.f_.b, t.f_.a);
 			},
 			xs);
 		var others = A2(
@@ -9512,7 +9607,7 @@ var $author$project$Visualizer$Map$drawTrafficLinePort = _Platform_outgoingPort(
 								[
 									_Utils_Tuple2(
 									'count',
-									$elm$json$Json$Encode$int($.an)),
+									$elm$json$Json$Encode$int($.dd)),
 									_Utils_Tuple2(
 									'traffic',
 									function ($) {
@@ -9529,13 +9624,13 @@ var $author$project$Visualizer$Map$drawTrafficLinePort = _Platform_outgoingPort(
 															[
 																_Utils_Tuple2(
 																'latitude',
-																$elm$json$Json$Encode$float($.bD)),
+																$elm$json$Json$Encode$float($.fe)),
 																_Utils_Tuple2(
 																'longitude',
-																$elm$json$Json$Encode$float($.bE)),
+																$elm$json$Json$Encode$float($.ff)),
 																_Utils_Tuple2(
 																'name',
-																$elm$json$Json$Encode$string($.aG))
+																$elm$json$Json$Encode$string($.dN))
 															]));
 												}(a),
 													function ($) {
@@ -9544,17 +9639,17 @@ var $author$project$Visualizer$Map$drawTrafficLinePort = _Platform_outgoingPort(
 															[
 																_Utils_Tuple2(
 																'latitude',
-																$elm$json$Json$Encode$float($.bD)),
+																$elm$json$Json$Encode$float($.fe)),
 																_Utils_Tuple2(
 																'longitude',
-																$elm$json$Json$Encode$float($.bE)),
+																$elm$json$Json$Encode$float($.ff)),
 																_Utils_Tuple2(
 																'name',
-																$elm$json$Json$Encode$string($.aG))
+																$elm$json$Json$Encode$string($.dN))
 															]));
 												}(b)
 												]));
-									}($.bZ))
+									}($.f_))
 								]));
 					}(a),
 						$elm$json$Json$Encode$list(
@@ -9564,7 +9659,7 @@ var $author$project$Visualizer$Map$drawTrafficLinePort = _Platform_outgoingPort(
 									[
 										_Utils_Tuple2(
 										'count',
-										$elm$json$Json$Encode$int($.an)),
+										$elm$json$Json$Encode$int($.dd)),
 										_Utils_Tuple2(
 										'traffic',
 										function ($) {
@@ -9581,13 +9676,13 @@ var $author$project$Visualizer$Map$drawTrafficLinePort = _Platform_outgoingPort(
 																[
 																	_Utils_Tuple2(
 																	'latitude',
-																	$elm$json$Json$Encode$float($.bD)),
+																	$elm$json$Json$Encode$float($.fe)),
 																	_Utils_Tuple2(
 																	'longitude',
-																	$elm$json$Json$Encode$float($.bE)),
+																	$elm$json$Json$Encode$float($.ff)),
 																	_Utils_Tuple2(
 																	'name',
-																	$elm$json$Json$Encode$string($.aG))
+																	$elm$json$Json$Encode$string($.dN))
 																]));
 													}(a),
 														function ($) {
@@ -9596,17 +9691,17 @@ var $author$project$Visualizer$Map$drawTrafficLinePort = _Platform_outgoingPort(
 																[
 																	_Utils_Tuple2(
 																	'latitude',
-																	$elm$json$Json$Encode$float($.bD)),
+																	$elm$json$Json$Encode$float($.fe)),
 																	_Utils_Tuple2(
 																	'longitude',
-																	$elm$json$Json$Encode$float($.bE)),
+																	$elm$json$Json$Encode$float($.ff)),
 																	_Utils_Tuple2(
 																	'name',
-																	$elm$json$Json$Encode$string($.aG))
+																	$elm$json$Json$Encode$string($.dN))
 																]));
 													}(b)
 													]));
-										}($.bZ))
+										}($.f_))
 									]));
 						})(b)
 					]));
@@ -9619,8 +9714,8 @@ var $author$project$Visualizer$Map$update = F2(
 	function (msg, rootModel) {
 		var mapUpdate = _List_fromArray(
 			[
-				$author$project$Visualizer$Map$drawPlaceCircle(rootModel.b2.bJ),
-				$author$project$Visualizer$Map$drawTrafficLine(rootModel.b2.bZ)
+				$author$project$Visualizer$Map$drawPlaceCircle(rootModel.f3.fu),
+				$author$project$Visualizer$Map$drawTrafficLine(rootModel.f3.f_)
 			]);
 		return _Utils_Tuple2(
 			rootModel,
@@ -9628,9 +9723,9 @@ var $author$project$Visualizer$Map$update = F2(
 	});
 var $author$project$Visualizer$Controller$update = F2(
 	function (msg, rootModel) {
-		var visualizerModel = rootModel.b2;
-		var errorList = rootModel.ar;
-		var controllerModel = visualizerModel.i;
+		var visualizerModel = rootModel.f3;
+		var errorList = rootModel.dk;
+		var controllerModel = visualizerModel.n;
 		switch (msg.$) {
 			case 0:
 				var result = msg.a;
@@ -9640,12 +9735,12 @@ var $author$project$Visualizer$Controller$update = F2(
 						_Utils_update(
 							rootModel,
 							{
-								b2: _Utils_update(
+								f3: _Utils_update(
 									visualizerModel,
 									{
-										i: _Utils_update(
+										n: _Utils_update(
 											controllerModel,
-											{aN: places})
+											{dV: places})
 									})
 							}),
 						$elm$core$Platform$Cmd$none);
@@ -9656,24 +9751,24 @@ var $author$project$Visualizer$Controller$update = F2(
 						$author$project$Visualizer$Controller$ErrorMsg(
 							$author$project$Common$ErrorPanel$AddError(
 								{
-									bo: $author$project$Common$ErrorPanel$HttpError(error),
-									bU: 'Failed to load location tags'
+									eU: $author$project$Common$ErrorPanel$HttpError(error),
+									fN: 'Failed to load location tags'
 								})),
 						rootModel);
 					var newRootModel = _v2.a;
 					var cmd = _v2.b;
-					var newVisualizierModel = newRootModel.b2;
-					var newControllerModel = newVisualizierModel.i;
+					var newVisualizierModel = newRootModel.f3;
+					var newControllerModel = newVisualizierModel.n;
 					return _Utils_Tuple2(
 						_Utils_update(
 							newRootModel,
 							{
-								b2: _Utils_update(
+								f3: _Utils_update(
 									newVisualizierModel,
 									{
-										i: _Utils_update(
+										n: _Utils_update(
 											newControllerModel,
-											{aN: _List_Nil})
+											{dV: _List_Nil})
 									})
 							}),
 						cmd);
@@ -9684,23 +9779,23 @@ var $author$project$Visualizer$Controller$update = F2(
 					A2(
 						$elm$core$List$filter,
 						function (p) {
-							return _Utils_eq(p.aG, placeName);
+							return _Utils_eq(p.dN, placeName);
 						},
-						controllerModel.aN));
+						controllerModel.dV));
 				if (!maybePlace.$) {
 					var place = maybePlace.a;
-					return A2($elm$core$List$member, place, controllerModel.s) ? _Utils_Tuple2(rootModel, $elm$core$Platform$Cmd$none) : _Utils_Tuple2(
+					return A2($elm$core$List$member, place, controllerModel.aa) ? _Utils_Tuple2(rootModel, $elm$core$Platform$Cmd$none) : _Utils_Tuple2(
 						_Utils_update(
 							rootModel,
 							{
-								b2: _Utils_update(
+								f3: _Utils_update(
 									visualizerModel,
 									{
-										i: _Utils_update(
+										n: _Utils_update(
 											controllerModel,
 											{
-												s: _Utils_ap(
-													controllerModel.s,
+												aa: _Utils_ap(
+													controllerModel.aa,
 													_List_fromArray(
 														[place]))
 											})
@@ -9716,18 +9811,18 @@ var $author$project$Visualizer$Controller$update = F2(
 					_Utils_update(
 						rootModel,
 						{
-							b2: _Utils_update(
+							f3: _Utils_update(
 								visualizerModel,
 								{
-									i: _Utils_update(
+									n: _Utils_update(
 										controllerModel,
 										{
-											s: A2(
+											aa: A2(
 												$elm$core$List$filter,
 												function (p) {
-													return !_Utils_eq(p.aG, placeName);
+													return !_Utils_eq(p.dN, placeName);
 												},
-												controllerModel.s)
+												controllerModel.aa)
 										})
 								})
 						}),
@@ -9738,19 +9833,59 @@ var $author$project$Visualizer$Controller$update = F2(
 					_Utils_update(
 						rootModel,
 						{
-							b2: _Utils_update(
+							f3: _Utils_update(
 								visualizerModel,
 								{
-									i: _Utils_update(
+									n: _Utils_update(
 										controllerModel,
-										{Y: keyword})
+										{cB: keyword})
 								})
 						}),
 					$elm$core$Platform$Cmd$none);
 			case 4:
+				var str = msg.a;
+				var inputDateRange = controllerModel.aK;
+				return _Utils_Tuple2(
+					_Utils_update(
+						rootModel,
+						{
+							f3: _Utils_update(
+								visualizerModel,
+								{
+									n: _Utils_update(
+										controllerModel,
+										{
+											aK: _Utils_update(
+												inputDateRange,
+												{bg: str})
+										})
+								})
+						}),
+					$elm$core$Platform$Cmd$none);
+			case 5:
+				var str = msg.a;
+				var inputDateRange = controllerModel.aK;
+				return _Utils_Tuple2(
+					_Utils_update(
+						rootModel,
+						{
+							f3: _Utils_update(
+								visualizerModel,
+								{
+									n: _Utils_update(
+										controllerModel,
+										{
+											aK: _Utils_update(
+												inputDateRange,
+												{bp: str})
+										})
+								})
+						}),
+					$elm$core$Platform$Cmd$none);
+			case 6:
 				var iso8601Str = msg.a;
 				var normalized = iso8601Str + ':00';
-				var dateRange = controllerModel.q;
+				var dateRange = controllerModel.aw;
 				var _v4 = $rtfeldman$elm_iso8601_date_strings$Iso8601$toTime(normalized);
 				if (!_v4.$) {
 					var localTime = _v4.a;
@@ -9758,16 +9893,16 @@ var $author$project$Visualizer$Controller$update = F2(
 						_Utils_update(
 							rootModel,
 							{
-								b2: _Utils_update(
+								f3: _Utils_update(
 									visualizerModel,
 									{
-										i: _Utils_update(
+										n: _Utils_update(
 											controllerModel,
 											{
-												q: _Utils_update(
+												aw: _Utils_update(
 													dateRange,
 													{
-														N: A2($author$project$Common$Settings$toUTC, rootModel.ab.af, localTime)
+														bg: A2($author$project$Common$Settings$toUTC, rootModel.cK.cX, localTime)
 													})
 											})
 									})
@@ -9779,16 +9914,16 @@ var $author$project$Visualizer$Controller$update = F2(
 						$author$project$Visualizer$Controller$update,
 						$author$project$Visualizer$Controller$ErrorMsg(
 							$author$project$Common$ErrorPanel$AddError(
-								{bo: $author$project$Common$ErrorPanel$OnlyStr, bU: 'Format of since time is invalid'})),
+								{eU: $author$project$Common$ErrorPanel$OnlyStr, fN: 'Format of since time is invalid'})),
 						rootModel);
 					var newRootModel = _v5.a;
 					var cmd = _v5.b;
 					return _Utils_Tuple2(newRootModel, cmd);
 				}
-			case 5:
+			case 7:
 				var iso8601Str = msg.a;
 				var normalized = iso8601Str + ':00';
-				var dateRange = controllerModel.q;
+				var dateRange = controllerModel.aw;
 				var _v6 = $rtfeldman$elm_iso8601_date_strings$Iso8601$toTime(normalized);
 				if (!_v6.$) {
 					var localTime = _v6.a;
@@ -9796,16 +9931,16 @@ var $author$project$Visualizer$Controller$update = F2(
 						_Utils_update(
 							rootModel,
 							{
-								b2: _Utils_update(
+								f3: _Utils_update(
 									visualizerModel,
 									{
-										i: _Utils_update(
+										n: _Utils_update(
 											controllerModel,
 											{
-												q: _Utils_update(
+												aw: _Utils_update(
 													dateRange,
 													{
-														O: A2($author$project$Common$Settings$toUTC, rootModel.ab.af, localTime)
+														bp: A2($author$project$Common$Settings$toUTC, rootModel.cK.cX, localTime)
 													})
 											})
 									})
@@ -9817,13 +9952,13 @@ var $author$project$Visualizer$Controller$update = F2(
 						$author$project$Visualizer$Controller$update,
 						$author$project$Visualizer$Controller$ErrorMsg(
 							$author$project$Common$ErrorPanel$AddError(
-								{bo: $author$project$Common$ErrorPanel$OnlyStr, bU: 'Format of until time is invalid'})),
+								{eU: $author$project$Common$ErrorPanel$OnlyStr, fN: 'Format of until time is invalid'})),
 						rootModel);
 					var newRootModel = _v7.a;
 					var cmd = _v7.b;
 					return _Utils_Tuple2(newRootModel, cmd);
 				}
-			case 6:
+			case 8:
 				var _v8 = A2(
 					$author$project$Visualizer$Controller$update,
 					$author$project$Visualizer$Controller$ChangeModalState(false),
@@ -9831,7 +9966,7 @@ var $author$project$Visualizer$Controller$update = F2(
 				var model_ = _v8.a;
 				var cmd_ = _v8.b;
 				return $author$project$Visualizer$Controller$analyze(model_);
-			case 7:
+			case 9:
 				var result = msg.a;
 				if (result.$ === 1) {
 					var error = result.a;
@@ -9839,11 +9974,11 @@ var $author$project$Visualizer$Controller$update = F2(
 						_Utils_update(
 							rootModel,
 							{
-								ar: A2(
+								dk: A2(
 									$elm$core$List$cons,
 									{
-										bo: $author$project$Common$ErrorPanel$HttpError(error),
-										bU: 'Analyzing Failed'
+										eU: $author$project$Common$ErrorPanel$HttpError(error),
+										fN: 'Analyzing Failed'
 									},
 									errorList)
 							}),
@@ -9853,13 +9988,13 @@ var $author$project$Visualizer$Controller$update = F2(
 					var trafficCount = $author$project$Visualizer$Traffic$f(people);
 					var newController = _Utils_update(
 						controllerModel,
-						{_: controllerModel.q, a_: controllerModel.s});
+						{cF: controllerModel.aw, d6: controllerModel.aa});
 					var newRootModel = _Utils_update(
 						rootModel,
 						{
-							b2: _Utils_update(
+							f3: _Utils_update(
 								visualizerModel,
-								{i: newController, bJ: people, bZ: trafficCount})
+								{n: newController, fu: people, f_: trafficCount})
 						});
 					var _v10 = A2($author$project$Visualizer$Map$update, 0, newRootModel);
 					var newRootModel_ = _v10.a;
@@ -9868,22 +10003,22 @@ var $author$project$Visualizer$Controller$update = F2(
 						newRootModel_,
 						A2($elm$core$Platform$Cmd$map, $author$project$Visualizer$Controller$MapMsg, cmd_));
 				}
-			case 8:
+			case 10:
 				var state = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						rootModel,
 						{
-							b2: _Utils_update(
+							f3: _Utils_update(
 								visualizerModel,
 								{
-									i: _Utils_update(
+									n: _Utils_update(
 										controllerModel,
-										{aE: state})
+										{dJ: state})
 								})
 						}),
 					$elm$core$Platform$Cmd$none);
-			case 9:
+			case 11:
 				var subMsg = msg.a;
 				var _v11 = A2($author$project$Visualizer$Map$update, subMsg, rootModel);
 				var rootModel_ = _v11.a;
@@ -9893,14 +10028,117 @@ var $author$project$Visualizer$Controller$update = F2(
 					A2($elm$core$Platform$Cmd$map, $author$project$Visualizer$Controller$MapMsg, cmd_));
 			default:
 				var subMsg = msg.a;
-				var _v12 = A2($author$project$Common$ErrorPanel$update, subMsg, rootModel.ar);
+				var _v12 = A2($author$project$Common$ErrorPanel$update, subMsg, rootModel.dk);
 				var errorPanelModel = _v12.a;
 				var cmd = _v12.b;
 				return _Utils_Tuple2(
 					_Utils_update(
 						rootModel,
-						{ar: errorPanelModel}),
+						{dk: errorPanelModel}),
 					A2($elm$core$Platform$Cmd$map, $author$project$Visualizer$Controller$ErrorMsg, cmd));
+		}
+	});
+var $author$project$Visualizer$Graph$update = F2(
+	function (msg, rootModel) {
+		var visualizerModel = rootModel.f3;
+		var resultAllPlaces = rootModel.f3.n.d6;
+		var graphModel = visualizerModel.aI;
+		var graphFocusSex = graphModel.b0;
+		var graphFocusPlaces = graphModel.bx;
+		switch (msg.$) {
+			case 0:
+				var placeName = msg.a;
+				var _v1 = A2(
+					$elm$core$List$filter,
+					function (p) {
+						return _Utils_eq(p.dN, placeName);
+					},
+					resultAllPlaces);
+				if (!_v1.b) {
+					return _Utils_Tuple2(rootModel, $elm$core$Platform$Cmd$none);
+				} else {
+					var graphFocusPlaces_ = function () {
+						var _v2 = A2(
+							$elm$core$List$filter,
+							function (p) {
+								return _Utils_eq(p.dN, placeName);
+							},
+							graphFocusPlaces);
+						if (!_v2.b) {
+							return _Utils_ap(
+								graphFocusPlaces,
+								A2(
+									$elm$core$List$filter,
+									function (p) {
+										return _Utils_eq(p.dN, placeName);
+									},
+									resultAllPlaces));
+						} else {
+							return A2(
+								$elm$core$List$filter,
+								function (p) {
+									return !_Utils_eq(p.dN, placeName);
+								},
+								graphFocusPlaces);
+						}
+					}();
+					return _Utils_Tuple2(
+						_Utils_update(
+							rootModel,
+							{
+								f3: _Utils_update(
+									visualizerModel,
+									{
+										aI: _Utils_update(
+											graphModel,
+											{bx: graphFocusPlaces_})
+									})
+							}),
+						$elm$core$Platform$Cmd$none);
+				}
+			case 1:
+				var place = msg.a;
+				var graphFocusPlaces_ = A2(
+					$elm$core$List$filter,
+					$elm$core$Basics$neq(place),
+					graphFocusPlaces);
+				return _Utils_Tuple2(
+					_Utils_update(
+						rootModel,
+						{
+							f3: _Utils_update(
+								visualizerModel,
+								{
+									aI: _Utils_update(
+										graphModel,
+										{bx: graphFocusPlaces_})
+								})
+						}),
+					$elm$core$Platform$Cmd$none);
+			default:
+				var maybeSex = msg.a;
+				if (!maybeSex.$) {
+					var sex = maybeSex.a;
+					var graphFocusSex_ = (!A2($elm$core$List$member, sex, graphFocusSex)) ? A2($elm$core$List$cons, sex, graphFocusSex) : A2(
+						$elm$core$List$filter,
+						$elm$core$Basics$neq(sex),
+						graphFocusSex);
+					return _Utils_Tuple2(
+						_Utils_update(
+							rootModel,
+							{
+								f3: _Utils_update(
+									visualizerModel,
+									{
+										aI: _Utils_update(
+											graphModel,
+											{b0: graphFocusSex_})
+									})
+							}),
+						$elm$core$Platform$Cmd$none);
+				} else {
+					return _Utils_Tuple2(rootModel, $elm$core$Platform$Cmd$none);
+				}
 		}
 	});
 var $author$project$Visualizer$People$update = F2(
@@ -9909,20 +10147,28 @@ var $author$project$Visualizer$People$update = F2(
 	});
 var $author$project$Visualizer$Visualizer$update = F2(
 	function (msg, rootModel) {
-		if (!msg.$) {
-			var subMsg = msg.a;
-			var _v1 = A2($author$project$Visualizer$Controller$update, subMsg, rootModel);
-			var rootModel_ = _v1.a;
-			var cmd_ = _v1.b;
-			var cmd = A2($elm$core$Platform$Cmd$map, $author$project$Visualizer$Visualizer$ControllerMsg, cmd_);
-			return _Utils_Tuple2(rootModel_, cmd);
-		} else {
-			var subMsg = msg.a;
-			var _v2 = A2($author$project$Visualizer$People$update, subMsg, rootModel);
-			var rootModel_ = _v2.a;
-			var cmd_ = _v2.b;
-			var cmd = A2($elm$core$Platform$Cmd$map, $author$project$Visualizer$Visualizer$PeopleMsg, cmd_);
-			return _Utils_Tuple2(rootModel_, cmd);
+		switch (msg.$) {
+			case 0:
+				var subMsg = msg.a;
+				var _v1 = A2($author$project$Visualizer$Controller$update, subMsg, rootModel);
+				var rootModel_ = _v1.a;
+				var cmd_ = _v1.b;
+				var cmd = A2($elm$core$Platform$Cmd$map, $author$project$Visualizer$Visualizer$ControllerMsg, cmd_);
+				return _Utils_Tuple2(rootModel_, cmd);
+			case 1:
+				var subMsg = msg.a;
+				var _v2 = A2($author$project$Visualizer$People$update, subMsg, rootModel);
+				var rootModel_ = _v2.a;
+				var cmd_ = _v2.b;
+				var cmd = A2($elm$core$Platform$Cmd$map, $author$project$Visualizer$Visualizer$PeopleMsg, cmd_);
+				return _Utils_Tuple2(rootModel_, cmd);
+			default:
+				var subMsg = msg.a;
+				var _v3 = A2($author$project$Visualizer$Graph$update, subMsg, rootModel);
+				var rootModel_ = _v3.a;
+				var cmd_ = _v3.b;
+				var cmd = A2($elm$core$Platform$Cmd$map, $author$project$Visualizer$Visualizer$GraphMsg, cmd_);
+				return _Utils_Tuple2(rootModel_, cmd);
 		}
 	});
 var $author$project$Main$update = F2(
@@ -9936,7 +10182,7 @@ var $author$project$Main$update = F2(
 						rootModel,
 						A2(
 							$elm$browser$Browser$Navigation$pushUrl,
-							rootModel.aD,
+							rootModel.dB,
 							$elm$url$Url$toString(url)));
 				} else {
 					var href = urlRequest.a;
@@ -9968,7 +10214,7 @@ var $author$project$Main$update = F2(
 					return $elm$core$Platform$Cmd$none;
 				}();
 				var clearMap = function () {
-					var _v2 = A2($elm$url$Url$Parser$parse, $author$project$Main$routeParser, rootModel.b0);
+					var _v2 = A2($elm$url$Url$Parser$parse, $author$project$Main$routeParser, rootModel.f1);
 					if ((!_v2.$) && (!_v2.a)) {
 						var _v3 = _v2.a;
 						var _v4 = A2($elm$url$Url$Parser$parse, $author$project$Main$routeParser, url);
@@ -9988,7 +10234,7 @@ var $author$project$Main$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						rootModel,
-						{b0: url}),
+						{f1: url}),
 					$elm$core$Platform$Cmd$batch(
 						A2($elm$core$List$cons, onLoadCmd, clearMap)));
 			case 2:
@@ -10017,23 +10263,23 @@ var $author$project$Main$update = F2(
 					A2($elm$core$Platform$Cmd$map, $author$project$Main$AnalyzeMonitorMsg, cmd));
 			case 5:
 				var subMsg = msg.a;
-				var _v12 = A2($author$project$Common$ErrorPanel$update, subMsg, rootModel.ar);
+				var _v12 = A2($author$project$Common$ErrorPanel$update, subMsg, rootModel.dk);
 				var model_ = _v12.a;
 				var cmd = _v12.b;
 				return _Utils_Tuple2(
 					_Utils_update(
 						rootModel,
-						{ar: model_}),
+						{dk: model_}),
 					A2($elm$core$Platform$Cmd$map, $author$project$Main$ErrorMsg, cmd));
 			default:
 				var subMsg = msg.a;
-				var _v13 = A2($author$project$Common$Settings$update, subMsg, rootModel.ab);
+				var _v13 = A2($author$project$Common$Settings$update, subMsg, rootModel.cK);
 				var settingsModel = _v13.a;
 				var cmd = _v13.b;
 				return _Utils_Tuple2(
 					_Utils_update(
 						rootModel,
-						{ab: settingsModel}),
+						{cK: settingsModel}),
 					$elm$core$Platform$Cmd$none);
 		}
 	});
@@ -10127,7 +10373,7 @@ var $author$project$Main$navbarView = function (model) {
 };
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
 var $author$project$Main$notFoundView = {
-	ak: _List_fromArray(
+	c8: _List_fromArray(
 		[
 			A2(
 			$elm$html$Html$div,
@@ -10143,10 +10389,9 @@ var $author$project$Main$notFoundView = {
 						]))
 				]))
 		]),
-	bX: 'Gingerbreadman | 404 Error'
+	fS: 'Gingerbreadman | 404 Error'
 };
 var $elm$html$Html$h2 = _VirtualDom_node('h2');
-var $elm$html$Html$hr = _VirtualDom_node('hr');
 var $author$project$AnalyzeMonitor$AnalyzeMonitor$indicatorView = F2(
 	function (title, val) {
 		return A2(
@@ -10191,6 +10436,9 @@ var $author$project$AnalyzeMonitor$AnalyzeMonitor$indicatorView = F2(
 						]))
 				]));
 	});
+var $elm$html$Html$Attributes$max = $elm$html$Html$Attributes$stringProperty('max');
+var $elm$html$Html$progress = _VirtualDom_node('progress');
+var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
 var $author$project$AnalyzeMonitor$AnalyzeMonitor$serviceView = function (service) {
 	return A2(
 		$elm$html$Html$div,
@@ -10201,17 +10449,49 @@ var $author$project$AnalyzeMonitor$AnalyzeMonitor$serviceView = function (servic
 		_List_fromArray(
 			[
 				A2(
-				$elm$html$Html$h2,
+				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('title')
+						$elm$html$Html$Attributes$class('title-indicator')
 					]),
 				_List_fromArray(
 					[
-						$elm$html$Html$text(service.bQ)
+						A2(
+						$elm$html$Html$h2,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('title')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text(service.fI)
+							])),
+						function () {
+						var _v0 = ((!service.bP) && (!service.cE)) ? _Utils_Tuple2(1, 1) : _Utils_Tuple2(service.bP, service.cE);
+						var val_ = _v0.a;
+						var max_ = _v0.b;
+						return A2(
+							$elm$html$Html$progress,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$value(
+									$elm$core$String$fromInt(val_)),
+									$elm$html$Html$Attributes$max(
+									$elm$core$String$fromInt(max_))
+								]),
+							_List_Nil);
+					}()
 					])),
-				A2($elm$html$Html$hr, _List_Nil, _List_Nil),
-				A2($author$project$AnalyzeMonitor$AnalyzeMonitor$indicatorView, 'Remain :', service.bM),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('main-indicator')
+					]),
+				_List_fromArray(
+					[
+						A2($author$project$AnalyzeMonitor$AnalyzeMonitor$indicatorView, 'Remain :', service.cE)
+					])),
 				A2(
 				$elm$html$Html$div,
 				_List_fromArray(
@@ -10220,15 +10500,15 @@ var $author$project$AnalyzeMonitor$AnalyzeMonitor$serviceView = function (servic
 					]),
 				_List_fromArray(
 					[
-						A2($author$project$AnalyzeMonitor$AnalyzeMonitor$indicatorView, 'Analyzing :', service.bi),
-						A2($author$project$AnalyzeMonitor$AnalyzeMonitor$indicatorView, 'Done :', service.bh)
+						A2($author$project$AnalyzeMonitor$AnalyzeMonitor$indicatorView, 'Analyzing :', service.bP),
+						A2($author$project$AnalyzeMonitor$AnalyzeMonitor$indicatorView, 'Done :', service.eB)
 					]))
 			]));
 };
 var $author$project$AnalyzeMonitor$AnalyzeMonitor$view = function (rootModel) {
-	var services = rootModel.P.a4;
+	var services = rootModel.bO.ef;
 	return {
-		ak: _List_fromArray(
+		c8: _List_fromArray(
 			[
 				A2(
 				$elm$html$Html$div,
@@ -10238,7 +10518,7 @@ var $author$project$AnalyzeMonitor$AnalyzeMonitor$view = function (rootModel) {
 					]),
 				A2($elm$core$List$map, $author$project$AnalyzeMonitor$AnalyzeMonitor$serviceView, services))
 			]),
-		bX: 'Analyze Monitor'
+		fS: 'Analyze Monitor'
 	};
 };
 var $author$project$Common$ErrorPanel$DelError = function (a) {
@@ -10280,7 +10560,7 @@ var $author$project$Common$ErrorPanel$errorBoxView = function (_v0) {
 					]),
 				_List_fromArray(
 					[
-						$elm$html$Html$text(error.bU)
+						$elm$html$Html$text(error.fN)
 					])),
 				A2(
 				$elm$html$Html$div,
@@ -10370,7 +10650,6 @@ var $elm$html$Html$Attributes$step = function (n) {
 	return A2($elm$html$Html$Attributes$stringProperty, 'step', n);
 };
 var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
-var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
 var $author$project$Upload$Upload$newPlacesView = function (model) {
 	return A2(
 		$elm$html$Html$div,
@@ -10388,7 +10667,7 @@ var $author$project$Upload$Upload$newPlacesView = function (model) {
 						$elm$html$Html$Attributes$class('form-control'),
 						$elm$html$Html$Attributes$placeholder('or create new place tag'),
 						$author$project$Common$Data$onChange($author$project$Upload$Upload$NewPlaceName),
-						$elm$html$Html$Attributes$value(model.aH.aG)
+						$elm$html$Html$Attributes$value(model.dO.dN)
 					]),
 				_List_Nil),
 				A2(
@@ -10400,7 +10679,7 @@ var $author$project$Upload$Upload$newPlacesView = function (model) {
 						$elm$html$Html$Attributes$step('0.0000001'),
 						$author$project$Common$Data$onChange($author$project$Upload$Upload$NewPlaceLatitude),
 						$elm$html$Html$Attributes$value(
-						$elm$core$String$fromFloat(model.aH.bD))
+						$elm$core$String$fromFloat(model.dO.fe))
 					]),
 				_List_Nil),
 				A2(
@@ -10411,7 +10690,7 @@ var $author$project$Upload$Upload$newPlacesView = function (model) {
 						$elm$html$Html$Attributes$placeholder('longitude'),
 						$elm$html$Html$Attributes$step('0.0000001'),
 						$elm$html$Html$Attributes$value(
-						$elm$core$String$fromFloat(model.aH.bE)),
+						$elm$core$String$fromFloat(model.dO.ff)),
 						$author$project$Common$Data$onChange($author$project$Upload$Upload$NewPlaceLongitude)
 					]),
 				_List_Nil)
@@ -10471,7 +10750,7 @@ var $author$project$Upload$Upload$selectPlacesView = function (model) {
 						$elm$html$Html$Attributes$type_('text'),
 						$author$project$Common$Data$onChange($author$project$Upload$Upload$PlaceSearchInput),
 						$elm$html$Html$Attributes$placeholder('Search Place'),
-						$elm$html$Html$Attributes$value(model.aM)
+						$elm$html$Html$Attributes$value(model.dU)
 					]),
 				_List_Nil),
 				A2(
@@ -10488,18 +10767,18 @@ var $author$project$Upload$Upload$selectPlacesView = function (model) {
 							$elm$html$Html$option,
 							_List_fromArray(
 								[
-									$elm$html$Html$Attributes$value(p.aG)
+									$elm$html$Html$Attributes$value(p.dN)
 								]),
 							_List_fromArray(
 								[
-									$elm$html$Html$text(p.aG)
+									$elm$html$Html$text(p.dN)
 								]));
 					},
-					model.aL))
+					model.dT))
 			]));
 };
 var $author$project$Upload$Upload$uploadedIndicator = function (model) {
-	var _v0 = model.ba;
+	var _v0 = model.ep;
 	if (!_v0.$) {
 		var resultStr = _v0.a;
 		return A2(
@@ -10529,9 +10808,9 @@ var $author$project$Upload$Upload$uploadedIndicator = function (model) {
 	}
 };
 var $author$project$Upload$Upload$view = function (rootModel) {
-	var model = rootModel.b$;
+	var model = rootModel.f0;
 	return {
-		ak: _List_fromArray(
+		c8: _List_fromArray(
 			[
 				A2(
 				$elm$html$Html$div,
@@ -10593,7 +10872,7 @@ var $author$project$Upload$Upload$view = function (rootModel) {
 															[
 																$elm$html$Html$text('Select Images (~100MB)')
 															])),
-														$author$project$Upload$Upload$filesCountView(model.a1)
+														$author$project$Upload$Upload$filesCountView(model.ec)
 													]))
 											])),
 										A2(
@@ -10665,7 +10944,7 @@ var $author$project$Upload$Upload$view = function (rootModel) {
 							]))
 					]))
 			]),
-		bX: 'Upload'
+		fS: 'Upload'
 	};
 };
 var $elm$html$Html$Attributes$id = $elm$html$Html$Attributes$stringProperty('id');
@@ -10674,10 +10953,29 @@ var $author$project$Visualizer$Map$mapView = function (mapId) {
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$id(mapId),
-				$elm$html$Html$Attributes$class('pad map')
+				$elm$html$Html$Attributes$class('map column')
 			]),
-		_List_Nil);
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$h2,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('title')
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Map')
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$id(mapId),
+						$elm$html$Html$Attributes$class('pad map')
+					]),
+				_List_Nil)
+			]));
 };
 var $author$project$Common$Settings$localDropSecsStr = F2(
 	function (hereZone, utcTime) {
@@ -10691,7 +10989,7 @@ var $author$project$Common$Settings$localDropSecsStr = F2(
 	});
 var $author$project$Visualizer$Controller$viewControllerState = function (rootModel) {
 	var timezone = function () {
-		var _v0 = rootModel.ab.ag;
+		var _v0 = rootModel.cK.cY;
 		if (!_v0.$) {
 			var tzname = _v0.a;
 			return tzname;
@@ -10700,18 +10998,18 @@ var $author$project$Visualizer$Controller$viewControllerState = function (rootMo
 			return 'UTC' + $elm$core$String$fromInt(integer);
 		}
 	}();
-	var controllerModel = rootModel.b2.i;
+	var controllerModel = rootModel.f3.n;
 	var places = A2(
 		$elm$core$String$join,
 		', ',
 		A2(
 			$elm$core$List$map,
 			function ($) {
-				return $.aG;
+				return $.dN;
 			},
-			controllerModel.a_));
-	var since = A2($author$project$Common$Settings$localDropSecsStr, rootModel.ab.af, controllerModel._.N);
-	var until = A2($author$project$Common$Settings$localDropSecsStr, rootModel.ab.af, controllerModel._.O);
+			controllerModel.d6));
+	var since = A2($author$project$Common$Settings$localDropSecsStr, rootModel.cK.cX, controllerModel.cF.bg);
+	var until = A2($author$project$Common$Settings$localDropSecsStr, rootModel.cK.cX, controllerModel.cF.bp);
 	return A2(
 		$elm$html$Html$div,
 		_List_fromArray(
@@ -10785,6 +11083,3390 @@ var $author$project$Visualizer$Controller$view = function (rootModel) {
 					]))
 			]));
 };
+var $author$project$Visualizer$Graph$RemoveFocusPlace = function (a) {
+	return {$: 1, a: a};
+};
+var $elm$core$List$sum = function (numbers) {
+	return A3($elm$core$List$foldl, $elm$core$Basics$add, 0, numbers);
+};
+var $author$project$Visualizer$Graph$averageAge = function (person) {
+	var ageList = A2(
+		$elm$core$List$filterMap,
+		function ($) {
+			return $.ey;
+		},
+		person);
+	var average = $elm$core$List$sum(ageList) / $elm$core$List$length(ageList);
+	return average;
+};
+var $author$project$Visualizer$Graph$agePer = function (people) {
+	var averageList = A2($elm$core$List$map, $author$project$Visualizer$Graph$averageAge, people);
+	return A2(
+		$elm$core$List$append,
+		_List_fromArray(
+			[
+				$elm$core$List$length(
+				A2(
+					$elm$core$List$filter,
+					function (x) {
+						return x >= 80;
+					},
+					averageList))
+			]),
+		A2(
+			$elm$core$List$map,
+			function (u) {
+				return $elm$core$List$length(
+					A2(
+						$elm$core$List$filter,
+						function (x) {
+							return (_Utils_cmp(x, u - 5) > -1) && (_Utils_cmp(x, u) < 0);
+						},
+						averageList));
+			},
+			A2(
+				$elm$core$List$map,
+				function (i) {
+					return i * 5;
+				},
+				A2($elm$core$List$range, 1, 16))));
+};
+var $author$project$Visualizer$Graph$Age = 1;
+var $elm$core$Array$fromListHelp = F3(
+	function (list, nodeList, nodeListSize) {
+		fromListHelp:
+		while (true) {
+			var _v0 = A2($elm$core$Elm$JsArray$initializeFromList, $elm$core$Array$branchFactor, list);
+			var jsArray = _v0.a;
+			var remainingItems = _v0.b;
+			if (_Utils_cmp(
+				$elm$core$Elm$JsArray$length(jsArray),
+				$elm$core$Array$branchFactor) < 0) {
+				return A2(
+					$elm$core$Array$builderToArray,
+					true,
+					{p: nodeList, k: nodeListSize, o: jsArray});
+			} else {
+				var $temp$list = remainingItems,
+					$temp$nodeList = A2(
+					$elm$core$List$cons,
+					$elm$core$Array$Leaf(jsArray),
+					nodeList),
+					$temp$nodeListSize = nodeListSize + 1;
+				list = $temp$list;
+				nodeList = $temp$nodeList;
+				nodeListSize = $temp$nodeListSize;
+				continue fromListHelp;
+			}
+		}
+	});
+var $elm$core$Array$fromList = function (list) {
+	if (!list.b) {
+		return $elm$core$Array$empty;
+	} else {
+		return A3($elm$core$Array$fromListHelp, list, _List_Nil, 0);
+	}
+};
+var $elm$core$List$repeatHelp = F3(
+	function (result, n, value) {
+		repeatHelp:
+		while (true) {
+			if (n <= 0) {
+				return result;
+			} else {
+				var $temp$result = A2($elm$core$List$cons, value, result),
+					$temp$n = n - 1,
+					$temp$value = value;
+				result = $temp$result;
+				n = $temp$n;
+				value = $temp$value;
+				continue repeatHelp;
+			}
+		}
+	});
+var $elm$core$List$repeat = F2(
+	function (n, value) {
+		return A3($elm$core$List$repeatHelp, _List_Nil, n, value);
+	});
+var $avh4$elm_color$Color$RgbaSpace = F4(
+	function (a, b, c, d) {
+		return {$: 0, a: a, b: b, c: c, d: d};
+	});
+var $avh4$elm_color$Color$fromRgba = function (components) {
+	return A4($avh4$elm_color$Color$RgbaSpace, components.fz, components.e0, components.eE, components.eA);
+};
+var $author$project$Visualizer$Graph$rgba255 = F4(
+	function (r, g, b, a) {
+		return $avh4$elm_color$Color$fromRgba(
+			{eA: a, eE: b / 255, e0: g / 255, fz: r / 255});
+	});
+var $author$project$Visualizer$Graph$ageColors = $elm$core$Array$fromList(
+	A2(
+		$elm$core$List$append,
+		_List_fromArray(
+			[
+				A4($author$project$Visualizer$Graph$rgba255, 220, 220, 220, 1)
+			]),
+		$elm$core$List$concat(
+			A2(
+				$elm$core$List$repeat,
+				8,
+				_List_fromArray(
+					[
+						A4($author$project$Visualizer$Graph$rgba255, 229, 223, 223, 1),
+						A4($author$project$Visualizer$Graph$rgba255, 190, 190, 190, 1)
+					])))));
+var $elm_community$typed_svg$TypedSvg$Types$Paint = function (a) {
+	return {$: 0, a: a};
+};
+var $author$project$Visualizer$Graph$SexFocus = function (a) {
+	return {$: 2, a: a};
+};
+var $elm_community$typed_svg$TypedSvg$Types$Translate = F2(
+	function (a, b) {
+		return {$: 5, a: a, b: b};
+	});
+var $elm$core$Basics$abs = function (n) {
+	return (n < 0) ? (-n) : n;
+};
+var $elm$core$Basics$acos = _Basics_acos;
+var $folkertdev$one_true_path_experiment$LowLevel$Command$EllipticalArc = function (a) {
+	return {$: 3, a: a};
+};
+var $folkertdev$one_true_path_experiment$LowLevel$Command$arcTo = $folkertdev$one_true_path_experiment$LowLevel$Command$EllipticalArc;
+var $folkertdev$svg_path_lowlevel$Path$LowLevel$LargestArc = 1;
+var $folkertdev$one_true_path_experiment$LowLevel$Command$largestArc = 1;
+var $folkertdev$svg_path_lowlevel$Path$LowLevel$SmallestArc = 0;
+var $folkertdev$one_true_path_experiment$LowLevel$Command$smallestArc = 0;
+var $gampleman$elm_visualization$Shape$Pie$boolToArc = function (b) {
+	return b ? $folkertdev$one_true_path_experiment$LowLevel$Command$largestArc : $folkertdev$one_true_path_experiment$LowLevel$Command$smallestArc;
+};
+var $folkertdev$svg_path_lowlevel$Path$LowLevel$Clockwise = 0;
+var $folkertdev$one_true_path_experiment$LowLevel$Command$clockwise = 0;
+var $folkertdev$svg_path_lowlevel$Path$LowLevel$CounterClockwise = 1;
+var $folkertdev$one_true_path_experiment$LowLevel$Command$counterClockwise = 1;
+var $gampleman$elm_visualization$Shape$Pie$boolToDirection = function (b) {
+	return b ? $folkertdev$one_true_path_experiment$LowLevel$Command$counterClockwise : $folkertdev$one_true_path_experiment$LowLevel$Command$clockwise;
+};
+var $elm$core$Basics$cos = _Basics_cos;
+var $folkertdev$one_true_path_experiment$SubPath$Empty = {$: 1};
+var $folkertdev$one_true_path_experiment$SubPath$empty = $folkertdev$one_true_path_experiment$SubPath$Empty;
+var $gampleman$elm_visualization$Shape$Pie$epsilon = 1.0e-12;
+var $elm$core$Basics$truncate = _Basics_truncate;
+var $gampleman$elm_visualization$Shape$Pie$mod = F2(
+	function (a, b) {
+		var frac = a / b;
+		return (frac - (frac | 0)) * b;
+	});
+var $folkertdev$one_true_path_experiment$LowLevel$Command$MoveTo = $elm$core$Basics$identity;
+var $folkertdev$one_true_path_experiment$LowLevel$Command$moveTo = $elm$core$Basics$identity;
+var $elm$core$Basics$pi = _Basics_pi;
+var $elm$core$Basics$sin = _Basics_sin;
+var $folkertdev$one_true_path_experiment$SubPath$SubPath = function (a) {
+	return {$: 0, a: a};
+};
+var $folkertdev$elm_deque$Deque$Deque = $elm$core$Basics$identity;
+var $folkertdev$elm_deque$Internal$rebalance = function (deque) {
+	var sizeF = deque.B;
+	var sizeR = deque.C;
+	var front = deque.I;
+	var rear = deque.J;
+	var size1 = ((sizeF + sizeR) / 2) | 0;
+	var size2 = (sizeF + sizeR) - size1;
+	var balanceConstant = 4;
+	if ((sizeF + sizeR) < 2) {
+		return deque;
+	} else {
+		if (_Utils_cmp(sizeF, (balanceConstant * sizeR) + 1) > 0) {
+			var newRear = _Utils_ap(
+				rear,
+				$elm$core$List$reverse(
+					A2($elm$core$List$drop, size1, front)));
+			var newFront = A2($elm$core$List$take, size1, front);
+			return {I: newFront, J: newRear, B: size1, C: size2};
+		} else {
+			if (_Utils_cmp(sizeR, (balanceConstant * sizeF) + 1) > 0) {
+				var newRear = A2($elm$core$List$take, size1, rear);
+				var newFront = _Utils_ap(
+					front,
+					$elm$core$List$reverse(
+						A2($elm$core$List$drop, size1, rear)));
+				return {I: newFront, J: newRear, B: size1, C: size2};
+			} else {
+				return deque;
+			}
+		}
+	}
+};
+var $folkertdev$elm_deque$Internal$fromList = function (list) {
+	return $folkertdev$elm_deque$Internal$rebalance(
+		{
+			I: list,
+			J: _List_Nil,
+			B: $elm$core$List$length(list),
+			C: 0
+		});
+};
+var $folkertdev$elm_deque$Deque$fromList = A2($elm$core$Basics$composeL, $elm$core$Basics$identity, $folkertdev$elm_deque$Internal$fromList);
+var $folkertdev$one_true_path_experiment$SubPath$with = F2(
+	function (moveto, drawtos) {
+		return $folkertdev$one_true_path_experiment$SubPath$SubPath(
+			{
+				dg: $folkertdev$elm_deque$Deque$fromList(drawtos),
+				dM: moveto
+			});
+	});
+var $gampleman$elm_visualization$Shape$Pie$arc_ = F6(
+	function (x, y, radius, a0, a1, ccw) {
+		var tau = 2 * $elm$core$Basics$pi;
+		var r = $elm$core$Basics$abs(radius);
+		var dy = r * $elm$core$Basics$sin(a0);
+		var y0_ = y + dy;
+		var dx = r * $elm$core$Basics$cos(a0);
+		var x0_ = x + dx;
+		var origin = $folkertdev$one_true_path_experiment$LowLevel$Command$moveTo(
+			_Utils_Tuple2(x0_, y0_));
+		var da = ccw ? (a0 - a1) : (a1 - a0);
+		var cw = $gampleman$elm_visualization$Shape$Pie$boolToDirection(!ccw);
+		if (!r) {
+			return $folkertdev$one_true_path_experiment$SubPath$empty;
+		} else {
+			if (_Utils_cmp(da, tau - $gampleman$elm_visualization$Shape$Pie$epsilon) > 0) {
+				return A2(
+					$folkertdev$one_true_path_experiment$SubPath$with,
+					origin,
+					_List_fromArray(
+						[
+							$folkertdev$one_true_path_experiment$LowLevel$Command$arcTo(
+							_List_fromArray(
+								[
+									{
+									bQ: $folkertdev$one_true_path_experiment$LowLevel$Command$largestArc,
+									bY: cw,
+									ap: _Utils_Tuple2(r, r),
+									K: _Utils_Tuple2(x - dx, y - dy),
+									ag: 0
+								}
+								])),
+							$folkertdev$one_true_path_experiment$LowLevel$Command$arcTo(
+							_List_fromArray(
+								[
+									{
+									bQ: $folkertdev$one_true_path_experiment$LowLevel$Command$largestArc,
+									bY: cw,
+									ap: _Utils_Tuple2(r, r),
+									K: _Utils_Tuple2(x0_, y0_),
+									ag: 0
+								}
+								]))
+						]));
+			} else {
+				var da_ = (da < 0) ? (A2($gampleman$elm_visualization$Shape$Pie$mod, da, tau) + tau) : da;
+				return A2(
+					$folkertdev$one_true_path_experiment$SubPath$with,
+					origin,
+					_List_fromArray(
+						[
+							$folkertdev$one_true_path_experiment$LowLevel$Command$arcTo(
+							_List_fromArray(
+								[
+									{
+									bQ: $gampleman$elm_visualization$Shape$Pie$boolToArc(
+										_Utils_cmp(da_, $elm$core$Basics$pi) > -1),
+									bY: cw,
+									ap: _Utils_Tuple2(r, r),
+									K: _Utils_Tuple2(
+										x + (r * $elm$core$Basics$cos(a1)),
+										y + (r * $elm$core$Basics$sin(a1))),
+									ag: 0
+								}
+								]))
+						]));
+			}
+		}
+	});
+var $elm$core$Basics$atan2 = _Basics_atan2;
+var $folkertdev$one_true_path_experiment$LowLevel$Command$ClosePath = {$: 4};
+var $folkertdev$one_true_path_experiment$LowLevel$Command$closePath = $folkertdev$one_true_path_experiment$LowLevel$Command$ClosePath;
+var $elm$core$Tuple$mapSecond = F2(
+	function (func, _v0) {
+		var x = _v0.a;
+		var y = _v0.b;
+		return _Utils_Tuple2(
+			x,
+			func(y));
+	});
+var $folkertdev$elm_deque$Internal$empty = {I: _List_Nil, J: _List_Nil, B: 0, C: 0};
+var $folkertdev$elm_deque$Internal$popBack = function (deque) {
+	var front = deque.I;
+	var rear = deque.J;
+	var _v0 = _Utils_Tuple2(front, rear);
+	if (!_v0.b.b) {
+		if (!_v0.a.b) {
+			return _Utils_Tuple2($elm$core$Maybe$Nothing, $folkertdev$elm_deque$Internal$empty);
+		} else {
+			if (!_v0.a.b.b) {
+				var _v1 = _v0.a;
+				var x = _v1.a;
+				return _Utils_Tuple2(
+					$elm$core$Maybe$Just(x),
+					$folkertdev$elm_deque$Internal$empty);
+			} else {
+				return _Utils_Tuple2($elm$core$Maybe$Nothing, $folkertdev$elm_deque$Internal$empty);
+			}
+		}
+	} else {
+		var _v2 = _v0.b;
+		var r = _v2.a;
+		var rs = _v2.b;
+		return _Utils_Tuple2(
+			$elm$core$Maybe$Just(r),
+			$folkertdev$elm_deque$Internal$rebalance(
+				{I: deque.I, J: rs, B: deque.B, C: deque.C - 1}));
+	}
+};
+var $folkertdev$elm_deque$Deque$unwrap = function (_v0) {
+	var boundedDeque = _v0;
+	return boundedDeque;
+};
+var $folkertdev$elm_deque$Deque$popBack = A2(
+	$elm$core$Basics$composeL,
+	A2(
+		$elm$core$Basics$composeL,
+		$elm$core$Tuple$mapSecond($elm$core$Basics$identity),
+		$folkertdev$elm_deque$Internal$popBack),
+	$folkertdev$elm_deque$Deque$unwrap);
+var $folkertdev$elm_deque$Deque$mapAbstract = F2(
+	function (f, _v0) {
+		var _abstract = _v0;
+		return f(_abstract);
+	});
+var $folkertdev$elm_deque$Deque$pushBack = F2(
+	function (elem, _v0) {
+		var deque = _v0;
+		return A2(
+			$folkertdev$elm_deque$Deque$mapAbstract,
+			$folkertdev$elm_deque$Internal$rebalance,
+			{
+				I: deque.I,
+				J: A2($elm$core$List$cons, elem, deque.J),
+				B: deque.B,
+				C: deque.C + 1
+			});
+	});
+var $folkertdev$one_true_path_experiment$SubPath$close = function (subpath) {
+	if (subpath.$ === 1) {
+		return $folkertdev$one_true_path_experiment$SubPath$Empty;
+	} else {
+		var moveto = subpath.a.dM;
+		var drawtos = subpath.a.dg;
+		var _v1 = $folkertdev$elm_deque$Deque$popBack(drawtos);
+		if ((!_v1.a.$) && (_v1.a.a.$ === 4)) {
+			var _v2 = _v1.a.a;
+			var preceding = _v1.b;
+			return subpath;
+		} else {
+			return $folkertdev$one_true_path_experiment$SubPath$SubPath(
+				{
+					dg: A2($folkertdev$elm_deque$Deque$pushBack, $folkertdev$one_true_path_experiment$LowLevel$Command$closePath, drawtos),
+					dM: moveto
+				});
+		}
+	}
+};
+var $folkertdev$one_true_path_experiment$SubPath$firstPoint = function (_v0) {
+	var moveto = _v0.dM;
+	var p = moveto;
+	return p;
+};
+var $folkertdev$one_true_path_experiment$LowLevel$Command$LineTo = function (a) {
+	return {$: 0, a: a};
+};
+var $folkertdev$one_true_path_experiment$LowLevel$Command$lineTo = $folkertdev$one_true_path_experiment$LowLevel$Command$LineTo;
+var $folkertdev$one_true_path_experiment$SubPath$map2 = F3(
+	function (f, sub1, sub2) {
+		var _v0 = _Utils_Tuple2(sub1, sub2);
+		if (_v0.a.$ === 1) {
+			if (_v0.b.$ === 1) {
+				var _v1 = _v0.a;
+				var _v2 = _v0.b;
+				return $folkertdev$one_true_path_experiment$SubPath$Empty;
+			} else {
+				var _v3 = _v0.a;
+				var subpath = _v0.b;
+				return subpath;
+			}
+		} else {
+			if (_v0.b.$ === 1) {
+				var subpath = _v0.a;
+				var _v4 = _v0.b;
+				return subpath;
+			} else {
+				var a = _v0.a.a;
+				var b = _v0.b.a;
+				return A2(f, a, b);
+			}
+		}
+	});
+var $folkertdev$one_true_path_experiment$SubPath$pushBack = F2(
+	function (drawto, data) {
+		return _Utils_update(
+			data,
+			{
+				dg: A2($folkertdev$elm_deque$Deque$pushBack, drawto, data.dg)
+			});
+	});
+var $folkertdev$elm_deque$Internal$length = function (deque) {
+	return deque.B + deque.C;
+};
+var $folkertdev$elm_deque$Internal$isEmpty = function (deque) {
+	return !$folkertdev$elm_deque$Internal$length(deque);
+};
+var $folkertdev$elm_deque$Deque$isEmpty = A2($elm$core$Basics$composeL, $folkertdev$elm_deque$Internal$isEmpty, $folkertdev$elm_deque$Deque$unwrap);
+var $folkertdev$elm_deque$Deque$append = F2(
+	function (p, q) {
+		var x = p;
+		var y = q;
+		return $folkertdev$elm_deque$Deque$isEmpty(p) ? q : ($folkertdev$elm_deque$Deque$isEmpty(q) ? p : {
+			I: _Utils_ap(
+				x.I,
+				$elm$core$List$reverse(x.J)),
+			J: $elm$core$List$reverse(
+				_Utils_ap(
+					y.I,
+					$elm$core$List$reverse(y.J))),
+			B: x.B + x.C,
+			C: y.B + y.C
+		});
+	});
+var $folkertdev$one_true_path_experiment$SubPath$unsafeConcatenate = F2(
+	function (a, b) {
+		return _Utils_update(
+			a,
+			{
+				dg: A2($folkertdev$elm_deque$Deque$append, a.dg, b.dg)
+			});
+	});
+var $folkertdev$one_true_path_experiment$SubPath$connect = function () {
+	var helper = F2(
+		function (right, left) {
+			return $folkertdev$one_true_path_experiment$SubPath$SubPath(
+				A2(
+					$folkertdev$one_true_path_experiment$SubPath$unsafeConcatenate,
+					A2(
+						$folkertdev$one_true_path_experiment$SubPath$pushBack,
+						$folkertdev$one_true_path_experiment$LowLevel$Command$lineTo(
+							_List_fromArray(
+								[
+									$folkertdev$one_true_path_experiment$SubPath$firstPoint(right)
+								])),
+						left),
+					right));
+		});
+	return $folkertdev$one_true_path_experiment$SubPath$map2(helper);
+}();
+var $elm$core$Basics$pow = _Basics_pow;
+var $elm$core$Basics$sqrt = _Basics_sqrt;
+var $gampleman$elm_visualization$Shape$Pie$cornerTangents = F7(
+	function (x0, y0, x1, y1, r1, rc, cw) {
+		var y01 = y0 - y1;
+		var x01 = x0 - x1;
+		var r = r1 - rc;
+		var lo = (cw ? rc : (-rc)) / $elm$core$Basics$sqrt(
+			A2($elm$core$Basics$pow, x01, 2) + A2($elm$core$Basics$pow, y01, 2));
+		var ox = lo * y01;
+		var x10 = x1 + ox;
+		var x11 = x0 + ox;
+		var x00 = (x11 + x10) / 2;
+		var oy = (-lo) * x01;
+		var y10 = y1 + oy;
+		var y11 = y0 + oy;
+		var y00 = (y11 + y10) / 2;
+		var dy = y10 - y11;
+		var dx = x10 - x11;
+		var dd = (x11 * y10) - (x10 * y11);
+		var d2 = A2($elm$core$Basics$pow, dx, 2) + A2($elm$core$Basics$pow, dy, 2);
+		var d = ((dy < 0) ? (-1) : 1) * $elm$core$Basics$sqrt(
+			A2(
+				$elm$core$Basics$max,
+				0,
+				(A2($elm$core$Basics$pow, r, 2) * d2) - A2($elm$core$Basics$pow, dd, 2)));
+		var cy1 = (((-dd) * dx) + (dy * d)) / d2;
+		var dy1 = cy1 - y00;
+		var cy0 = (((-dd) * dx) - (dy * d)) / d2;
+		var dy0 = cy0 - y00;
+		var cx1 = ((dd * dy) + (dx * d)) / d2;
+		var dx1 = cx1 - x00;
+		var cx0 = ((dd * dy) - (dx * d)) / d2;
+		var dx0 = cx0 - x00;
+		var _v0 = (_Utils_cmp(
+			A2($elm$core$Basics$pow, dx0, 2) + A2($elm$core$Basics$pow, dy0, 2),
+			A2($elm$core$Basics$pow, dx1, 2) + A2($elm$core$Basics$pow, dy1, 2)) > 0) ? _Utils_Tuple2(cx1, cy1) : _Utils_Tuple2(cx0, cy0);
+		var fcx = _v0.a;
+		var fxy = _v0.b;
+		return {v: fcx, w: fxy, P: -ox, af: fcx * ((r1 / r) - 1), Q: -oy, ah: fxy * ((r1 / r) - 1)};
+	});
+var $gampleman$elm_visualization$Shape$Pie$intersect = F8(
+	function (x0, y0, x1, y1, x2, y2, x3, y3) {
+		var y32 = y3 - y2;
+		var y10 = y1 - y0;
+		var x32 = x3 - x2;
+		var x10 = x1 - x0;
+		var t = ((x32 * (y0 - y2)) - (y32 * (x0 - x2))) / ((y32 * x10) - (x32 * y10));
+		return _Utils_Tuple2(x0 + (t * x10), y0 + (t * y10));
+	});
+var $ianmackenzie$elm_geometry$Vector2d$components = function (_v0) {
+	var components_ = _v0;
+	return components_;
+};
+var $ianmackenzie$elm_geometry$Geometry$Types$Vector2d = $elm$core$Basics$identity;
+var $ianmackenzie$elm_geometry$Vector2d$fromComponents = $elm$core$Basics$identity;
+var $ianmackenzie$elm_geometry$Vector2d$difference = F2(
+	function (firstVector, secondVector) {
+		var _v0 = $ianmackenzie$elm_geometry$Vector2d$components(secondVector);
+		var x2 = _v0.a;
+		var y2 = _v0.b;
+		var _v1 = $ianmackenzie$elm_geometry$Vector2d$components(firstVector);
+		var x1 = _v1.a;
+		var y1 = _v1.b;
+		return $ianmackenzie$elm_geometry$Vector2d$fromComponents(
+			_Utils_Tuple2(x1 - x2, y1 - y2));
+	});
+var $folkertdev$elm_deque$Internal$foldl = F3(
+	function (f, initial, deque) {
+		return function (initial_) {
+			return A3($elm$core$List$foldr, f, initial_, deque.J);
+		}(
+			A3($elm$core$List$foldl, f, initial, deque.I));
+	});
+var $folkertdev$elm_deque$Deque$foldl = F2(
+	function (f, initial) {
+		return A2(
+			$elm$core$Basics$composeL,
+			A2($folkertdev$elm_deque$Internal$foldl, f, initial),
+			$folkertdev$elm_deque$Deque$unwrap);
+	});
+var $elm_community$list_extra$List$Extra$last = function (items) {
+	last:
+	while (true) {
+		if (!items.b) {
+			return $elm$core$Maybe$Nothing;
+		} else {
+			if (!items.b.b) {
+				var x = items.a;
+				return $elm$core$Maybe$Just(x);
+			} else {
+				var rest = items.b;
+				var $temp$items = rest;
+				items = $temp$items;
+				continue last;
+			}
+		}
+	}
+};
+var $elm$core$Maybe$map = F2(
+	function (f, maybe) {
+		if (!maybe.$) {
+			var value = maybe.a;
+			return $elm$core$Maybe$Just(
+				f(value));
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	});
+var $elm$core$Maybe$withDefault = F2(
+	function (_default, maybe) {
+		if (!maybe.$) {
+			var value = maybe.a;
+			return value;
+		} else {
+			return _default;
+		}
+	});
+var $folkertdev$one_true_path_experiment$LowLevel$Command$updateCursorState = F2(
+	function (drawto, state) {
+		var noControlPoint = function (currentState) {
+			return _Utils_update(
+				currentState,
+				{r: $elm$core$Maybe$Nothing});
+		};
+		var maybeUpdateCursor = function (coordinate) {
+			return _Utils_update(
+				state,
+				{
+					j: A2($elm$core$Maybe$withDefault, state.j, coordinate)
+				});
+		};
+		var _v0 = state.j;
+		var cursorX = _v0.a;
+		var cursorY = _v0.b;
+		switch (drawto.$) {
+			case 0:
+				var coordinates = drawto.a;
+				return noControlPoint(
+					maybeUpdateCursor(
+						$elm_community$list_extra$List$Extra$last(coordinates)));
+			case 1:
+				var coordinates = drawto.a;
+				var _v2 = $elm_community$list_extra$List$Extra$last(coordinates);
+				if (_v2.$ === 1) {
+					return state;
+				} else {
+					var _v3 = _v2.a;
+					var control1 = _v3.a;
+					var control2 = _v3.b;
+					var target = _v3.c;
+					return _Utils_update(
+						state,
+						{
+							j: target,
+							r: $elm$core$Maybe$Just(control2)
+						});
+				}
+			case 2:
+				var coordinates = drawto.a;
+				var _v4 = $elm_community$list_extra$List$Extra$last(coordinates);
+				if (_v4.$ === 1) {
+					return state;
+				} else {
+					var _v5 = _v4.a;
+					var control = _v5.a;
+					var target = _v5.b;
+					return _Utils_update(
+						state,
+						{
+							j: target,
+							r: $elm$core$Maybe$Just(control)
+						});
+				}
+			case 3:
+				var _arguments = drawto.a;
+				return noControlPoint(
+					maybeUpdateCursor(
+						A2(
+							$elm$core$Maybe$map,
+							function ($) {
+								return $.K;
+							},
+							$elm_community$list_extra$List$Extra$last(_arguments))));
+			default:
+				return noControlPoint(state);
+		}
+	});
+var $folkertdev$one_true_path_experiment$SubPath$finalCursorState = function (_v0) {
+	var moveto = _v0.dM;
+	var drawtos = _v0.dg;
+	var _v1 = moveto;
+	var start = _v1;
+	var initial = {j: start, r: $elm$core$Maybe$Nothing, cT: start};
+	return A3($folkertdev$elm_deque$Deque$foldl, $folkertdev$one_true_path_experiment$LowLevel$Command$updateCursorState, initial, drawtos);
+};
+var $folkertdev$one_true_path_experiment$SubPath$finalPoint = A2(
+	$elm$core$Basics$composeR,
+	$folkertdev$one_true_path_experiment$SubPath$finalCursorState,
+	function ($) {
+		return $.j;
+	});
+var $folkertdev$elm_deque$Internal$map = F2(
+	function (f, deque) {
+		return {
+			I: A2($elm$core$List$map, f, deque.I),
+			J: A2($elm$core$List$map, f, deque.J),
+			B: deque.B,
+			C: deque.C
+		};
+	});
+var $folkertdev$elm_deque$Deque$map = function (f) {
+	return $folkertdev$elm_deque$Deque$mapAbstract(
+		$folkertdev$elm_deque$Internal$map(f));
+};
+var $folkertdev$one_true_path_experiment$LowLevel$Command$CurveTo = function (a) {
+	return {$: 1, a: a};
+};
+var $folkertdev$one_true_path_experiment$LowLevel$Command$QuadraticBezierCurveTo = function (a) {
+	return {$: 2, a: a};
+};
+var $folkertdev$one_true_path_experiment$LowLevel$Command$mapTuple2 = F2(
+	function (f, _v0) {
+		var a = _v0.a;
+		var b = _v0.b;
+		return _Utils_Tuple2(
+			f(a),
+			f(b));
+	});
+var $folkertdev$one_true_path_experiment$LowLevel$Command$mapTuple3 = F2(
+	function (f, _v0) {
+		var a = _v0.a;
+		var b = _v0.b;
+		var c = _v0.c;
+		return _Utils_Tuple3(
+			f(a),
+			f(b),
+			f(c));
+	});
+var $folkertdev$one_true_path_experiment$LowLevel$Command$mapCoordinateDrawTo = F2(
+	function (f, drawto) {
+		switch (drawto.$) {
+			case 0:
+				var coordinates = drawto.a;
+				return $folkertdev$one_true_path_experiment$LowLevel$Command$LineTo(
+					A2($elm$core$List$map, f, coordinates));
+			case 1:
+				var coordinates = drawto.a;
+				return $folkertdev$one_true_path_experiment$LowLevel$Command$CurveTo(
+					A2(
+						$elm$core$List$map,
+						$folkertdev$one_true_path_experiment$LowLevel$Command$mapTuple3(f),
+						coordinates));
+			case 2:
+				var coordinates = drawto.a;
+				return $folkertdev$one_true_path_experiment$LowLevel$Command$QuadraticBezierCurveTo(
+					A2(
+						$elm$core$List$map,
+						$folkertdev$one_true_path_experiment$LowLevel$Command$mapTuple2(f),
+						coordinates));
+			case 3:
+				var _arguments = drawto.a;
+				return $folkertdev$one_true_path_experiment$LowLevel$Command$EllipticalArc(
+					A2(
+						$elm$core$List$map,
+						function (argument) {
+							return _Utils_update(
+								argument,
+								{
+									K: f(argument.K)
+								});
+						},
+						_arguments));
+			default:
+				return $folkertdev$one_true_path_experiment$LowLevel$Command$ClosePath;
+		}
+	});
+var $folkertdev$one_true_path_experiment$SubPath$mapCoordinateInstructions = F2(
+	function (f, _v0) {
+		var moveto = _v0.dM;
+		var drawtos = _v0.dg;
+		var coordinate = moveto;
+		return {
+			dg: A2(
+				$folkertdev$elm_deque$Deque$map,
+				$folkertdev$one_true_path_experiment$LowLevel$Command$mapCoordinateDrawTo(f),
+				drawtos),
+			dM: f(coordinate)
+		};
+	});
+var $ianmackenzie$elm_geometry$Vector2d$sum = F2(
+	function (firstVector, secondVector) {
+		var _v0 = $ianmackenzie$elm_geometry$Vector2d$components(secondVector);
+		var x2 = _v0.a;
+		var y2 = _v0.b;
+		var _v1 = $ianmackenzie$elm_geometry$Vector2d$components(firstVector);
+		var x1 = _v1.a;
+		var y1 = _v1.b;
+		return $ianmackenzie$elm_geometry$Vector2d$fromComponents(
+			_Utils_Tuple2(x1 + x2, y1 + y2));
+	});
+var $folkertdev$one_true_path_experiment$SubPath$continue = function () {
+	var helper = F2(
+		function (right, left) {
+			var distance = A2(
+				$ianmackenzie$elm_geometry$Vector2d$difference,
+				$ianmackenzie$elm_geometry$Vector2d$fromComponents(
+					$folkertdev$one_true_path_experiment$SubPath$finalPoint(left)),
+				$ianmackenzie$elm_geometry$Vector2d$fromComponents(
+					$folkertdev$one_true_path_experiment$SubPath$firstPoint(right)));
+			var mapper = A2(
+				$elm$core$Basics$composeL,
+				A2(
+					$elm$core$Basics$composeL,
+					$ianmackenzie$elm_geometry$Vector2d$components,
+					$ianmackenzie$elm_geometry$Vector2d$sum(distance)),
+				$ianmackenzie$elm_geometry$Vector2d$fromComponents);
+			return $folkertdev$one_true_path_experiment$SubPath$SubPath(
+				A2(
+					$folkertdev$one_true_path_experiment$SubPath$unsafeConcatenate,
+					left,
+					A2($folkertdev$one_true_path_experiment$SubPath$mapCoordinateInstructions, mapper, right)));
+		});
+	return $folkertdev$one_true_path_experiment$SubPath$map2(helper);
+}();
+var $gampleman$elm_visualization$Shape$Pie$makeArc = F6(
+	function (x, y, radius, a0, a1, ccw) {
+		return $folkertdev$one_true_path_experiment$SubPath$continue(
+			A6($gampleman$elm_visualization$Shape$Pie$arc_, x, y, radius, a0, a1, ccw));
+	});
+var $elm$core$Basics$min = F2(
+	function (x, y) {
+		return (_Utils_cmp(x, y) < 0) ? x : y;
+	});
+var $elm$core$Basics$asin = _Basics_asin;
+var $gampleman$elm_visualization$Shape$Pie$myAsin = function (x) {
+	return (x >= 1) ? ($elm$core$Basics$pi / 2) : ((_Utils_cmp(x, -1) < 1) ? ((-$elm$core$Basics$pi) / 2) : $elm$core$Basics$asin(x));
+};
+var $gampleman$elm_visualization$Shape$Pie$arc = function (arcData) {
+	var a1 = arcData.b$ - ($elm$core$Basics$pi / 2);
+	var a0 = arcData.bh - ($elm$core$Basics$pi / 2);
+	var cw = _Utils_cmp(a1, a0) > 0;
+	var da = $elm$core$Basics$abs(a1 - a0);
+	var _v0 = (_Utils_cmp(arcData.dw, arcData.cq) > 0) ? _Utils_Tuple2(arcData.cq, arcData.dw) : _Utils_Tuple2(arcData.dw, arcData.cq);
+	var r0 = _v0.a;
+	var r1 = _v0.b;
+	var path = function () {
+		if (_Utils_cmp(r1, $gampleman$elm_visualization$Shape$Pie$epsilon) < 1) {
+			return _List_fromArray(
+				[
+					$folkertdev$one_true_path_experiment$SubPath$close(
+					A2(
+						$folkertdev$one_true_path_experiment$SubPath$with,
+						$folkertdev$one_true_path_experiment$LowLevel$Command$moveTo(
+							_Utils_Tuple2(0, 0)),
+						_List_Nil))
+				]);
+		} else {
+			if (_Utils_cmp(da, (2 * $elm$core$Basics$pi) - $gampleman$elm_visualization$Shape$Pie$epsilon) > 0) {
+				var p = A7(
+					$gampleman$elm_visualization$Shape$Pie$makeArc,
+					0,
+					0,
+					r1,
+					a0,
+					a1,
+					!cw,
+					A2(
+						$folkertdev$one_true_path_experiment$SubPath$with,
+						$folkertdev$one_true_path_experiment$LowLevel$Command$moveTo(
+							_Utils_Tuple2(
+								r1 * $elm$core$Basics$cos(a0),
+								r1 * $elm$core$Basics$sin(a0))),
+						_List_Nil));
+				return (_Utils_cmp(r0, $gampleman$elm_visualization$Shape$Pie$epsilon) > 0) ? _List_fromArray(
+					[
+						p,
+						$folkertdev$one_true_path_experiment$SubPath$close(
+						A7(
+							$gampleman$elm_visualization$Shape$Pie$makeArc,
+							0,
+							0,
+							r0,
+							a1,
+							a0,
+							cw,
+							A2(
+								$folkertdev$one_true_path_experiment$SubPath$with,
+								$folkertdev$one_true_path_experiment$LowLevel$Command$moveTo(
+									_Utils_Tuple2(
+										r0 * $elm$core$Basics$cos(a1),
+										r0 * $elm$core$Basics$sin(a1))),
+								_List_Nil)))
+					]) : _List_fromArray(
+					[
+						$folkertdev$one_true_path_experiment$SubPath$close(p)
+					]);
+			} else {
+				var rc = A2(
+					$elm$core$Basics$min,
+					$elm$core$Basics$abs(r1 - r0) / 2,
+					arcData.bV);
+				var ap = arcData.cr / 2;
+				var rp = (_Utils_cmp(ap, $gampleman$elm_visualization$Shape$Pie$epsilon) > 0) ? ((arcData.cs > 0) ? arcData.cs : $elm$core$Basics$sqrt(
+					A2($elm$core$Basics$pow, r0, 2) + A2($elm$core$Basics$pow, r1, 2))) : 0;
+				var p0 = $gampleman$elm_visualization$Shape$Pie$myAsin(
+					(rp / r0) * $elm$core$Basics$sin(ap));
+				var p1 = $gampleman$elm_visualization$Shape$Pie$myAsin(
+					(rp / r1) * $elm$core$Basics$sin(ap));
+				var _v1 = (_Utils_cmp(rp, $gampleman$elm_visualization$Shape$Pie$epsilon) > 0) ? ((_Utils_cmp(da - (p1 * 2), $gampleman$elm_visualization$Shape$Pie$epsilon) > 0) ? (cw ? _Utils_Tuple3(a0 + p1, a1 - p1, da - (p1 * 2)) : _Utils_Tuple3(a0 - p1, a1 + p1, da - (p1 * 2))) : _Utils_Tuple3((a0 + a1) / 2, (a0 + a1) / 2, 0)) : _Utils_Tuple3(a0, a1, da);
+				var a01 = _v1.a;
+				var a11 = _v1.b;
+				var da1 = _v1.c;
+				var x01 = r1 * $elm$core$Basics$cos(a01);
+				var y01 = r1 * $elm$core$Basics$sin(a01);
+				var x11 = r1 * $elm$core$Basics$cos(a11);
+				var y11 = r1 * $elm$core$Basics$sin(a11);
+				var _v2 = (_Utils_cmp(rp, $gampleman$elm_visualization$Shape$Pie$epsilon) > 0) ? ((_Utils_cmp(da - (p0 * 2), $gampleman$elm_visualization$Shape$Pie$epsilon) > 0) ? (cw ? _Utils_Tuple3(a0 + p0, a1 - p0, da - (p0 * 2)) : _Utils_Tuple3(a0 - p0, a1 + p0, da - (p0 * 2))) : _Utils_Tuple3((a0 + a1) / 2, (a0 + a1) / 2, 0)) : _Utils_Tuple3(a0, a1, da);
+				var a00 = _v2.a;
+				var a10 = _v2.b;
+				var da0 = _v2.c;
+				var x00 = r0 * $elm$core$Basics$cos(a00);
+				var y00 = r0 * $elm$core$Basics$sin(a00);
+				var x10 = r0 * $elm$core$Basics$cos(a10);
+				var y10 = r0 * $elm$core$Basics$sin(a10);
+				var _v3 = (_Utils_cmp(da0, $gampleman$elm_visualization$Shape$Pie$epsilon) > 0) ? A8($gampleman$elm_visualization$Shape$Pie$intersect, x01, y01, x00, y00, x11, y11, x10, y10) : _Utils_Tuple2(x10, y10);
+				var ocx = _v3.a;
+				var ocy = _v3.b;
+				var lc = $elm$core$Basics$sqrt(
+					A2($elm$core$Basics$pow, ocx, 2) + A2($elm$core$Basics$pow, ocy, 2));
+				var _v4 = _Utils_Tuple2(x11 - ocx, y11 - ocy);
+				var bx = _v4.a;
+				var by = _v4.b;
+				var _v5 = _Utils_Tuple2(x01 - ocx, y01 - ocy);
+				var ax = _v5.a;
+				var ay = _v5.b;
+				var kc = 1 / $elm$core$Basics$sin(
+					$elm$core$Basics$acos(
+						((ax * bx) + (ay * by)) / ($elm$core$Basics$sqrt(
+							A2($elm$core$Basics$pow, ax, 2) + A2($elm$core$Basics$pow, ay, 2)) * $elm$core$Basics$sqrt(
+							A2($elm$core$Basics$pow, bx, 2) + A2($elm$core$Basics$pow, by, 2)))) / 2);
+				var _v6 = ((_Utils_cmp(rc, $gampleman$elm_visualization$Shape$Pie$epsilon) > 0) && (_Utils_cmp(da, $elm$core$Basics$pi) < 0)) ? _Utils_Tuple2(
+					A2($elm$core$Basics$min, rc, (r0 - lc) / (kc - 1)),
+					A2($elm$core$Basics$min, rc, (r1 - lc) / (kc + 1))) : _Utils_Tuple2(rc, rc);
+				var rc0 = _v6.a;
+				var rc1 = _v6.b;
+				var outerRing = function () {
+					if (_Utils_cmp(da1, $gampleman$elm_visualization$Shape$Pie$epsilon) < 1) {
+						return A2(
+							$folkertdev$one_true_path_experiment$SubPath$with,
+							$folkertdev$one_true_path_experiment$LowLevel$Command$moveTo(
+								_Utils_Tuple2(x01, y01)),
+							_List_Nil);
+					} else {
+						if (_Utils_cmp(rc1, $gampleman$elm_visualization$Shape$Pie$epsilon) > 0) {
+							var t1 = A7($gampleman$elm_visualization$Shape$Pie$cornerTangents, x11, y11, x10, y10, r1, rc1, cw);
+							var t0 = A7($gampleman$elm_visualization$Shape$Pie$cornerTangents, x00, y00, x01, y01, r1, rc1, cw);
+							var p = A2(
+								$folkertdev$one_true_path_experiment$SubPath$with,
+								$folkertdev$one_true_path_experiment$LowLevel$Command$moveTo(
+									_Utils_Tuple2(t0.v + t0.P, t0.w + t0.Q)),
+								_List_Nil);
+							return (_Utils_cmp(rc1, rc) < 0) ? A7(
+								$gampleman$elm_visualization$Shape$Pie$makeArc,
+								t0.v,
+								t0.w,
+								rc1,
+								A2($elm$core$Basics$atan2, t0.Q, t0.P),
+								A2($elm$core$Basics$atan2, t1.Q, t1.P),
+								!cw,
+								p) : A7(
+								$gampleman$elm_visualization$Shape$Pie$makeArc,
+								t1.v,
+								t1.w,
+								rc1,
+								A2($elm$core$Basics$atan2, t1.ah, t1.af),
+								A2($elm$core$Basics$atan2, t1.Q, t1.P),
+								!cw,
+								A7(
+									$gampleman$elm_visualization$Shape$Pie$makeArc,
+									0,
+									0,
+									r1,
+									A2($elm$core$Basics$atan2, t0.w + t0.ah, t0.v + t0.af),
+									A2($elm$core$Basics$atan2, t1.w + t1.ah, t1.v + t1.af),
+									!cw,
+									A7(
+										$gampleman$elm_visualization$Shape$Pie$makeArc,
+										t0.v,
+										t0.w,
+										rc1,
+										A2($elm$core$Basics$atan2, t0.Q, t0.P),
+										A2($elm$core$Basics$atan2, t0.ah, t0.af),
+										!cw,
+										p)));
+						} else {
+							return A7(
+								$gampleman$elm_visualization$Shape$Pie$makeArc,
+								0,
+								0,
+								r1,
+								a01,
+								a11,
+								!cw,
+								A2(
+									$folkertdev$one_true_path_experiment$SubPath$with,
+									$folkertdev$one_true_path_experiment$LowLevel$Command$moveTo(
+										_Utils_Tuple2(x01, y01)),
+									_List_Nil));
+						}
+					}
+				}();
+				if ((_Utils_cmp(r0, $gampleman$elm_visualization$Shape$Pie$epsilon) < 1) || (_Utils_cmp(da0, $gampleman$elm_visualization$Shape$Pie$epsilon) < 1)) {
+					return _List_fromArray(
+						[
+							$folkertdev$one_true_path_experiment$SubPath$close(
+							A2(
+								$folkertdev$one_true_path_experiment$SubPath$connect,
+								A2(
+									$folkertdev$one_true_path_experiment$SubPath$with,
+									$folkertdev$one_true_path_experiment$LowLevel$Command$moveTo(
+										_Utils_Tuple2(x10, y10)),
+									_List_Nil),
+								outerRing))
+						]);
+				} else {
+					if (_Utils_cmp(rc0, $gampleman$elm_visualization$Shape$Pie$epsilon) > 0) {
+						var t1 = A7($gampleman$elm_visualization$Shape$Pie$cornerTangents, x01, y01, x00, y00, r0, -rc0, cw);
+						var t0 = A7($gampleman$elm_visualization$Shape$Pie$cornerTangents, x10, y10, x11, y11, r0, -rc0, cw);
+						var p = A2(
+							$folkertdev$one_true_path_experiment$SubPath$connect,
+							A2(
+								$folkertdev$one_true_path_experiment$SubPath$with,
+								$folkertdev$one_true_path_experiment$LowLevel$Command$moveTo(
+									_Utils_Tuple2(t0.v + t0.P, t0.w + t0.Q)),
+								_List_Nil),
+							outerRing);
+						return (_Utils_cmp(rc0, rc) < 0) ? _List_fromArray(
+							[
+								$folkertdev$one_true_path_experiment$SubPath$close(
+								A7(
+									$gampleman$elm_visualization$Shape$Pie$makeArc,
+									t0.v,
+									t0.w,
+									rc0,
+									A2($elm$core$Basics$atan2, t0.Q, t0.P),
+									A2($elm$core$Basics$atan2, t1.Q, t1.P),
+									!cw,
+									p))
+							]) : _List_fromArray(
+							[
+								$folkertdev$one_true_path_experiment$SubPath$close(
+								A7(
+									$gampleman$elm_visualization$Shape$Pie$makeArc,
+									t1.v,
+									t1.w,
+									rc0,
+									A2($elm$core$Basics$atan2, t1.ah, t1.af),
+									A2($elm$core$Basics$atan2, t1.Q, t1.P),
+									!cw,
+									A7(
+										$gampleman$elm_visualization$Shape$Pie$makeArc,
+										0,
+										0,
+										r0,
+										A2($elm$core$Basics$atan2, t0.w + t0.ah, t0.v + t0.af),
+										A2($elm$core$Basics$atan2, t1.w + t1.ah, t1.v + t1.af),
+										cw,
+										A7(
+											$gampleman$elm_visualization$Shape$Pie$makeArc,
+											t0.v,
+											t0.w,
+											rc0,
+											A2($elm$core$Basics$atan2, t0.Q, t0.P),
+											A2($elm$core$Basics$atan2, t0.ah, t0.af),
+											!cw,
+											p))))
+							]);
+					} else {
+						return _List_fromArray(
+							[
+								$folkertdev$one_true_path_experiment$SubPath$close(
+								A2(
+									$folkertdev$one_true_path_experiment$SubPath$connect,
+									A6($gampleman$elm_visualization$Shape$Pie$arc_, 0, 0, r0, a10, a00, cw),
+									outerRing))
+							]);
+					}
+				}
+			}
+		}
+	}();
+	return path;
+};
+var $gampleman$elm_visualization$Shape$arc = $gampleman$elm_visualization$Shape$Pie$arc;
+var $avh4$elm_color$Color$black = A4($avh4$elm_color$Color$RgbaSpace, 0 / 255, 0 / 255, 0 / 255, 1.0);
+var $gampleman$elm_visualization$Shape$Pie$centroid = function (arcData) {
+	var r = (arcData.dw + arcData.cq) / 2;
+	var a = ((arcData.bh + arcData.b$) / 2) - ($elm$core$Basics$pi / 2);
+	return _Utils_Tuple2(
+		$elm$core$Basics$cos(a) * r,
+		$elm$core$Basics$sin(a) * r);
+};
+var $gampleman$elm_visualization$Shape$centroid = $gampleman$elm_visualization$Shape$Pie$centroid;
+var $elm$svg$Svg$Attributes$d = _VirtualDom_attribute('d');
+var $elm$svg$Svg$trustedNode = _VirtualDom_nodeNS('http://www.w3.org/2000/svg');
+var $elm$svg$Svg$path = $elm$svg$Svg$trustedNode('path');
+var $folkertdev$elm_deque$Deque$empty = $folkertdev$elm_deque$Internal$empty;
+var $folkertdev$one_true_path_experiment$LowLevel$Command$merge = F2(
+	function (instruction1, instruction2) {
+		var _v0 = _Utils_Tuple2(instruction1, instruction2);
+		_v0$5:
+		while (true) {
+			switch (_v0.a.$) {
+				case 0:
+					if (!_v0.b.$) {
+						var p1 = _v0.a.a;
+						var p2 = _v0.b.a;
+						return $elm$core$Result$Ok(
+							$folkertdev$one_true_path_experiment$LowLevel$Command$LineTo(
+								_Utils_ap(p1, p2)));
+					} else {
+						break _v0$5;
+					}
+				case 1:
+					if (_v0.b.$ === 1) {
+						var p1 = _v0.a.a;
+						var p2 = _v0.b.a;
+						return $elm$core$Result$Ok(
+							$folkertdev$one_true_path_experiment$LowLevel$Command$CurveTo(
+								_Utils_ap(p1, p2)));
+					} else {
+						break _v0$5;
+					}
+				case 2:
+					if (_v0.b.$ === 2) {
+						var p1 = _v0.a.a;
+						var p2 = _v0.b.a;
+						return $elm$core$Result$Ok(
+							$folkertdev$one_true_path_experiment$LowLevel$Command$QuadraticBezierCurveTo(
+								_Utils_ap(p1, p2)));
+					} else {
+						break _v0$5;
+					}
+				case 3:
+					if (_v0.b.$ === 3) {
+						var p1 = _v0.a.a;
+						var p2 = _v0.b.a;
+						return $elm$core$Result$Ok(
+							$folkertdev$one_true_path_experiment$LowLevel$Command$EllipticalArc(
+								_Utils_ap(p1, p2)));
+					} else {
+						break _v0$5;
+					}
+				default:
+					if (_v0.b.$ === 4) {
+						var _v1 = _v0.a;
+						var _v2 = _v0.b;
+						return $elm$core$Result$Ok($folkertdev$one_true_path_experiment$LowLevel$Command$ClosePath);
+					} else {
+						break _v0$5;
+					}
+			}
+		}
+		return $elm$core$Result$Err(
+			_Utils_Tuple2(instruction1, instruction2));
+	});
+var $folkertdev$elm_deque$Internal$toList = function (deque) {
+	return _Utils_ap(
+		deque.I,
+		$elm$core$List$reverse(deque.J));
+};
+var $folkertdev$elm_deque$Deque$toList = A2($elm$core$Basics$composeL, $folkertdev$elm_deque$Internal$toList, $folkertdev$elm_deque$Deque$unwrap);
+var $folkertdev$one_true_path_experiment$SubPath$compressHelper = function (drawtos) {
+	var folder = F2(
+		function (instruction, _v3) {
+			var previous = _v3.a;
+			var accum = _v3.b;
+			var _v2 = A2($folkertdev$one_true_path_experiment$LowLevel$Command$merge, previous, instruction);
+			if (!_v2.$) {
+				var merged = _v2.a;
+				return _Utils_Tuple2(merged, accum);
+			} else {
+				return _Utils_Tuple2(
+					instruction,
+					A2($elm$core$List$cons, previous, accum));
+			}
+		});
+	var _v0 = $folkertdev$elm_deque$Deque$toList(drawtos);
+	if (!_v0.b) {
+		return $folkertdev$elm_deque$Deque$empty;
+	} else {
+		var first = _v0.a;
+		var rest = _v0.b;
+		return $folkertdev$elm_deque$Deque$fromList(
+			$elm$core$List$reverse(
+				function (_v1) {
+					var a = _v1.a;
+					var b = _v1.b;
+					return A2($elm$core$List$cons, a, b);
+				}(
+					A3(
+						$elm$core$List$foldl,
+						folder,
+						_Utils_Tuple2(first, _List_Nil),
+						rest))));
+	}
+};
+var $folkertdev$one_true_path_experiment$SubPath$compress = function (subpath) {
+	if (subpath.$ === 1) {
+		return $folkertdev$one_true_path_experiment$SubPath$Empty;
+	} else {
+		var data = subpath.a;
+		return $folkertdev$one_true_path_experiment$SubPath$SubPath(
+			_Utils_update(
+				data,
+				{
+					dg: $folkertdev$one_true_path_experiment$SubPath$compressHelper(data.dg)
+				}));
+	}
+};
+var $folkertdev$svg_path_lowlevel$Path$LowLevel$DecimalPlaces = $elm$core$Basics$identity;
+var $folkertdev$svg_path_lowlevel$Path$LowLevel$decimalPlaces = $elm$core$Basics$identity;
+var $folkertdev$one_true_path_experiment$SubPath$defaultConfig = {bv: $elm$core$Maybe$Nothing, bD: false};
+var $folkertdev$one_true_path_experiment$SubPath$optionFolder = F2(
+	function (option, config) {
+		if (!option.$) {
+			var n = option.a;
+			return _Utils_update(
+				config,
+				{
+					bv: $elm$core$Maybe$Just(n)
+				});
+		} else {
+			return _Utils_update(
+				config,
+				{bD: true});
+		}
+	});
+var $elm$core$List$singleton = function (value) {
+	return _List_fromArray(
+		[value]);
+};
+var $folkertdev$svg_path_lowlevel$Path$LowLevel$Absolute = 1;
+var $folkertdev$svg_path_lowlevel$Path$LowLevel$ClosePath = {$: 8};
+var $folkertdev$svg_path_lowlevel$Path$LowLevel$CurveTo = F2(
+	function (a, b) {
+		return {$: 3, a: a, b: b};
+	});
+var $folkertdev$svg_path_lowlevel$Path$LowLevel$EllipticalArc = F2(
+	function (a, b) {
+		return {$: 7, a: a, b: b};
+	});
+var $folkertdev$svg_path_lowlevel$Path$LowLevel$LineTo = F2(
+	function (a, b) {
+		return {$: 0, a: a, b: b};
+	});
+var $folkertdev$svg_path_lowlevel$Path$LowLevel$QuadraticBezierCurveTo = F2(
+	function (a, b) {
+		return {$: 5, a: a, b: b};
+	});
+var $folkertdev$one_true_path_experiment$LowLevel$Command$toLowLevelDrawTo = function (drawto) {
+	switch (drawto.$) {
+		case 0:
+			var coordinates = drawto.a;
+			return A2($folkertdev$svg_path_lowlevel$Path$LowLevel$LineTo, 1, coordinates);
+		case 1:
+			var coordinates = drawto.a;
+			return A2($folkertdev$svg_path_lowlevel$Path$LowLevel$CurveTo, 1, coordinates);
+		case 2:
+			var coordinates = drawto.a;
+			return A2($folkertdev$svg_path_lowlevel$Path$LowLevel$QuadraticBezierCurveTo, 1, coordinates);
+		case 3:
+			var _arguments = drawto.a;
+			return A2($folkertdev$svg_path_lowlevel$Path$LowLevel$EllipticalArc, 1, _arguments);
+		default:
+			return $folkertdev$svg_path_lowlevel$Path$LowLevel$ClosePath;
+	}
+};
+var $folkertdev$svg_path_lowlevel$Path$LowLevel$MoveTo = F2(
+	function (a, b) {
+		return {$: 0, a: a, b: b};
+	});
+var $folkertdev$one_true_path_experiment$LowLevel$Command$toLowLevelMoveTo = function (_v0) {
+	var target = _v0;
+	return A2($folkertdev$svg_path_lowlevel$Path$LowLevel$MoveTo, 1, target);
+};
+var $folkertdev$one_true_path_experiment$SubPath$toLowLevel = function (subpath) {
+	if (subpath.$ === 1) {
+		return $elm$core$Maybe$Nothing;
+	} else {
+		var moveto = subpath.a.dM;
+		var drawtos = subpath.a.dg;
+		return $elm$core$Maybe$Just(
+			{
+				dg: A2(
+					$elm$core$List$map,
+					$folkertdev$one_true_path_experiment$LowLevel$Command$toLowLevelDrawTo,
+					$folkertdev$elm_deque$Deque$toList(drawtos)),
+				dM: $folkertdev$one_true_path_experiment$LowLevel$Command$toLowLevelMoveTo(moveto)
+			});
+	}
+};
+var $folkertdev$svg_path_lowlevel$Path$LowLevel$defaultConfig = {a8: $elm$core$String$fromFloat};
+var $folkertdev$svg_path_lowlevel$Path$LowLevel$roundTo = F2(
+	function (n, value) {
+		if (!n) {
+			return $elm$core$String$fromInt(
+				$elm$core$Basics$round(value));
+		} else {
+			var sign = (value < 0.0) ? '-' : '';
+			var exp = A2($elm$core$Basics$pow, 10, n);
+			var raised = $elm$core$Basics$abs(
+				$elm$core$Basics$round(value * exp));
+			var decimals = raised % exp;
+			return (!decimals) ? _Utils_ap(
+				sign,
+				$elm$core$String$fromInt((raised / exp) | 0)) : (sign + ($elm$core$String$fromInt((raised / exp) | 0) + ('.' + $elm$core$String$fromInt(decimals))));
+		}
+	});
+var $folkertdev$svg_path_lowlevel$Path$LowLevel$optionFolder = F2(
+	function (option, config) {
+		var n = option;
+		return _Utils_update(
+			config,
+			{
+				a8: $folkertdev$svg_path_lowlevel$Path$LowLevel$roundTo(n)
+			});
+	});
+var $folkertdev$svg_path_lowlevel$Path$LowLevel$accumulateOptions = A2($elm$core$List$foldl, $folkertdev$svg_path_lowlevel$Path$LowLevel$optionFolder, $folkertdev$svg_path_lowlevel$Path$LowLevel$defaultConfig);
+var $folkertdev$svg_path_lowlevel$Path$LowLevel$isEmpty = function (command) {
+	switch (command.$) {
+		case 0:
+			var mode = command.a;
+			var coordinates = command.b;
+			return $elm$core$List$isEmpty(coordinates);
+		case 1:
+			var mode = command.a;
+			var coordinates = command.b;
+			return $elm$core$List$isEmpty(coordinates);
+		case 2:
+			var mode = command.a;
+			var coordinates = command.b;
+			return $elm$core$List$isEmpty(coordinates);
+		case 3:
+			var mode = command.a;
+			var coordinates = command.b;
+			return $elm$core$List$isEmpty(coordinates);
+		case 4:
+			var mode = command.a;
+			var coordinates = command.b;
+			return $elm$core$List$isEmpty(coordinates);
+		case 5:
+			var mode = command.a;
+			var coordinates = command.b;
+			return $elm$core$List$isEmpty(coordinates);
+		case 6:
+			var mode = command.a;
+			var coordinates = command.b;
+			return $elm$core$List$isEmpty(coordinates);
+		case 7:
+			var mode = command.a;
+			var _arguments = command.b;
+			return $elm$core$List$isEmpty(_arguments);
+		default:
+			return false;
+	}
+};
+var $elm$core$Char$toLower = _Char_toLower;
+var $elm$core$Char$toUpper = _Char_toUpper;
+var $folkertdev$svg_path_lowlevel$Path$LowLevel$stringifyCharacter = F2(
+	function (mode, character) {
+		if (mode === 1) {
+			return $elm$core$String$fromChar(
+				$elm$core$Char$toUpper(character));
+		} else {
+			return $elm$core$String$fromChar(
+				$elm$core$Char$toLower(character));
+		}
+	});
+var $folkertdev$svg_path_lowlevel$Path$LowLevel$stringifyCoordinate = F2(
+	function (config, _v0) {
+		var x = _v0.a;
+		var y = _v0.b;
+		return config.a8(x) + (',' + config.a8(y));
+	});
+var $folkertdev$svg_path_lowlevel$Path$LowLevel$stringifyCoordinate2 = F2(
+	function (config, _v0) {
+		var c1 = _v0.a;
+		var c2 = _v0.b;
+		return A2($folkertdev$svg_path_lowlevel$Path$LowLevel$stringifyCoordinate, config, c1) + (' ' + A2($folkertdev$svg_path_lowlevel$Path$LowLevel$stringifyCoordinate, config, c2));
+	});
+var $folkertdev$svg_path_lowlevel$Path$LowLevel$stringifyCoordinate3 = F2(
+	function (config, _v0) {
+		var c1 = _v0.a;
+		var c2 = _v0.b;
+		var c3 = _v0.c;
+		return A2($folkertdev$svg_path_lowlevel$Path$LowLevel$stringifyCoordinate, config, c1) + (' ' + (A2($folkertdev$svg_path_lowlevel$Path$LowLevel$stringifyCoordinate, config, c2) + (' ' + A2($folkertdev$svg_path_lowlevel$Path$LowLevel$stringifyCoordinate, config, c3))));
+	});
+var $folkertdev$svg_path_lowlevel$Path$LowLevel$encodeFlags = function (_v0) {
+	var arcFlag = _v0.a;
+	var direction = _v0.b;
+	var _v1 = _Utils_Tuple2(arcFlag, direction);
+	if (_v1.a === 1) {
+		if (!_v1.b) {
+			var _v2 = _v1.a;
+			var _v3 = _v1.b;
+			return _Utils_Tuple2(1, 0);
+		} else {
+			var _v6 = _v1.a;
+			var _v7 = _v1.b;
+			return _Utils_Tuple2(1, 1);
+		}
+	} else {
+		if (!_v1.b) {
+			var _v4 = _v1.a;
+			var _v5 = _v1.b;
+			return _Utils_Tuple2(0, 0);
+		} else {
+			var _v8 = _v1.a;
+			var _v9 = _v1.b;
+			return _Utils_Tuple2(0, 1);
+		}
+	}
+};
+var $folkertdev$svg_path_lowlevel$Path$LowLevel$stringifyEllipticalArcArgument = F2(
+	function (config, _v0) {
+		var radii = _v0.ap;
+		var xAxisRotate = _v0.ag;
+		var arcFlag = _v0.bQ;
+		var direction = _v0.bY;
+		var target = _v0.K;
+		var _v1 = $folkertdev$svg_path_lowlevel$Path$LowLevel$encodeFlags(
+			_Utils_Tuple2(arcFlag, direction));
+		var arc = _v1.a;
+		var sweep = _v1.b;
+		return A2(
+			$elm$core$String$join,
+			' ',
+			_List_fromArray(
+				[
+					A2($folkertdev$svg_path_lowlevel$Path$LowLevel$stringifyCoordinate, config, radii),
+					$elm$core$String$fromFloat(xAxisRotate),
+					$elm$core$String$fromInt(arc),
+					$elm$core$String$fromInt(sweep),
+					A2($folkertdev$svg_path_lowlevel$Path$LowLevel$stringifyCoordinate, config, target)
+				]));
+	});
+var $folkertdev$svg_path_lowlevel$Path$LowLevel$stringifyDrawTo = F2(
+	function (config, command) {
+		if ($folkertdev$svg_path_lowlevel$Path$LowLevel$isEmpty(command)) {
+			return '';
+		} else {
+			switch (command.$) {
+				case 0:
+					var mode = command.a;
+					var coordinates = command.b;
+					return _Utils_ap(
+						A2($folkertdev$svg_path_lowlevel$Path$LowLevel$stringifyCharacter, mode, 'L'),
+						A2(
+							$elm$core$String$join,
+							' ',
+							A2(
+								$elm$core$List$map,
+								$folkertdev$svg_path_lowlevel$Path$LowLevel$stringifyCoordinate(config),
+								coordinates)));
+				case 1:
+					var mode = command.a;
+					var coordinates = command.b;
+					return $elm$core$List$isEmpty(coordinates) ? '' : _Utils_ap(
+						A2($folkertdev$svg_path_lowlevel$Path$LowLevel$stringifyCharacter, mode, 'H'),
+						A2(
+							$elm$core$String$join,
+							' ',
+							A2($elm$core$List$map, $elm$core$String$fromFloat, coordinates)));
+				case 2:
+					var mode = command.a;
+					var coordinates = command.b;
+					return _Utils_ap(
+						A2($folkertdev$svg_path_lowlevel$Path$LowLevel$stringifyCharacter, mode, 'V'),
+						A2(
+							$elm$core$String$join,
+							' ',
+							A2($elm$core$List$map, $elm$core$String$fromFloat, coordinates)));
+				case 3:
+					var mode = command.a;
+					var coordinates = command.b;
+					return _Utils_ap(
+						A2($folkertdev$svg_path_lowlevel$Path$LowLevel$stringifyCharacter, mode, 'C'),
+						A2(
+							$elm$core$String$join,
+							' ',
+							A2(
+								$elm$core$List$map,
+								$folkertdev$svg_path_lowlevel$Path$LowLevel$stringifyCoordinate3(config),
+								coordinates)));
+				case 4:
+					var mode = command.a;
+					var coordinates = command.b;
+					return _Utils_ap(
+						A2($folkertdev$svg_path_lowlevel$Path$LowLevel$stringifyCharacter, mode, 'S'),
+						A2(
+							$elm$core$String$join,
+							' ',
+							A2(
+								$elm$core$List$map,
+								$folkertdev$svg_path_lowlevel$Path$LowLevel$stringifyCoordinate2(config),
+								coordinates)));
+				case 5:
+					var mode = command.a;
+					var coordinates = command.b;
+					return _Utils_ap(
+						A2($folkertdev$svg_path_lowlevel$Path$LowLevel$stringifyCharacter, mode, 'Q'),
+						A2(
+							$elm$core$String$join,
+							' ',
+							A2(
+								$elm$core$List$map,
+								$folkertdev$svg_path_lowlevel$Path$LowLevel$stringifyCoordinate2(config),
+								coordinates)));
+				case 6:
+					var mode = command.a;
+					var coordinates = command.b;
+					return _Utils_ap(
+						A2($folkertdev$svg_path_lowlevel$Path$LowLevel$stringifyCharacter, mode, 'T'),
+						A2(
+							$elm$core$String$join,
+							' ',
+							A2(
+								$elm$core$List$map,
+								$folkertdev$svg_path_lowlevel$Path$LowLevel$stringifyCoordinate(config),
+								coordinates)));
+				case 7:
+					var mode = command.a;
+					var _arguments = command.b;
+					return _Utils_ap(
+						A2($folkertdev$svg_path_lowlevel$Path$LowLevel$stringifyCharacter, mode, 'A'),
+						A2(
+							$elm$core$String$join,
+							' ',
+							A2(
+								$elm$core$List$map,
+								$folkertdev$svg_path_lowlevel$Path$LowLevel$stringifyEllipticalArcArgument(config),
+								_arguments)));
+				default:
+					return 'Z';
+			}
+		}
+	});
+var $folkertdev$svg_path_lowlevel$Path$LowLevel$stringifyMoveTo = F2(
+	function (config, _v0) {
+		var mode = _v0.a;
+		var coordinate = _v0.b;
+		if (mode === 1) {
+			return 'M' + A2($folkertdev$svg_path_lowlevel$Path$LowLevel$stringifyCoordinate, config, coordinate);
+		} else {
+			return 'm' + A2($folkertdev$svg_path_lowlevel$Path$LowLevel$stringifyCoordinate, config, coordinate);
+		}
+	});
+var $folkertdev$svg_path_lowlevel$Path$LowLevel$toStringSubPath = F2(
+	function (config, _v0) {
+		var moveto = _v0.dM;
+		var drawtos = _v0.dg;
+		return A2($folkertdev$svg_path_lowlevel$Path$LowLevel$stringifyMoveTo, config, moveto) + (' ' + A2(
+			$elm$core$String$join,
+			' ',
+			A2(
+				$elm$core$List$map,
+				$folkertdev$svg_path_lowlevel$Path$LowLevel$stringifyDrawTo(config),
+				drawtos)));
+	});
+var $folkertdev$svg_path_lowlevel$Path$LowLevel$toStringWith = F2(
+	function (options, subpaths) {
+		var config = $folkertdev$svg_path_lowlevel$Path$LowLevel$accumulateOptions(options);
+		return A2(
+			$elm$core$String$join,
+			' ',
+			A2(
+				$elm$core$List$map,
+				$folkertdev$svg_path_lowlevel$Path$LowLevel$toStringSubPath(config),
+				subpaths));
+	});
+var $folkertdev$one_true_path_experiment$SubPath$toStringWith = F2(
+	function (options, subpath) {
+		var config = A3($elm$core$List$foldl, $folkertdev$one_true_path_experiment$SubPath$optionFolder, $folkertdev$one_true_path_experiment$SubPath$defaultConfig, options);
+		var lowLevelOptions = function () {
+			var _v0 = config.bv;
+			if (_v0.$ === 1) {
+				return _List_Nil;
+			} else {
+				var n = _v0.a;
+				return _List_fromArray(
+					[
+						$folkertdev$svg_path_lowlevel$Path$LowLevel$decimalPlaces(n)
+					]);
+			}
+		}();
+		return A2(
+			$elm$core$Maybe$withDefault,
+			'',
+			A2(
+				$elm$core$Maybe$map,
+				A2(
+					$elm$core$Basics$composeL,
+					$folkertdev$svg_path_lowlevel$Path$LowLevel$toStringWith(lowLevelOptions),
+					$elm$core$List$singleton),
+				$folkertdev$one_true_path_experiment$SubPath$toLowLevel(
+					(config.bD ? $folkertdev$one_true_path_experiment$SubPath$compress : $elm$core$Basics$identity)(subpath))));
+	});
+var $folkertdev$one_true_path_experiment$SubPath$toString = function (subpath) {
+	return A2($folkertdev$one_true_path_experiment$SubPath$toStringWith, _List_Nil, subpath);
+};
+var $folkertdev$one_true_path_experiment$Path$toString = A2(
+	$elm$core$Basics$composeL,
+	$elm$core$String$join(' '),
+	$elm$core$List$map($folkertdev$one_true_path_experiment$SubPath$toString));
+var $folkertdev$one_true_path_experiment$Path$element = F2(
+	function (path, attributes) {
+		return A2(
+			$elm$svg$Svg$path,
+			A2(
+				$elm$core$List$cons,
+				$elm$svg$Svg$Attributes$d(
+					$folkertdev$one_true_path_experiment$Path$toString(path)),
+				attributes),
+			_List_Nil);
+	});
+var $elm$virtual_dom$VirtualDom$attribute = F2(
+	function (key, value) {
+		return A2(
+			_VirtualDom_attribute,
+			_VirtualDom_noOnOrFormAction(key),
+			_VirtualDom_noJavaScriptOrHtmlUri(value));
+	});
+var $elm_community$typed_svg$TypedSvg$Core$attribute = $elm$virtual_dom$VirtualDom$attribute;
+var $elm$core$String$concat = function (strings) {
+	return A2($elm$core$String$join, '', strings);
+};
+var $avh4$elm_color$Color$toCssString = function (_v0) {
+	var r = _v0.a;
+	var g = _v0.b;
+	var b = _v0.c;
+	var a = _v0.d;
+	var roundTo = function (x) {
+		return $elm$core$Basics$round(x * 1000) / 1000;
+	};
+	var pct = function (x) {
+		return $elm$core$Basics$round(x * 10000) / 100;
+	};
+	return $elm$core$String$concat(
+		_List_fromArray(
+			[
+				'rgba(',
+				$elm$core$String$fromFloat(
+				pct(r)),
+				'%,',
+				$elm$core$String$fromFloat(
+				pct(g)),
+				'%,',
+				$elm$core$String$fromFloat(
+				pct(b)),
+				'%,',
+				$elm$core$String$fromFloat(
+				roundTo(a)),
+				')'
+			]));
+};
+var $elm_community$typed_svg$TypedSvg$TypesToStrings$paintToString = function (paint) {
+	switch (paint.$) {
+		case 0:
+			var color = paint.a;
+			return $avh4$elm_color$Color$toCssString(color);
+		case 1:
+			var string = paint.a;
+			return $elm$core$String$concat(
+				_List_fromArray(
+					['url(#', string, ')']));
+		case 2:
+			return 'context-fill';
+		case 3:
+			return 'context-stroke';
+		default:
+			return 'none';
+	}
+};
+var $elm_community$typed_svg$TypedSvg$Attributes$fill = A2(
+	$elm$core$Basics$composeL,
+	$elm_community$typed_svg$TypedSvg$Core$attribute('fill'),
+	$elm_community$typed_svg$TypedSvg$TypesToStrings$paintToString);
+var $elm$virtual_dom$VirtualDom$nodeNS = function (tag) {
+	return _VirtualDom_nodeNS(
+		_VirtualDom_noScript(tag));
+};
+var $elm_community$typed_svg$TypedSvg$Core$node = $elm$virtual_dom$VirtualDom$nodeNS('http://www.w3.org/2000/svg');
+var $elm_community$typed_svg$TypedSvg$g = $elm_community$typed_svg$TypedSvg$Core$node('g');
+var $elm$core$Bitwise$shiftRightZfBy = _Bitwise_shiftRightZfBy;
+var $elm$core$Array$bitMask = 4294967295 >>> (32 - $elm$core$Array$shiftStep);
+var $elm$core$Elm$JsArray$unsafeGet = _JsArray_unsafeGet;
+var $elm$core$Array$getHelp = F3(
+	function (shift, index, tree) {
+		getHelp:
+		while (true) {
+			var pos = $elm$core$Array$bitMask & (index >>> shift);
+			var _v0 = A2($elm$core$Elm$JsArray$unsafeGet, pos, tree);
+			if (!_v0.$) {
+				var subTree = _v0.a;
+				var $temp$shift = shift - $elm$core$Array$shiftStep,
+					$temp$index = index,
+					$temp$tree = subTree;
+				shift = $temp$shift;
+				index = $temp$index;
+				tree = $temp$tree;
+				continue getHelp;
+			} else {
+				var values = _v0.a;
+				return A2($elm$core$Elm$JsArray$unsafeGet, $elm$core$Array$bitMask & index, values);
+			}
+		}
+	});
+var $elm$core$Bitwise$shiftLeftBy = _Bitwise_shiftLeftBy;
+var $elm$core$Array$tailIndex = function (len) {
+	return (len >>> 5) << 5;
+};
+var $elm$core$Array$get = F2(
+	function (index, _v0) {
+		var len = _v0.a;
+		var startShift = _v0.b;
+		var tree = _v0.c;
+		var tail = _v0.d;
+		return ((index < 0) || (_Utils_cmp(index, len) > -1)) ? $elm$core$Maybe$Nothing : ((_Utils_cmp(
+			index,
+			$elm$core$Array$tailIndex(len)) > -1) ? $elm$core$Maybe$Just(
+			A2($elm$core$Elm$JsArray$unsafeGet, $elm$core$Array$bitMask & index, tail)) : $elm$core$Maybe$Just(
+			A3($elm$core$Array$getHelp, startShift, index, tree)));
+	});
+var $elm_community$typed_svg$TypedSvg$Types$AnchorMiddle = 2;
+var $elm_community$typed_svg$TypedSvg$Types$FontWeightBold = {$: 1};
+var $elm_community$typed_svg$TypedSvg$TypesToStrings$lengthToString = function (length) {
+	switch (length.$) {
+		case 0:
+			var x = length.a;
+			return $elm$core$String$fromFloat(x) + 'cm';
+		case 1:
+			var x = length.a;
+			return $elm$core$String$fromFloat(x) + 'em';
+		case 2:
+			var x = length.a;
+			return $elm$core$String$fromFloat(x) + 'ex';
+		case 3:
+			var x = length.a;
+			return $elm$core$String$fromFloat(x) + 'in';
+		case 4:
+			var x = length.a;
+			return $elm$core$String$fromFloat(x) + 'mm';
+		case 5:
+			var x = length.a;
+			return $elm$core$String$fromFloat(x);
+		case 6:
+			var x = length.a;
+			return $elm$core$String$fromFloat(x) + 'pc';
+		case 7:
+			var x = length.a;
+			return $elm$core$String$fromFloat(x) + '%';
+		case 8:
+			var x = length.a;
+			return $elm$core$String$fromFloat(x) + 'pt';
+		default:
+			var x = length.a;
+			return $elm$core$String$fromFloat(x) + 'px';
+	}
+};
+var $elm_community$typed_svg$TypedSvg$Attributes$dy = function (length) {
+	return A2(
+		$elm_community$typed_svg$TypedSvg$Core$attribute,
+		'dy',
+		$elm_community$typed_svg$TypedSvg$TypesToStrings$lengthToString(length));
+};
+var $elm_community$typed_svg$TypedSvg$Types$Em = function (a) {
+	return {$: 1, a: a};
+};
+var $elm_community$typed_svg$TypedSvg$Types$em = $elm_community$typed_svg$TypedSvg$Types$Em;
+var $elm_community$typed_svg$TypedSvg$Attributes$fontSize = function (length) {
+	return A2(
+		$elm_community$typed_svg$TypedSvg$Core$attribute,
+		'font-size',
+		$elm_community$typed_svg$TypedSvg$TypesToStrings$lengthToString(length));
+};
+var $elm_community$typed_svg$TypedSvg$TypesToStrings$fontWeightToString = function (fontWeight) {
+	var fontWeightClamped = function (weight) {
+		return A3($elm$core$Basics$clamp, 100, 900, (((weight + 50) / 100) | 0) * 100);
+	};
+	switch (fontWeight.$) {
+		case 0:
+			return 'normal';
+		case 1:
+			return 'bold';
+		case 2:
+			return 'bolder';
+		case 3:
+			return 'lighter';
+		case 4:
+			return 'inherit';
+		default:
+			var weight = fontWeight.a;
+			return $elm$core$String$fromInt(
+				fontWeightClamped(weight));
+	}
+};
+var $elm_community$typed_svg$TypedSvg$Attributes$fontWeight = function (fWeight) {
+	return A2(
+		$elm_community$typed_svg$TypedSvg$Core$attribute,
+		'font-weight',
+		$elm_community$typed_svg$TypedSvg$TypesToStrings$fontWeightToString(fWeight));
+};
+var $elm_community$typed_svg$TypedSvg$TypesToStrings$anchorAlignmentToString = function (anchorAlignment) {
+	switch (anchorAlignment) {
+		case 0:
+			return 'inherit';
+		case 1:
+			return 'start';
+		case 2:
+			return 'middle';
+		default:
+			return 'end';
+	}
+};
+var $elm_community$typed_svg$TypedSvg$Attributes$textAnchor = function (anchorAlignment) {
+	return A2(
+		$elm_community$typed_svg$TypedSvg$Core$attribute,
+		'text-anchor',
+		$elm_community$typed_svg$TypedSvg$TypesToStrings$anchorAlignmentToString(anchorAlignment));
+};
+var $elm_community$typed_svg$TypedSvg$text_ = $elm_community$typed_svg$TypedSvg$Core$node('text');
+var $elm_community$typed_svg$TypedSvg$TypesToStrings$transformToString = function (xform) {
+	var tr = F2(
+		function (name, args) {
+			return $elm$core$String$concat(
+				_List_fromArray(
+					[
+						name,
+						'(',
+						A2(
+						$elm$core$String$join,
+						' ',
+						A2($elm$core$List$map, $elm$core$String$fromFloat, args)),
+						')'
+					]));
+		});
+	switch (xform.$) {
+		case 0:
+			var a = xform.a;
+			var b = xform.b;
+			var c = xform.c;
+			var d = xform.d;
+			var e = xform.e;
+			var f = xform.f;
+			return A2(
+				tr,
+				'matrix',
+				_List_fromArray(
+					[a, b, c, d, e, f]));
+		case 1:
+			var a = xform.a;
+			var x = xform.b;
+			var y = xform.c;
+			return A2(
+				tr,
+				'rotate',
+				_List_fromArray(
+					[a, x, y]));
+		case 2:
+			var x = xform.a;
+			var y = xform.b;
+			return A2(
+				tr,
+				'scale',
+				_List_fromArray(
+					[x, y]));
+		case 3:
+			var x = xform.a;
+			return A2(
+				tr,
+				'skewX',
+				_List_fromArray(
+					[x]));
+		case 4:
+			var y = xform.a;
+			return A2(
+				tr,
+				'skewY',
+				_List_fromArray(
+					[y]));
+		default:
+			var x = xform.a;
+			var y = xform.b;
+			return A2(
+				tr,
+				'translate',
+				_List_fromArray(
+					[x, y]));
+	}
+};
+var $elm_community$typed_svg$TypedSvg$Attributes$transform = function (transforms) {
+	return A2(
+		$elm_community$typed_svg$TypedSvg$Core$attribute,
+		'transform',
+		A2(
+			$elm$core$String$join,
+			' ',
+			A2($elm$core$List$map, $elm_community$typed_svg$TypedSvg$TypesToStrings$transformToString, transforms)));
+};
+var $author$project$Visualizer$Graph$labelText = F3(
+	function (x, y, txt) {
+		return A2(
+			$elm_community$typed_svg$TypedSvg$text_,
+			_List_fromArray(
+				[
+					$elm_community$typed_svg$TypedSvg$Attributes$transform(
+					_List_fromArray(
+						[
+							A2($elm_community$typed_svg$TypedSvg$Types$Translate, x, y)
+						])),
+					$elm_community$typed_svg$TypedSvg$Attributes$dy(
+					$elm_community$typed_svg$TypedSvg$Types$em(0.5)),
+					$elm_community$typed_svg$TypedSvg$Attributes$textAnchor(2),
+					$elm_community$typed_svg$TypedSvg$Attributes$fontSize(
+					$elm_community$typed_svg$TypedSvg$Types$em(0.8)),
+					$elm_community$typed_svg$TypedSvg$Attributes$fontWeight($elm_community$typed_svg$TypedSvg$Types$FontWeightBold),
+					$elm_community$typed_svg$TypedSvg$Attributes$fill(
+					$elm_community$typed_svg$TypedSvg$Types$Paint(
+						A4($author$project$Visualizer$Graph$rgba255, 70, 70, 70, 1)))
+				]),
+			_List_fromArray(
+				[
+					$elm$html$Html$text(txt)
+				]));
+	});
+var $author$project$Visualizer$Graph$pieW = 250;
+var $author$project$Visualizer$Graph$pieH = 250;
+var $author$project$Visualizer$Graph$radius = (A2($elm$core$Basics$min, $author$project$Visualizer$Graph$pieW / 2, $author$project$Visualizer$Graph$pieH) / 2) - 10;
+var $author$project$Visualizer$Graph$title = F3(
+	function (x, y, txt) {
+		return A2(
+			$elm_community$typed_svg$TypedSvg$text_,
+			_List_fromArray(
+				[
+					$elm_community$typed_svg$TypedSvg$Attributes$transform(
+					_List_fromArray(
+						[
+							A2($elm_community$typed_svg$TypedSvg$Types$Translate, x, y)
+						])),
+					$elm_community$typed_svg$TypedSvg$Attributes$dy(
+					$elm_community$typed_svg$TypedSvg$Types$em(0.5)),
+					$elm_community$typed_svg$TypedSvg$Attributes$textAnchor(2),
+					$elm_community$typed_svg$TypedSvg$Attributes$fontSize(
+					$elm_community$typed_svg$TypedSvg$Types$em(1.5)),
+					$elm_community$typed_svg$TypedSvg$Attributes$fontWeight($elm_community$typed_svg$TypedSvg$Types$FontWeightBold),
+					$elm_community$typed_svg$TypedSvg$Attributes$fill(
+					$elm_community$typed_svg$TypedSvg$Types$Paint(
+						A4($author$project$Visualizer$Graph$rgba255, 110, 110, 110, 1)))
+				]),
+			_List_fromArray(
+				[
+					$elm$html$Html$text(txt)
+				]));
+	});
+var $author$project$Visualizer$Graph$annular = F6(
+	function (graphType, colorArray, titleStr, arcs, valList, labelVisible) {
+		var makeLabels = F2(
+			function (index, _v5) {
+				var datum = _v5.a;
+				var val = _v5.b;
+				var labelT = function () {
+					if (labelVisible) {
+						if (!graphType) {
+							var head = function () {
+								switch (index) {
+									case 0:
+										return 'Male';
+									case 1:
+										return 'Female';
+									case 2:
+										return 'Not Known';
+									default:
+										return 'ERROR';
+								}
+							}();
+							return head + (' : ' + ($elm$core$String$fromInt(
+								$elm$core$Basics$round(
+									(val / $elm$core$List$sum(valList)) * 100)) + '%'));
+						} else {
+							return $elm$core$String$fromInt(index * 5) + ('~' + ($elm$core$String$fromInt((index + 1) * 5) + (' : ' + ($elm$core$String$fromInt(
+								$elm$core$Basics$round(
+									(val / $elm$core$List$sum(valList)) * 100)) + '%'))));
+						}
+					} else {
+						return '';
+					}
+				}();
+				var _v2 = $gampleman$elm_visualization$Shape$centroid(
+					_Utils_update(
+						datum,
+						{dw: $author$project$Visualizer$Graph$radius * 2, cq: ($author$project$Visualizer$Graph$radius * 2) + 10}));
+				var x = _v2.a;
+				var y = _v2.b;
+				return A3($author$project$Visualizer$Graph$labelText, x, y, labelT);
+			});
+		var clickEvent = function (index) {
+			var sex = function () {
+				switch (index) {
+					case 0:
+						return $elm$core$Maybe$Just(1);
+					case 1:
+						return $elm$core$Maybe$Just(2);
+					case 2:
+						return $elm$core$Maybe$Just(0);
+					default:
+						return $elm$core$Maybe$Nothing;
+				}
+			}();
+			return $elm$html$Html$Events$onClick(
+				$author$project$Visualizer$Graph$SexFocus(sex));
+		};
+		var makeSlice = F2(
+			function (index, datum) {
+				return A2(
+					$folkertdev$one_true_path_experiment$Path$element,
+					$gampleman$elm_visualization$Shape$arc(
+						_Utils_update(
+							datum,
+							{dw: ($author$project$Visualizer$Graph$radius * 2) - 10})),
+					_List_fromArray(
+						[
+							$elm_community$typed_svg$TypedSvg$Attributes$fill(
+							$elm_community$typed_svg$TypedSvg$Types$Paint(
+								A2(
+									$elm$core$Maybe$withDefault,
+									$avh4$elm_color$Color$black,
+									A2($elm$core$Array$get, index, colorArray)))),
+							clickEvent(index)
+						]));
+			});
+		return A2(
+			$elm_community$typed_svg$TypedSvg$g,
+			_List_fromArray(
+				[
+					$elm_community$typed_svg$TypedSvg$Attributes$transform(
+					_List_fromArray(
+						[
+							A2($elm_community$typed_svg$TypedSvg$Types$Translate, $author$project$Visualizer$Graph$pieW / 2, $author$project$Visualizer$Graph$pieW / 2)
+						]))
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm_community$typed_svg$TypedSvg$g,
+					_List_Nil,
+					A2($elm$core$List$indexedMap, makeSlice, arcs)),
+					A2(
+					$elm_community$typed_svg$TypedSvg$g,
+					_List_Nil,
+					A2(
+						$elm$core$List$indexedMap,
+						makeLabels,
+						A3($elm$core$List$map2, $elm$core$Tuple$pair, arcs, valList))),
+					A3($author$project$Visualizer$Graph$title, 0, 0, titleStr)
+				]));
+	});
+var $gampleman$elm_visualization$Shape$defaultPieConfig = {bV: 0, b$: 2 * $elm$core$Basics$pi, dw: 0, cq: 100, cr: 0, cs: 0, eh: $elm$core$Basics$compare, bh: 0, eq: $elm$core$Basics$identity};
+var $elm_community$typed_svg$TypedSvg$Attributes$height = function (length) {
+	return A2(
+		$elm_community$typed_svg$TypedSvg$Core$attribute,
+		'height',
+		$elm_community$typed_svg$TypedSvg$TypesToStrings$lengthToString(length));
+};
+var $elm_community$typed_svg$TypedSvg$Types$Px = function (a) {
+	return {$: 9, a: a};
+};
+var $elm_community$typed_svg$TypedSvg$Types$px = $elm_community$typed_svg$TypedSvg$Types$Px;
+var $elm_community$typed_svg$TypedSvg$Attributes$InPx$height = function (value) {
+	return $elm_community$typed_svg$TypedSvg$Attributes$height(
+		$elm_community$typed_svg$TypedSvg$Types$px(value));
+};
+var $elm$core$List$maximum = function (list) {
+	if (list.b) {
+		var x = list.a;
+		var xs = list.b;
+		return $elm$core$Maybe$Just(
+			A3($elm$core$List$foldl, $elm$core$Basics$max, x, xs));
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
+var $author$project$Visualizer$Graph$nonSort = F2(
+	function (_v0, _v1) {
+		return 2;
+	});
+var $elm$core$List$sortWith = _List_sortWith;
+var $elm$core$Dict$values = function (dict) {
+	return A3(
+		$elm$core$Dict$foldr,
+		F3(
+			function (key, value, valueList) {
+				return A2($elm$core$List$cons, value, valueList);
+			}),
+		_List_Nil,
+		dict);
+};
+var $gampleman$elm_visualization$Shape$Pie$pie = F2(
+	function (settings, data) {
+		var unsafeGet = F2(
+			function (index, array) {
+				unsafeGet:
+				while (true) {
+					var _v0 = A2($elm$core$Array$get, index, array);
+					if (!_v0.$) {
+						var v = _v0.a;
+						return v;
+					} else {
+						var $temp$index = index,
+							$temp$array = array;
+						index = $temp$index;
+						array = $temp$array;
+						continue unsafeGet;
+					}
+				}
+			});
+		var summer = F2(
+			function (a, b) {
+				var v = settings.eq(a);
+				return (v > 0) ? (v + b) : b;
+			});
+		var sum = A3($elm$core$List$foldr, summer, 0, data);
+		var sortedIndices = A2(
+			$elm$core$Basics$composeL,
+			A2(
+				$elm$core$Basics$composeL,
+				$elm$core$List$map($elm$core$Tuple$first),
+				$elm$core$List$sortWith(
+					F2(
+						function (_v2, _v3) {
+							var a = _v2.b;
+							var b = _v3.b;
+							return A2(settings.eh, a, b);
+						}))),
+			$elm$core$List$indexedMap($elm$core$Tuple$pair));
+		var dataArray = $elm$core$Array$fromList(data);
+		var da = A2(
+			$elm$core$Basics$min,
+			2 * $elm$core$Basics$pi,
+			A2($elm$core$Basics$max, (-2) * $elm$core$Basics$pi, settings.b$ - settings.bh));
+		var p = A2(
+			$elm$core$Basics$min,
+			$elm$core$Basics$abs(da) / $elm$core$List$length(data),
+			settings.cr);
+		var pa = p * ((da < 0) ? (-1) : 1);
+		var k = (!sum) ? 0 : ((da - ($elm$core$List$length(data) * pa)) / sum);
+		var computeValue = F2(
+			function (el, angle) {
+				var value = settings.eq(el);
+				return {
+					bV: settings.bV,
+					b$: (angle + ((value > 0) ? (value * k) : 0)) + pa,
+					dw: settings.dw,
+					cq: settings.cq,
+					cr: p,
+					cs: settings.cs,
+					bh: angle
+				};
+			});
+		var helper = F2(
+			function (index, _v1) {
+				var angle = _v1.a;
+				var result = _v1.b;
+				var r = A2(
+					computeValue,
+					A2(unsafeGet, index, dataArray),
+					angle);
+				return _Utils_Tuple2(
+					r.b$,
+					A3($elm$core$Dict$insert, index, r, result));
+			});
+		return $elm$core$Dict$values(
+			A3(
+				$elm$core$List$foldl,
+				helper,
+				_Utils_Tuple2(settings.bh, $elm$core$Dict$empty),
+				sortedIndices(data)).b);
+	});
+var $gampleman$elm_visualization$Shape$pie = $gampleman$elm_visualization$Shape$Pie$pie;
+var $elm_community$typed_svg$TypedSvg$svg = $elm_community$typed_svg$TypedSvg$Core$node('svg');
+var $elm_community$typed_svg$TypedSvg$Attributes$width = function (length) {
+	return A2(
+		$elm_community$typed_svg$TypedSvg$Core$attribute,
+		'width',
+		$elm_community$typed_svg$TypedSvg$TypesToStrings$lengthToString(length));
+};
+var $elm_community$typed_svg$TypedSvg$Attributes$InPx$width = function (value) {
+	return $elm_community$typed_svg$TypedSvg$Attributes$width(
+		$elm_community$typed_svg$TypedSvg$Types$px(value));
+};
+var $author$project$Visualizer$Graph$ageView = function (valList) {
+	var _v0 = (A2(
+		$elm$core$Maybe$withDefault,
+		0,
+		$elm$core$List$maximum(valList)) > 0) ? _Utils_Tuple2(valList, true) : _Utils_Tuple2(
+		A2(
+			$elm$core$List$append,
+			_List_fromArray(
+				[1]),
+			A2(
+				$elm$core$List$map,
+				function (_v1) {
+					return 0;
+				},
+				A2($elm$core$List$range, 1, 17))),
+		false);
+	var valList_ = _v0.a;
+	var labelVisible = _v0.b;
+	var pieData = A2(
+		$gampleman$elm_visualization$Shape$pie,
+		_Utils_update(
+			$gampleman$elm_visualization$Shape$defaultPieConfig,
+			{cq: $author$project$Visualizer$Graph$radius, eh: $author$project$Visualizer$Graph$nonSort}),
+		valList_);
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('graph-svg age')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm_community$typed_svg$TypedSvg$svg,
+				_List_fromArray(
+					[
+						$elm_community$typed_svg$TypedSvg$Attributes$InPx$width($author$project$Visualizer$Graph$pieW),
+						$elm_community$typed_svg$TypedSvg$Attributes$InPx$height($author$project$Visualizer$Graph$pieH)
+					]),
+				_List_fromArray(
+					[
+						A6($author$project$Visualizer$Graph$annular, 1, $author$project$Visualizer$Graph$ageColors, 'Age', pieData, valList_, labelVisible)
+					]))
+			]));
+};
+var $gampleman$elm_visualization$Scale$bandwidth = function (_v0) {
+	var scale = _v0;
+	return scale.bS;
+};
+var $author$project$Visualizer$Graph$barH = 300;
+var $author$project$Visualizer$Graph$barPadding = 20;
+var $elm_community$typed_svg$TypedSvg$Attributes$class = function (names) {
+	return A2(
+		$elm_community$typed_svg$TypedSvg$Core$attribute,
+		'class',
+		A2($elm$core$String$join, ' ', names));
+};
+var $gampleman$elm_visualization$Scale$convert = F2(
+	function (_v0, value) {
+		var scale = _v0;
+		return A3(scale.D, scale.bZ, scale.u, value);
+	});
+var $justinmimbs$time_extra$Time$Extra$posixToParts = F2(
+	function (zone, posix) {
+		return {
+			de: A2($elm$time$Time$toDay, zone, posix),
+			b2: A2($elm$time$Time$toHour, zone, posix),
+			ci: A2($elm$time$Time$toMillis, zone, posix),
+			ck: A2($elm$time$Time$toMinute, zone, posix),
+			dK: A2($elm$time$Time$toMonth, zone, posix),
+			cI: A2($elm$time$Time$toSecond, zone, posix),
+			ew: A2($elm$time$Time$toYear, zone, posix)
+		};
+	});
+var $author$project$Visualizer$Graph$hourFormat = F2(
+	function (timezone, time) {
+		return $elm$core$String$fromInt(
+			A2($justinmimbs$time_extra$Time$Extra$posixToParts, timezone, time).b2);
+	});
+var $elm_community$typed_svg$TypedSvg$rect = $elm_community$typed_svg$TypedSvg$Core$node('rect');
+var $elm_community$typed_svg$TypedSvg$Attributes$rx = function (length) {
+	return A2(
+		$elm_community$typed_svg$TypedSvg$Core$attribute,
+		'rx',
+		$elm_community$typed_svg$TypedSvg$TypesToStrings$lengthToString(length));
+};
+var $elm_community$typed_svg$TypedSvg$Attributes$InPx$rx = function (value) {
+	return $elm_community$typed_svg$TypedSvg$Attributes$rx(
+		$elm_community$typed_svg$TypedSvg$Types$px(value));
+};
+var $elm_community$typed_svg$TypedSvg$Attributes$ry = function (length) {
+	return A2(
+		$elm_community$typed_svg$TypedSvg$Core$attribute,
+		'ry',
+		$elm_community$typed_svg$TypedSvg$TypesToStrings$lengthToString(length));
+};
+var $elm_community$typed_svg$TypedSvg$Attributes$InPx$ry = function (value) {
+	return $elm_community$typed_svg$TypedSvg$Attributes$ry(
+		$elm_community$typed_svg$TypedSvg$Types$px(value));
+};
+var $gampleman$elm_visualization$Scale$Scale = $elm$core$Basics$identity;
+var $gampleman$elm_visualization$Scale$toRenderable = F2(
+	function (toString, _v0) {
+		var scale = _v0;
+		return {
+			D: F3(
+				function (dmn, rng, value) {
+					return A3(scale.D, dmn, rng, value) + (A2($elm$core$Basics$max, scale.bS - 1, 0) / 2);
+				}),
+			bZ: scale.bZ,
+			u: scale.u,
+			aS: F2(
+				function (_v1, rng) {
+					return rng;
+				}),
+			cV: F2(
+				function (_v2, _v3) {
+					return toString;
+				}),
+			cW: F2(
+				function (dmn, _v4) {
+					return dmn;
+				})
+		};
+	});
+var $elm_community$typed_svg$TypedSvg$Attributes$x = function (length) {
+	return A2(
+		$elm_community$typed_svg$TypedSvg$Core$attribute,
+		'x',
+		$elm_community$typed_svg$TypedSvg$TypesToStrings$lengthToString(length));
+};
+var $elm_community$typed_svg$TypedSvg$Attributes$InPx$x = function (value) {
+	return $elm_community$typed_svg$TypedSvg$Attributes$x(
+		$elm_community$typed_svg$TypedSvg$Types$px(value));
+};
+var $elm_community$typed_svg$TypedSvg$Attributes$y = function (length) {
+	return A2(
+		$elm_community$typed_svg$TypedSvg$Core$attribute,
+		'y',
+		$elm_community$typed_svg$TypedSvg$TypesToStrings$lengthToString(length));
+};
+var $elm_community$typed_svg$TypedSvg$Attributes$InPx$y = function (value) {
+	return $elm_community$typed_svg$TypedSvg$Attributes$y(
+		$elm_community$typed_svg$TypedSvg$Types$px(value));
+};
+var $gampleman$elm_visualization$Scale$Internal$bimap = F4(
+	function (_v0, _v1, deinterpolate, reinterpolate) {
+		var d0 = _v0.a;
+		var d1 = _v0.b;
+		var r0 = _v1.a;
+		var r1 = _v1.b;
+		var _v2 = (_Utils_cmp(d1, d0) < 0) ? _Utils_Tuple2(
+			A2(deinterpolate, d1, d0),
+			A2(reinterpolate, r1, r0)) : _Utils_Tuple2(
+			A2(deinterpolate, d0, d1),
+			A2(reinterpolate, r0, r1));
+		var de = _v2.a;
+		var re = _v2.b;
+		return A2($elm$core$Basics$composeL, re, de);
+	});
+var $gampleman$elm_visualization$Scale$Linear$deinterpolate = F3(
+	function (a, b, x) {
+		var normalizedB = b - a;
+		return (!normalizedB) ? 0 : ((x - a) / normalizedB);
+	});
+var $gampleman$elm_visualization$Scale$Internal$interpolateFloat = F3(
+	function (from, to, time) {
+		return from + ((to - from) * time);
+	});
+var $gampleman$elm_visualization$Scale$Linear$convert = F2(
+	function (domain, range) {
+		return A4($gampleman$elm_visualization$Scale$Internal$bimap, domain, range, $gampleman$elm_visualization$Scale$Linear$deinterpolate, $gampleman$elm_visualization$Scale$Internal$interpolateFloat);
+	});
+var $gampleman$elm_visualization$Scale$Linear$interpolate = $gampleman$elm_visualization$Scale$Internal$interpolateFloat;
+var $gampleman$elm_visualization$Scale$Linear$invert = F2(
+	function (domain, range) {
+		return A4($gampleman$elm_visualization$Scale$Internal$bimap, range, domain, $gampleman$elm_visualization$Scale$Linear$deinterpolate, $gampleman$elm_visualization$Scale$Linear$interpolate);
+	});
+var $elm$core$Basics$e = _Basics_e;
+var $gampleman$elm_visualization$Statistics$tickStep = F3(
+	function (start, stop, count) {
+		var step0 = $elm$core$Basics$abs(stop - start) / A2($elm$core$Basics$max, 0, count);
+		var step1 = A2(
+			$elm$core$Basics$pow,
+			10,
+			$elm$core$Basics$floor(
+				A2($elm$core$Basics$logBase, $elm$core$Basics$e, step0) / A2($elm$core$Basics$logBase, $elm$core$Basics$e, 10)));
+		var error = step0 / step1;
+		var step2 = (_Utils_cmp(
+			error,
+			$elm$core$Basics$sqrt(50)) > -1) ? (step1 * 10) : ((_Utils_cmp(
+			error,
+			$elm$core$Basics$sqrt(10)) > -1) ? (step1 * 5) : ((_Utils_cmp(
+			error,
+			$elm$core$Basics$sqrt(2)) > -1) ? (step1 * 2) : step1));
+		return (_Utils_cmp(stop, start) < 0) ? (-step2) : step2;
+	});
+var $gampleman$elm_visualization$Scale$Linear$nice = F2(
+	function (_v0, count) {
+		var start = _v0.a;
+		var stop = _v0.b;
+		var step0 = A3($gampleman$elm_visualization$Statistics$tickStep, start, stop, count);
+		var step1 = A3(
+			$gampleman$elm_visualization$Statistics$tickStep,
+			$elm$core$Basics$floor(start / step0) * step0,
+			$elm$core$Basics$ceiling(stop / step0) * step0,
+			count);
+		return _Utils_Tuple2(
+			$elm$core$Basics$floor(start / step1) * step1,
+			$elm$core$Basics$ceiling(stop / step1) * step1);
+	});
+var $gampleman$elm_visualization$Scale$Linear$rangeExtent = F2(
+	function (d, r) {
+		return r;
+	});
+var $gampleman$elm_visualization$Scale$Linear$exponent = function (x) {
+	return (!x) ? 0 : ((x < 1) ? (1 + $gampleman$elm_visualization$Scale$Linear$exponent(x * 10)) : 0);
+};
+var $gampleman$elm_visualization$Scale$Linear$precisionFixed = function (step) {
+	return A2(
+		$elm$core$Basics$max,
+		0,
+		$gampleman$elm_visualization$Scale$Linear$exponent(
+			$elm$core$Basics$abs(step)));
+};
+var $elm$core$String$padRight = F3(
+	function (n, _char, string) {
+		return _Utils_ap(
+			string,
+			A2(
+				$elm$core$String$repeat,
+				n - $elm$core$String$length(string),
+				$elm$core$String$fromChar(_char)));
+	});
+var $gampleman$elm_visualization$Scale$Internal$toFixed = F2(
+	function (precision, value) {
+		var power = A2($elm$core$Basics$pow, 10, precision);
+		var pad = function (num) {
+			_v0$2:
+			while (true) {
+				if (num.b) {
+					if (num.b.b) {
+						if (!num.b.b.b) {
+							var x = num.a;
+							var _v1 = num.b;
+							var y = _v1.a;
+							return _List_fromArray(
+								[
+									x,
+									A3($elm$core$String$padRight, precision, '0', y)
+								]);
+						} else {
+							break _v0$2;
+						}
+					} else {
+						var val = num.a;
+						return (precision > 0) ? _List_fromArray(
+							[
+								val,
+								A3($elm$core$String$padRight, precision, '0', '')
+							]) : _List_fromArray(
+							[val]);
+					}
+				} else {
+					break _v0$2;
+				}
+			}
+			var val = num;
+			return val;
+		};
+		return A2(
+			$elm$core$String$join,
+			'.',
+			pad(
+				A2(
+					$elm$core$String$split,
+					'.',
+					$elm$core$String$fromFloat(
+						$elm$core$Basics$round(value * power) / power))));
+	});
+var $gampleman$elm_visualization$Scale$Linear$tickFormat = F2(
+	function (_v0, count) {
+		var start = _v0.a;
+		var stop = _v0.b;
+		return $gampleman$elm_visualization$Scale$Internal$toFixed(
+			$gampleman$elm_visualization$Scale$Linear$precisionFixed(
+				A3($gampleman$elm_visualization$Statistics$tickStep, start, stop, count)));
+	});
+var $elm$core$Bitwise$or = _Bitwise_or;
+var $gampleman$elm_visualization$Statistics$range = F3(
+	function (start, stop, step) {
+		var n = A2(
+			$elm$core$Basics$max,
+			0,
+			0 | $elm$core$Basics$ceiling((stop - start) / step));
+		var helper = F2(
+			function (i, list) {
+				return (i >= 0) ? A2(
+					helper,
+					i - 1,
+					A2($elm$core$List$cons, start + (step * i), list)) : list;
+			});
+		return A2(helper, n - 1, _List_Nil);
+	});
+var $gampleman$elm_visualization$Statistics$ticks = F3(
+	function (start, stop, count) {
+		var step = A3($gampleman$elm_visualization$Statistics$tickStep, start, stop, count);
+		var end = ($elm$core$Basics$floor(stop / step) * step) + (step / 2);
+		var beg = $elm$core$Basics$ceiling(start / step) * step;
+		return A3($gampleman$elm_visualization$Statistics$range, beg, end, step);
+	});
+var $gampleman$elm_visualization$Scale$Linear$ticks = F2(
+	function (_v0, count) {
+		var start = _v0.a;
+		var end = _v0.b;
+		return A3($gampleman$elm_visualization$Statistics$ticks, start, end, count);
+	});
+var $gampleman$elm_visualization$Scale$linear = F2(
+	function (range_, domain_) {
+		return {D: $gampleman$elm_visualization$Scale$Linear$convert, bZ: domain_, bz: $gampleman$elm_visualization$Scale$Linear$invert, bc: $gampleman$elm_visualization$Scale$Linear$nice, u: range_, aS: $gampleman$elm_visualization$Scale$Linear$rangeExtent, cV: $gampleman$elm_visualization$Scale$Linear$tickFormat, cW: $gampleman$elm_visualization$Scale$Linear$ticks};
+	});
+var $author$project$Visualizer$Graph$yScale = function (max) {
+	return A2(
+		$gampleman$elm_visualization$Scale$linear,
+		_Utils_Tuple2($author$project$Visualizer$Graph$barH - (2 * $author$project$Visualizer$Graph$barPadding), 0),
+		_Utils_Tuple2(0, max));
+};
+var $author$project$Visualizer$Graph$bar = F4(
+	function (timezone, scale, max, _v0) {
+		var date = _v0.a;
+		var value = _v0.b;
+		return A2(
+			$elm_community$typed_svg$TypedSvg$g,
+			_List_fromArray(
+				[
+					$elm_community$typed_svg$TypedSvg$Attributes$class(
+					_List_fromArray(
+						['bar']))
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm_community$typed_svg$TypedSvg$rect,
+					_List_fromArray(
+						[
+							$elm_community$typed_svg$TypedSvg$Attributes$InPx$x(
+							A2($gampleman$elm_visualization$Scale$convert, scale, date)),
+							$elm_community$typed_svg$TypedSvg$Attributes$InPx$y(
+							A2(
+								$gampleman$elm_visualization$Scale$convert,
+								$author$project$Visualizer$Graph$yScale(max),
+								value)),
+							$elm_community$typed_svg$TypedSvg$Attributes$InPx$width(
+							$gampleman$elm_visualization$Scale$bandwidth(scale)),
+							$elm_community$typed_svg$TypedSvg$Attributes$InPx$height(
+							($author$project$Visualizer$Graph$barH - A2(
+								$gampleman$elm_visualization$Scale$convert,
+								$author$project$Visualizer$Graph$yScale(max),
+								value)) - (2 * $author$project$Visualizer$Graph$barPadding)),
+							$elm_community$typed_svg$TypedSvg$Attributes$fill(
+							$elm_community$typed_svg$TypedSvg$Types$Paint(
+								A4($author$project$Visualizer$Graph$rgba255, 219, 213, 213, 1))),
+							$elm_community$typed_svg$TypedSvg$Attributes$InPx$rx(6),
+							$elm_community$typed_svg$TypedSvg$Attributes$InPx$ry(6)
+						]),
+					_List_Nil),
+					A2(
+					$elm_community$typed_svg$TypedSvg$text_,
+					_List_fromArray(
+						[
+							$elm_community$typed_svg$TypedSvg$Attributes$InPx$x(
+							A2(
+								$gampleman$elm_visualization$Scale$convert,
+								A2(
+									$gampleman$elm_visualization$Scale$toRenderable,
+									$author$project$Visualizer$Graph$hourFormat(timezone),
+									scale),
+								date)),
+							$elm_community$typed_svg$TypedSvg$Attributes$InPx$y(
+							A2(
+								$gampleman$elm_visualization$Scale$convert,
+								$author$project$Visualizer$Graph$yScale(max),
+								value) - 5),
+							$elm_community$typed_svg$TypedSvg$Attributes$textAnchor(2),
+							$elm_community$typed_svg$TypedSvg$Attributes$fill(
+							$elm_community$typed_svg$TypedSvg$Types$Paint(
+								A4($author$project$Visualizer$Graph$rgba255, 70, 70, 70, 1)))
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text(
+							$elm$core$String$fromFloat(value))
+						]))
+				]));
+	});
+var $author$project$Visualizer$Graph$barW = 550;
+var $elm_community$typed_svg$TypedSvg$Attributes$viewBox = F4(
+	function (minX, minY, vWidth, vHeight) {
+		return A2(
+			$elm_community$typed_svg$TypedSvg$Core$attribute,
+			'viewBox',
+			A2(
+				$elm$core$String$join,
+				' ',
+				A2(
+					$elm$core$List$map,
+					$elm$core$String$fromFloat,
+					_List_fromArray(
+						[minX, minY, vWidth, vHeight]))));
+	});
+var $elm$svg$Svg$Attributes$class = _VirtualDom_attribute('class');
+var $gampleman$elm_visualization$Scale$tickFormat = function (_v0) {
+	var opts = _v0;
+	return opts.cV(opts.bZ);
+};
+var $gampleman$elm_visualization$Scale$ticks = F2(
+	function (_v0, count) {
+		var scale = _v0;
+		return A2(scale.cW, scale.bZ, count);
+	});
+var $gampleman$elm_visualization$Axis$computeOptions = F2(
+	function (attrs, scale) {
+		var _v0 = A3(
+			$elm$core$List$foldl,
+			F2(
+				function (attr, _v1) {
+					var babyOpts = _v1.a;
+					var post = _v1.b;
+					switch (attr.$) {
+						case 2:
+							var val = attr.a;
+							return _Utils_Tuple2(
+								_Utils_update(
+									babyOpts,
+									{aX: val}),
+								post);
+						case 3:
+							var val = attr.a;
+							return _Utils_Tuple2(
+								_Utils_update(
+									babyOpts,
+									{aY: val}),
+								post);
+						case 4:
+							var val = attr.a;
+							return _Utils_Tuple2(
+								_Utils_update(
+									babyOpts,
+									{aq: val}),
+								post);
+						case 5:
+							var val = attr.a;
+							return _Utils_Tuple2(
+								_Utils_update(
+									babyOpts,
+									{bj: val}),
+								post);
+						default:
+							return _Utils_Tuple2(
+								babyOpts,
+								A2($elm$core$List$cons, attr, post));
+					}
+				}),
+			_Utils_Tuple2(
+				{aX: 10, bj: 3, aY: 6, aq: 6},
+				_List_Nil),
+			attrs);
+		var opts = _v0.a;
+		var postList = _v0.b;
+		return A3(
+			$elm$core$List$foldl,
+			F2(
+				function (attr, options) {
+					switch (attr.$) {
+						case 0:
+							var val = attr.a;
+							return _Utils_update(
+								options,
+								{cW: val});
+						case 1:
+							var val = attr.a;
+							return _Utils_update(
+								options,
+								{cV: val});
+						default:
+							return options;
+					}
+				}),
+			{
+				aX: opts.aX,
+				cV: A2($gampleman$elm_visualization$Scale$tickFormat, scale, opts.aX),
+				bj: opts.bj,
+				aY: opts.aY,
+				aq: opts.aq,
+				cW: A2($gampleman$elm_visualization$Scale$ticks, scale, opts.aX)
+			},
+			postList);
+	});
+var $elm$svg$Svg$Attributes$dy = _VirtualDom_attribute('dy');
+var $elm$svg$Svg$Attributes$fill = _VirtualDom_attribute('fill');
+var $elm$svg$Svg$Attributes$fontFamily = _VirtualDom_attribute('font-family');
+var $elm$svg$Svg$Attributes$fontSize = _VirtualDom_attribute('font-size');
+var $elm$svg$Svg$g = $elm$svg$Svg$trustedNode('g');
+var $elm$svg$Svg$line = $elm$svg$Svg$trustedNode('line');
+var $gampleman$elm_visualization$Scale$rangeExtent = function (_v0) {
+	var options = _v0;
+	return A2(options.aS, options.bZ, options.u);
+};
+var $elm$svg$Svg$Attributes$stroke = _VirtualDom_attribute('stroke');
+var $elm$svg$Svg$text = $elm$virtual_dom$VirtualDom$text;
+var $elm$svg$Svg$Attributes$textAnchor = _VirtualDom_attribute('text-anchor');
+var $elm$svg$Svg$text_ = $elm$svg$Svg$trustedNode('text');
+var $elm$svg$Svg$Attributes$transform = _VirtualDom_attribute('transform');
+var $gampleman$elm_visualization$Axis$element = F4(
+	function (_v0, k, displacement, textAnchorPosition) {
+		var x = _v0.f7;
+		var y = _v0.gc;
+		var x1 = _v0.f8;
+		var x2 = _v0.f9;
+		var y1 = _v0.gd;
+		var y2 = _v0.ge;
+		var translate = _v0.c_;
+		var horizontal = _v0.b1;
+		return F2(
+			function (attrs, scale) {
+				var rangeExtent = $gampleman$elm_visualization$Scale$rangeExtent(scale);
+				var range1 = rangeExtent.b + 0.5;
+				var range0 = rangeExtent.a + 0.5;
+				var position = $gampleman$elm_visualization$Scale$convert(scale);
+				var opts = A2($gampleman$elm_visualization$Axis$computeOptions, attrs, scale);
+				var spacing = A2($elm$core$Basics$max, opts.aY, 0) + opts.bj;
+				var drawTick = function (tick) {
+					return A2(
+						$elm$svg$Svg$g,
+						_List_fromArray(
+							[
+								$elm$svg$Svg$Attributes$class('tick'),
+								$elm$svg$Svg$Attributes$transform(
+								translate(
+									position(tick)))
+							]),
+						_List_fromArray(
+							[
+								A2(
+								$elm$svg$Svg$line,
+								_List_fromArray(
+									[
+										$elm$svg$Svg$Attributes$stroke('#000'),
+										x2(k * opts.aY),
+										y1(0.5),
+										y2(0.5)
+									]),
+								_List_Nil),
+								A2(
+								$elm$svg$Svg$text_,
+								_List_fromArray(
+									[
+										$elm$svg$Svg$Attributes$fill('#000'),
+										x(k * spacing),
+										y(0.5),
+										$elm$svg$Svg$Attributes$dy(displacement)
+									]),
+								_List_fromArray(
+									[
+										$elm$svg$Svg$text(
+										opts.cV(tick))
+									]))
+							]));
+				};
+				var domainLine = horizontal ? ('M' + ($elm$core$String$fromFloat(k * opts.aq) + (',' + ($elm$core$String$fromFloat(range0) + ('H0.5V' + ($elm$core$String$fromFloat(range1) + ('H' + $elm$core$String$fromFloat(k * opts.aq)))))))) : ('M' + ($elm$core$String$fromFloat(range0) + (',' + ($elm$core$String$fromFloat(k * opts.aq) + ('V0.5H' + ($elm$core$String$fromFloat(range1) + ('V' + $elm$core$String$fromFloat(k * opts.aq))))))));
+				return A2(
+					$elm$svg$Svg$g,
+					_List_fromArray(
+						[
+							$elm$svg$Svg$Attributes$fill('none'),
+							$elm$svg$Svg$Attributes$fontSize('10'),
+							$elm$svg$Svg$Attributes$fontFamily('sans-serif'),
+							$elm$svg$Svg$Attributes$textAnchor(textAnchorPosition)
+						]),
+					A2(
+						$elm$core$List$cons,
+						A2(
+							$elm$svg$Svg$path,
+							_List_fromArray(
+								[
+									$elm$svg$Svg$Attributes$class('domain'),
+									$elm$svg$Svg$Attributes$stroke('#000'),
+									$elm$svg$Svg$Attributes$d(domainLine)
+								]),
+							_List_Nil),
+						A2($elm$core$List$map, drawTick, opts.cW)));
+			});
+	});
+var $elm$svg$Svg$Attributes$x = _VirtualDom_attribute('x');
+var $elm$svg$Svg$Attributes$x1 = _VirtualDom_attribute('x1');
+var $elm$svg$Svg$Attributes$x2 = _VirtualDom_attribute('x2');
+var $elm$svg$Svg$Attributes$y = _VirtualDom_attribute('y');
+var $elm$svg$Svg$Attributes$y1 = _VirtualDom_attribute('y1');
+var $elm$svg$Svg$Attributes$y2 = _VirtualDom_attribute('y2');
+var $gampleman$elm_visualization$Axis$verticalAttrs = {
+	b1: false,
+	c_: function (x) {
+		return 'translate(' + ($elm$core$String$fromFloat(x) + ', 0)');
+	},
+	f7: A2($elm$core$Basics$composeL, $elm$svg$Svg$Attributes$y, $elm$core$String$fromFloat),
+	f8: A2($elm$core$Basics$composeL, $elm$svg$Svg$Attributes$y1, $elm$core$String$fromFloat),
+	f9: A2($elm$core$Basics$composeL, $elm$svg$Svg$Attributes$y2, $elm$core$String$fromFloat),
+	gc: A2($elm$core$Basics$composeL, $elm$svg$Svg$Attributes$x, $elm$core$String$fromFloat),
+	gd: A2($elm$core$Basics$composeL, $elm$svg$Svg$Attributes$x1, $elm$core$String$fromFloat),
+	ge: A2($elm$core$Basics$composeL, $elm$svg$Svg$Attributes$x2, $elm$core$String$fromFloat)
+};
+var $gampleman$elm_visualization$Axis$bottom = A4($gampleman$elm_visualization$Axis$element, $gampleman$elm_visualization$Axis$verticalAttrs, 1, '0.71em', 'middle');
+var $gampleman$elm_visualization$Scale$Band$normalizeConfig = function (_v0) {
+	var paddingInner = _v0.fs;
+	var paddingOuter = _v0.ft;
+	var align = _v0.c5;
+	return {
+		c5: A3($elm$core$Basics$clamp, 0, 1, align),
+		fs: A3($elm$core$Basics$clamp, 0, 1, paddingInner),
+		ft: A3($elm$core$Basics$clamp, 0, 1, paddingOuter)
+	};
+};
+var $gampleman$elm_visualization$Scale$Band$bandwidth = F3(
+	function (cfg, domain, _v0) {
+		var d0 = _v0.a;
+		var d1 = _v0.b;
+		var n = $elm$core$List$length(domain);
+		var _v1 = (_Utils_cmp(d0, d1) < 0) ? _Utils_Tuple2(d0, d1) : _Utils_Tuple2(d1, d0);
+		var start = _v1.a;
+		var stop = _v1.b;
+		var _v2 = $gampleman$elm_visualization$Scale$Band$normalizeConfig(cfg);
+		var paddingInner = _v2.fs;
+		var paddingOuter = _v2.ft;
+		var align = _v2.c5;
+		var step = (stop - start) / A2($elm$core$Basics$max, 1, (n - paddingInner) + (paddingOuter * 2));
+		return step * (1 - paddingInner);
+	});
+var $gampleman$elm_visualization$Scale$Band$computePositions = F4(
+	function (index, cfg, n, _v0) {
+		var start = _v0.a;
+		var stop = _v0.b;
+		var _v1 = $gampleman$elm_visualization$Scale$Band$normalizeConfig(cfg);
+		var paddingInner = _v1.fs;
+		var paddingOuter = _v1.ft;
+		var align = _v1.c5;
+		var step = (stop - start) / A2($elm$core$Basics$max, 1, (n - paddingInner) + (paddingOuter * 2));
+		var start2 = start + (((stop - start) - (step * (n - paddingInner))) * align);
+		return _Utils_Tuple2(start2, step);
+	});
+var $gampleman$elm_visualization$Scale$Band$indexOfHelp = F3(
+	function (index, value, list) {
+		indexOfHelp:
+		while (true) {
+			if (!list.b) {
+				return $elm$core$Maybe$Nothing;
+			} else {
+				var x = list.a;
+				var xs = list.b;
+				if (_Utils_eq(value, x)) {
+					return $elm$core$Maybe$Just(index);
+				} else {
+					var $temp$index = index + 1,
+						$temp$value = value,
+						$temp$list = xs;
+					index = $temp$index;
+					value = $temp$value;
+					list = $temp$list;
+					continue indexOfHelp;
+				}
+			}
+		}
+	});
+var $gampleman$elm_visualization$Scale$Band$indexOf = $gampleman$elm_visualization$Scale$Band$indexOfHelp(0);
+var $gampleman$elm_visualization$Scale$Band$convert = F4(
+	function (cfg, domain, _v0, value) {
+		var start = _v0.a;
+		var stop = _v0.b;
+		var _v1 = A2($gampleman$elm_visualization$Scale$Band$indexOf, value, domain);
+		if (!_v1.$) {
+			var index = _v1.a;
+			var n = $elm$core$List$length(domain);
+			if (_Utils_cmp(start, stop) < 0) {
+				var _v2 = A4(
+					$gampleman$elm_visualization$Scale$Band$computePositions,
+					index,
+					cfg,
+					n,
+					_Utils_Tuple2(start, stop));
+				var start2 = _v2.a;
+				var step = _v2.b;
+				return start2 + (step * index);
+			} else {
+				var _v3 = A4(
+					$gampleman$elm_visualization$Scale$Band$computePositions,
+					index,
+					cfg,
+					n,
+					_Utils_Tuple2(stop, start));
+				var stop2 = _v3.a;
+				var step = _v3.b;
+				return stop2 + (step * ((n - index) - 1));
+			}
+		} else {
+			return 0 / 0;
+		}
+	});
+var $gampleman$elm_visualization$Scale$band = F3(
+	function (config, range_, domain_) {
+		return {
+			bS: A3($gampleman$elm_visualization$Scale$Band$bandwidth, config, domain_, range_),
+			D: $gampleman$elm_visualization$Scale$Band$convert(config),
+			bZ: domain_,
+			u: range_
+		};
+	});
+var $gampleman$elm_visualization$Scale$defaultBandConfig = {c5: 0.5, fs: 0.0, ft: 0.0};
+var $author$project$Visualizer$Graph$xScale = function (model) {
+	return A3(
+		$gampleman$elm_visualization$Scale$band,
+		_Utils_update(
+			$gampleman$elm_visualization$Scale$defaultBandConfig,
+			{fs: 0.1, ft: 0.2}),
+		_Utils_Tuple2(0, $author$project$Visualizer$Graph$barW - (2 * $author$project$Visualizer$Graph$barPadding)),
+		A2($elm$core$List$map, $elm$core$Tuple$first, model));
+};
+var $author$project$Visualizer$Graph$xAxis = F2(
+	function (timezone, model) {
+		return A2(
+			$gampleman$elm_visualization$Axis$bottom,
+			_List_Nil,
+			A2(
+				$gampleman$elm_visualization$Scale$toRenderable,
+				$author$project$Visualizer$Graph$hourFormat(timezone),
+				$author$project$Visualizer$Graph$xScale(model)));
+	});
+var $gampleman$elm_visualization$Axis$horizontalAttrs = {
+	b1: true,
+	c_: function (y) {
+		return 'translate(0, ' + ($elm$core$String$fromFloat(y) + ')');
+	},
+	f7: A2($elm$core$Basics$composeL, $elm$svg$Svg$Attributes$x, $elm$core$String$fromFloat),
+	f8: A2($elm$core$Basics$composeL, $elm$svg$Svg$Attributes$x1, $elm$core$String$fromFloat),
+	f9: A2($elm$core$Basics$composeL, $elm$svg$Svg$Attributes$x2, $elm$core$String$fromFloat),
+	gc: A2($elm$core$Basics$composeL, $elm$svg$Svg$Attributes$y, $elm$core$String$fromFloat),
+	gd: A2($elm$core$Basics$composeL, $elm$svg$Svg$Attributes$y1, $elm$core$String$fromFloat),
+	ge: A2($elm$core$Basics$composeL, $elm$svg$Svg$Attributes$y2, $elm$core$String$fromFloat)
+};
+var $gampleman$elm_visualization$Axis$left = A4($gampleman$elm_visualization$Axis$element, $gampleman$elm_visualization$Axis$horizontalAttrs, -1, '0.32em', 'end');
+var $author$project$Visualizer$Graph$yAxis = function (model) {
+	var maxVal = A2(
+		$elm$core$Maybe$withDefault,
+		0,
+		$elm$core$List$maximum(
+			A2($elm$core$List$map, $elm$core$Tuple$second, model)));
+	return A2(
+		$gampleman$elm_visualization$Axis$left,
+		_List_Nil,
+		$author$project$Visualizer$Graph$yScale(maxVal));
+};
+var $author$project$Visualizer$Graph$barGraph = F2(
+	function (timezone, model) {
+		var maxVal = A2(
+			$elm$core$Maybe$withDefault,
+			0,
+			$elm$core$List$maximum(
+				A2($elm$core$List$map, $elm$core$Tuple$second, model)));
+		return A2(
+			$elm_community$typed_svg$TypedSvg$svg,
+			_List_fromArray(
+				[
+					A4($elm_community$typed_svg$TypedSvg$Attributes$viewBox, 0, 0, $author$project$Visualizer$Graph$barW, $author$project$Visualizer$Graph$barH)
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm_community$typed_svg$TypedSvg$g,
+					_List_fromArray(
+						[
+							$elm_community$typed_svg$TypedSvg$Attributes$transform(
+							_List_fromArray(
+								[
+									A2($elm_community$typed_svg$TypedSvg$Types$Translate, $author$project$Visualizer$Graph$barPadding - 1, $author$project$Visualizer$Graph$barH - $author$project$Visualizer$Graph$barPadding)
+								]))
+						]),
+					_List_fromArray(
+						[
+							A2($author$project$Visualizer$Graph$xAxis, timezone, model)
+						])),
+					A2(
+					$elm_community$typed_svg$TypedSvg$g,
+					_List_fromArray(
+						[
+							$elm_community$typed_svg$TypedSvg$Attributes$transform(
+							_List_fromArray(
+								[
+									A2($elm_community$typed_svg$TypedSvg$Types$Translate, $author$project$Visualizer$Graph$barPadding - 1, $author$project$Visualizer$Graph$barPadding)
+								]))
+						]),
+					_List_fromArray(
+						[
+							$author$project$Visualizer$Graph$yAxis(model)
+						])),
+					A2(
+					$elm_community$typed_svg$TypedSvg$g,
+					_List_fromArray(
+						[
+							$elm_community$typed_svg$TypedSvg$Attributes$transform(
+							_List_fromArray(
+								[
+									A2($elm_community$typed_svg$TypedSvg$Types$Translate, $author$project$Visualizer$Graph$barPadding, $author$project$Visualizer$Graph$barPadding)
+								])),
+							$elm_community$typed_svg$TypedSvg$Attributes$class(
+							_List_fromArray(
+								['series']))
+						]),
+					A2(
+						$elm$core$List$map,
+						A3(
+							$author$project$Visualizer$Graph$bar,
+							timezone,
+							$author$project$Visualizer$Graph$xScale(model),
+							maxVal),
+						model))
+				]));
+	});
+var $justinmimbs$time_extra$Time$Extra$posixFromDateTime = F3(
+	function (zone, date, time) {
+		var millis = $justinmimbs$time_extra$Time$Extra$dateToMillis(date) + time;
+		var offset0 = A2(
+			$justinmimbs$time_extra$Time$Extra$toOffset,
+			zone,
+			$elm$time$Time$millisToPosix(millis));
+		var posix1 = $elm$time$Time$millisToPosix(millis - (offset0 * 60000));
+		var offset1 = A2($justinmimbs$time_extra$Time$Extra$toOffset, zone, posix1);
+		if (_Utils_eq(offset0, offset1)) {
+			return posix1;
+		} else {
+			var posix2 = $elm$time$Time$millisToPosix(millis - (offset1 * 60000));
+			var offset2 = A2($justinmimbs$time_extra$Time$Extra$toOffset, zone, posix2);
+			return _Utils_eq(offset1, offset2) ? posix2 : posix1;
+		}
+	});
+var $justinmimbs$time_extra$Time$Extra$partsToPosix = F2(
+	function (zone, _v0) {
+		var year = _v0.ew;
+		var month = _v0.dK;
+		var day = _v0.de;
+		var hour = _v0.b2;
+		var minute = _v0.ck;
+		var second = _v0.cI;
+		var millisecond = _v0.ci;
+		return A3(
+			$justinmimbs$time_extra$Time$Extra$posixFromDateTime,
+			zone,
+			A3($justinmimbs$date$Date$fromCalendarDate, year, month, day),
+			A4(
+				$justinmimbs$time_extra$Time$Extra$timeFromClock,
+				A3($elm$core$Basics$clamp, 0, 23, hour),
+				A3($elm$core$Basics$clamp, 0, 59, minute),
+				A3($elm$core$Basics$clamp, 0, 59, second),
+				A3($elm$core$Basics$clamp, 0, 999, millisecond)));
+	});
+var $author$project$Visualizer$Graph$hourToPosix = F2(
+	function (timezone, hour) {
+		var unixzero = $elm$time$Time$millisToPosix(0);
+		var unixzeroParts = A2($justinmimbs$time_extra$Time$Extra$posixToParts, timezone, unixzero);
+		return A2(
+			$justinmimbs$time_extra$Time$Extra$partsToPosix,
+			timezone,
+			_Utils_update(
+				unixzeroParts,
+				{b2: hour}));
+	});
+var $author$project$Visualizer$Graph$hourCount = F2(
+	function (timezone, people) {
+		var times = A2(
+			$elm$core$List$map,
+			function ($) {
+				return $.b2;
+			},
+			A2(
+				$elm$core$List$map,
+				$justinmimbs$time_extra$Time$Extra$posixToParts(timezone),
+				$elm$core$List$concat(
+					A2(
+						$elm$core$List$map,
+						$elm$core$List$map(
+							function ($) {
+								return $.eN;
+							}),
+						people))));
+		var hours = A2($elm$core$List$range, 0, 23);
+		var counts = A2(
+			$elm$core$List$map,
+			function (hour) {
+				return $elm$core$List$length(
+					A2(
+						$elm$core$List$filter,
+						function (t) {
+							return _Utils_eq(t, hour);
+						},
+						times));
+			},
+			hours);
+		return A3(
+			$elm$core$List$map2,
+			F2(
+				function (h, c) {
+					return _Utils_Tuple2(
+						A2($author$project$Visualizer$Graph$hourToPosix, timezone, h),
+						c);
+				}),
+			hours,
+			counts);
+	});
+var $author$project$Visualizer$Graph$barView = F2(
+	function (filteredPeople, rootModel) {
+		var timezone = rootModel.cK.cX;
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('graph-svg time')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$author$project$Visualizer$Graph$barGraph,
+					rootModel.cK.cX,
+					A2($author$project$Visualizer$Graph$hourCount, timezone, filteredPeople))
+				]));
+	});
+var $author$project$Visualizer$Graph$personFacesFilter = F2(
+	function (filterList, person) {
+		personFacesFilter:
+		while (true) {
+			if (!filterList.b) {
+				return person;
+			} else {
+				var filter = filterList.a;
+				var tail = filterList.b;
+				var $temp$filterList = tail,
+					$temp$person = filter(person);
+				filterList = $temp$filterList;
+				person = $temp$person;
+				continue personFacesFilter;
+			}
+		}
+	});
+var $author$project$Visualizer$Graph$personFacesFilterByPlaces = F2(
+	function (places, person) {
+		if (!places.b) {
+			return person;
+		} else {
+			return A2(
+				$elm$core$List$filter,
+				function (face) {
+					return A2($elm$core$List$member, face.fv, places);
+				},
+				person);
+		}
+	});
+var $author$project$Visualizer$Graph$personFacesFilterBySex = F2(
+	function (sexlist, person) {
+		if (!sexlist.b) {
+			return person;
+		} else {
+			return A2(
+				$elm$core$List$filter,
+				function (face) {
+					return A2($elm$core$List$member, face.cM, sexlist);
+				},
+				person);
+		}
+	});
+var $author$project$Visualizer$Graph$sexDetect = function (person) {
+	var m = $elm$core$List$length(
+		A2(
+			$elm$core$List$filter,
+			function (face) {
+				return face.cM === 1;
+			},
+			person));
+	var f = $elm$core$List$length(
+		A2(
+			$elm$core$List$filter,
+			function (face) {
+				return face.cM === 2;
+			},
+			person));
+	var _v0 = A2($elm$core$Basics$compare, m, f);
+	switch (_v0) {
+		case 0:
+			return 2;
+		case 2:
+			return 1;
+		default:
+			return 0;
+	}
+};
+var $author$project$Visualizer$Graph$sexPer = function (people) {
+	var n = $elm$core$List$length(
+		A2(
+			$elm$core$List$filter,
+			function (p) {
+				return !$author$project$Visualizer$Graph$sexDetect(p);
+			},
+			people));
+	var m = $elm$core$List$length(
+		A2(
+			$elm$core$List$filter,
+			function (p) {
+				return $author$project$Visualizer$Graph$sexDetect(p) === 1;
+			},
+			people));
+	var f = $elm$core$List$length(
+		A2(
+			$elm$core$List$filter,
+			function (p) {
+				return $author$project$Visualizer$Graph$sexDetect(p) === 2;
+			},
+			people));
+	return A2(
+		$elm$core$List$map,
+		$elm$core$Basics$toFloat,
+		_List_fromArray(
+			[m, f, n]));
+};
+var $author$project$Visualizer$Graph$Sex = 0;
+var $author$project$Visualizer$Graph$sexColors = function (focusList) {
+	var focusList_ = _Utils_eq(focusList, _List_Nil) ? _List_fromArray(
+		[1, 2, 0]) : focusList;
+	return $elm$core$Array$fromList(
+		_List_fromArray(
+			[
+				A4(
+				$author$project$Visualizer$Graph$rgba255,
+				77,
+				124,
+				191,
+				A2($elm$core$List$member, 1, focusList_) ? 1 : 0.3),
+				A4(
+				$author$project$Visualizer$Graph$rgba255,
+				191,
+				77,
+				134,
+				A2($elm$core$List$member, 2, focusList_) ? 1 : 0.3),
+				A4(
+				$author$project$Visualizer$Graph$rgba255,
+				220,
+				220,
+				220,
+				A2($elm$core$List$member, 0, focusList_) ? 1 : 0.3),
+				A4($author$project$Visualizer$Graph$rgba255, 220, 220, 220, 1)
+			]));
+};
+var $author$project$Visualizer$Graph$sexView = F2(
+	function (focusSex, valList) {
+		var _v0 = (A2(
+			$elm$core$Maybe$withDefault,
+			0,
+			$elm$core$List$maximum(valList)) > 0) ? _Utils_Tuple2(valList, true) : _Utils_Tuple2(
+			_List_fromArray(
+				[0, 0, 0, 1]),
+			false);
+		var valList_ = _v0.a;
+		var labelVisible = _v0.b;
+		var pieData = A2(
+			$gampleman$elm_visualization$Shape$pie,
+			_Utils_update(
+				$gampleman$elm_visualization$Shape$defaultPieConfig,
+				{cq: $author$project$Visualizer$Graph$radius, eh: $author$project$Visualizer$Graph$nonSort}),
+			valList_);
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('graph-svg sex')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm_community$typed_svg$TypedSvg$svg,
+					_List_fromArray(
+						[
+							$elm_community$typed_svg$TypedSvg$Attributes$InPx$width($author$project$Visualizer$Graph$pieW),
+							$elm_community$typed_svg$TypedSvg$Attributes$InPx$height($author$project$Visualizer$Graph$pieH)
+						]),
+					_List_fromArray(
+						[
+							A6(
+							$author$project$Visualizer$Graph$annular,
+							0,
+							$author$project$Visualizer$Graph$sexColors(focusSex),
+							'Sex',
+							pieData,
+							valList_,
+							labelVisible)
+						]))
+				]));
+	});
+var $author$project$Visualizer$Graph$view = function (rootModel) {
+	var people = rootModel.f3.fu;
+	var focusSex = rootModel.f3.aI.b0;
+	var focusPlaces = rootModel.f3.aI.bx;
+	var withoutSexFilter = $author$project$Visualizer$Graph$personFacesFilter(
+		_List_fromArray(
+			[
+				$author$project$Visualizer$Graph$personFacesFilterByPlaces(focusPlaces)
+			]));
+	var withoutSexFilteredPeople = A2(
+		$elm$core$List$filter,
+		$elm$core$Basics$neq(_List_Nil),
+		A2($elm$core$List$map, withoutSexFilter, people));
+	var filterList = _List_fromArray(
+		[
+			$author$project$Visualizer$Graph$personFacesFilterByPlaces(focusPlaces),
+			$author$project$Visualizer$Graph$personFacesFilterBySex(focusSex)
+		]);
+	var allFilter = $author$project$Visualizer$Graph$personFacesFilter(filterList);
+	var filteredPeople = A2(
+		$elm$core$List$filter,
+		$elm$core$Basics$neq(_List_Nil),
+		A2($elm$core$List$map, allFilter, people));
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('graph column'),
+				$elm$html$Html$Attributes$id('graph')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$h2,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('title')
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Graph')
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('graph-container depression-container')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('focus-places')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Focus: '),
+								_Utils_eq(focusPlaces, _List_Nil) ? $elm$html$Html$text('All') : A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('name-container')
+									]),
+								A2(
+									$elm$core$List$map,
+									function (p) {
+										return A2(
+											$elm$html$Html$p,
+											_List_fromArray(
+												[
+													$elm$html$Html$Events$onClick(
+													$author$project$Visualizer$Graph$RemoveFocusPlace(p))
+												]),
+											_List_fromArray(
+												[
+													$elm$html$Html$text(p.dN + ' ×')
+												]));
+									},
+									focusPlaces))
+							])),
+						A2(
+						$author$project$Visualizer$Graph$sexView,
+						focusSex,
+						$author$project$Visualizer$Graph$sexPer(withoutSexFilteredPeople)),
+						$author$project$Visualizer$Graph$ageView(
+						$author$project$Visualizer$Graph$agePer(people)),
+						A2($author$project$Visualizer$Graph$barView, filteredPeople, rootModel)
+					]))
+			]));
+};
+var $author$project$Visualizer$People$ageString = function (age) {
+	if (age.$ === 1) {
+		return '';
+	} else {
+		var val = age.a;
+		return $elm$core$String$fromFloat(val);
+	}
+};
 var $author$project$Visualizer$People$sexString = function (sex) {
 	switch (sex) {
 		case 1:
@@ -10810,9 +14492,9 @@ var $author$project$Visualizer$People$faceView = F2(
 					$elm$html$Html$img,
 					_List_fromArray(
 						[
-							$elm$html$Html$Attributes$src(face.bs),
+							$elm$html$Html$Attributes$src(face.eZ),
 							$elm$html$Html$Attributes$title(
-							face.bK.aG + (' ' + ($author$project$Visualizer$People$sexString(face.bR) + (' ' + A2($author$project$Common$Settings$localDropSecsStr, timezone, face.ao)))))
+							face.fv.dN + (' ' + ($author$project$Visualizer$People$sexString(face.cM) + (' ' + ($author$project$Visualizer$People$ageString(face.ey) + (' ' + A2($author$project$Common$Settings$localDropSecsStr, timezone, face.eN)))))))
 						]),
 					_List_Nil)
 				]));
@@ -10836,7 +14518,7 @@ var $author$project$Visualizer$People$view = function (rootModel) {
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$class('people'),
+				$elm$html$Html$Attributes$class('people column'),
 				$elm$html$Html$Attributes$id('people')
 			]),
 		_List_fromArray(
@@ -10855,27 +14537,27 @@ var $author$project$Visualizer$People$view = function (rootModel) {
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('people-container')
+						$elm$html$Html$Attributes$class('people-container depression-container')
 					]),
 				A2(
 					$elm$core$List$map,
-					$author$project$Visualizer$People$personView(rootModel.ab.af),
-					rootModel.b2.bJ))
+					$author$project$Visualizer$People$personView(rootModel.cK.cX),
+					rootModel.f3.fu))
 			]));
 };
 var $author$project$Visualizer$Traffic$trafficCountString = function (trafficCount) {
-	var count = trafficCount.an;
-	var _v0 = trafficCount.bZ;
+	var count = trafficCount.dd;
+	var _v0 = trafficCount.f_;
 	var from = _v0.a;
 	var to = _v0.b;
-	return from.aG + (' -> ' + (to.aG + (' : ' + $elm$core$String$fromInt(count))));
+	return from.dN + (' -> ' + (to.dN + (' : ' + $elm$core$String$fromInt(count))));
 };
 var $author$project$Visualizer$Traffic$trafficView = function (trafficList) {
 	var sorted = $elm$core$List$reverse(
 		A2(
 			$elm$core$List$sortBy,
 			function ($) {
-				return $.an;
+				return $.dd;
 			},
 			trafficList));
 	var top6 = A2($elm$core$List$take, 6, sorted);
@@ -10962,16 +14644,22 @@ var $author$project$Visualizer$Traffic$view = function (model) {
 					]),
 				_List_fromArray(
 					[
-						$author$project$Visualizer$Traffic$trafficView(model.bZ)
+						$author$project$Visualizer$Traffic$trafficView(model.f_)
 					]))
 			]));
 };
-var $author$project$Visualizer$Controller$Analyze = {$: 6};
+var $author$project$Visualizer$Controller$Analyze = {$: 8};
 var $author$project$Visualizer$Controller$GotSinceTime = function (a) {
 	return {$: 4, a: a};
 };
 var $author$project$Visualizer$Controller$GotUntilTime = function (a) {
 	return {$: 5, a: a};
+};
+var $author$project$Visualizer$Controller$ValidSinceTime = function (a) {
+	return {$: 6, a: a};
+};
+var $author$project$Visualizer$Controller$ValidUntilTime = function (a) {
+	return {$: 7, a: a};
 };
 var $author$project$Common$Settings$timezoneNameString = function (zonename) {
 	if (!zonename.$) {
@@ -10983,8 +14671,8 @@ var $author$project$Common$Settings$timezoneNameString = function (zonename) {
 	}
 };
 var $author$project$Visualizer$Controller$dateSelectorView = function (rootModel) {
-	var hereTimeZone = rootModel.ab.af;
-	var controllerModel = rootModel.b2.i;
+	var hereTimeZone = rootModel.cK.cX;
+	var controllerModel = rootModel.f3.n;
 	return A2(
 		$elm$html$Html$div,
 		_List_fromArray(
@@ -11013,9 +14701,9 @@ var $author$project$Visualizer$Controller$dateSelectorView = function (rootModel
 						_List_fromArray(
 							[
 								$elm$html$Html$Attributes$type_('datetime-local'),
-								$elm$html$Html$Attributes$value(
-								A2($author$project$Common$Settings$localDropSecsStr, hereTimeZone, controllerModel.q.N)),
-								$author$project$Common$Data$onChange($author$project$Visualizer$Controller$GotSinceTime)
+								$elm$html$Html$Attributes$value(controllerModel.aK.bg),
+								$elm$html$Html$Events$onInput($author$project$Visualizer$Controller$GotSinceTime),
+								$author$project$Common$Data$onChange($author$project$Visualizer$Controller$ValidSinceTime)
 							]),
 						_List_Nil)
 					])),
@@ -11039,9 +14727,9 @@ var $author$project$Visualizer$Controller$dateSelectorView = function (rootModel
 						_List_fromArray(
 							[
 								$elm$html$Html$Attributes$type_('datetime-local'),
-								$elm$html$Html$Attributes$value(
-								A2($author$project$Common$Settings$localDropSecsStr, hereTimeZone, controllerModel.q.O)),
-								$author$project$Common$Data$onChange($author$project$Visualizer$Controller$GotUntilTime)
+								$elm$html$Html$Attributes$value(controllerModel.aK.bp),
+								$elm$html$Html$Events$onInput($author$project$Visualizer$Controller$GotUntilTime),
+								$author$project$Common$Data$onChange($author$project$Visualizer$Controller$ValidUntilTime)
 							]),
 						_List_Nil)
 					])),
@@ -11054,7 +14742,7 @@ var $author$project$Visualizer$Controller$dateSelectorView = function (rootModel
 				_List_fromArray(
 					[
 						$elm$html$Html$text(
-						'timezone: ' + $author$project$Common$Settings$timezoneNameString(rootModel.ab.ag))
+						'timezone: ' + $author$project$Common$Settings$timezoneNameString(rootModel.cK.cY))
 					]))
 			]));
 };
@@ -11071,7 +14759,7 @@ var $author$project$Common$Data$placesFilter = F2(
 				return A2(
 					$elm$core$String$contains,
 					lowerCaseKeyword,
-					$elm$core$String$toLower(p.aG));
+					$elm$core$String$toLower(p.dN));
 			},
 			places);
 	});
@@ -11091,14 +14779,14 @@ var $author$project$Visualizer$Controller$allPlacesList = function (controllerMo
 					_List_fromArray(
 						[
 							$elm$html$Html$Events$onClick(
-							$author$project$Visualizer$Controller$SelectPlace(p.aG))
+							$author$project$Visualizer$Controller$SelectPlace(p.dN))
 						]),
 					_List_fromArray(
 						[
-							$elm$html$Html$text(p.aG)
+							$elm$html$Html$text(p.dN)
 						]));
 			},
-			A2($author$project$Common$Data$placesFilter, controllerModel.Y, controllerModel.aN)));
+			A2($author$project$Common$Data$placesFilter, controllerModel.cB, controllerModel.dV)));
 };
 var $author$project$Visualizer$Controller$PlaceSearchInput = function (a) {
 	return {$: 3, a: a};
@@ -11118,7 +14806,7 @@ var $author$project$Visualizer$Controller$searchView = function (controllerModel
 					[
 						$elm$html$Html$Attributes$type_('text'),
 						$elm$html$Html$Events$onInput($author$project$Visualizer$Controller$PlaceSearchInput),
-						$elm$html$Html$Attributes$value(controllerModel.Y),
+						$elm$html$Html$Attributes$value(controllerModel.cB),
 						$elm$html$Html$Attributes$placeholder('Search Places')
 					]),
 				_List_Nil)
@@ -11134,11 +14822,11 @@ var $author$project$Visualizer$Controller$selectedPlaceBox = function (place) {
 			[
 				$elm$html$Html$Attributes$class('selected-place-box'),
 				$elm$html$Html$Events$onClick(
-				$author$project$Visualizer$Controller$DelSelectedPlace(place.aG))
+				$author$project$Visualizer$Controller$DelSelectedPlace(place.dN))
 			]),
 		_List_fromArray(
 			[
-				$elm$html$Html$text(place.aG)
+				$elm$html$Html$text(place.dN)
 			]));
 };
 var $author$project$Visualizer$Controller$selectedPlacesView = function (controllerModel) {
@@ -11148,7 +14836,7 @@ var $author$project$Visualizer$Controller$selectedPlacesView = function (control
 			[
 				$elm$html$Html$Attributes$class('selected')
 			]),
-		A2($elm$core$List$map, $author$project$Visualizer$Controller$selectedPlaceBox, controllerModel.s));
+		A2($elm$core$List$map, $author$project$Visualizer$Controller$selectedPlaceBox, controllerModel.aa));
 };
 var $author$project$Visualizer$Controller$placesView = function (controllerModel) {
 	return A2(
@@ -11183,7 +14871,7 @@ var $author$project$Visualizer$Controller$placesView = function (controllerModel
 			]));
 };
 var $author$project$Visualizer$Controller$viewControllerModal = function (rootModel) {
-	return rootModel.b2.i.aE ? A2(
+	return rootModel.f3.n.dJ ? A2(
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
@@ -11233,7 +14921,7 @@ var $author$project$Visualizer$Controller$viewControllerModal = function (rootMo
 							]),
 						_List_fromArray(
 							[
-								$author$project$Visualizer$Controller$placesView(rootModel.b2.i)
+								$author$project$Visualizer$Controller$placesView(rootModel.f3.n)
 							])),
 						A2(
 						$elm$html$Html$div,
@@ -11272,7 +14960,7 @@ var $author$project$Visualizer$Controller$viewControllerModal = function (rootMo
 };
 var $author$project$Visualizer$Visualizer$view = function (rootModel) {
 	return {
-		ak: _List_fromArray(
+		c8: _List_fromArray(
 			[
 				A2(
 				$elm$html$Html$div,
@@ -11290,34 +14978,38 @@ var $author$project$Visualizer$Visualizer$view = function (rootModel) {
 							]),
 						_List_fromArray(
 							[
-								$author$project$Visualizer$Map$mapView('map'),
 								A2(
 								$elm$html$Html$map,
 								$author$project$Visualizer$Visualizer$ControllerMsg,
-								$author$project$Visualizer$Controller$view(rootModel))
+								$author$project$Visualizer$Controller$view(rootModel)),
+								$author$project$Visualizer$Map$mapView('map')
 							])),
+						A2(
+						$elm$html$Html$map,
+						$author$project$Visualizer$Visualizer$GraphMsg,
+						$author$project$Visualizer$Graph$view(rootModel)),
 						A2(
 						$elm$html$Html$map,
 						$author$project$Visualizer$Visualizer$PeopleMsg,
 						$author$project$Visualizer$People$view(rootModel)),
-						$author$project$Visualizer$Traffic$view(rootModel.b2)
+						$author$project$Visualizer$Traffic$view(rootModel.f3)
 					])),
 				A2(
 				$elm$html$Html$map,
 				$author$project$Visualizer$Visualizer$ControllerMsg,
 				$author$project$Visualizer$Controller$viewControllerModal(rootModel))
 			]),
-		bX: 'Visualizer'
+		fS: 'Visualizer'
 	};
 };
 var $author$project$Main$view = function (rootModel) {
 	var viewPage = F3(
 		function (view_, model_, msg_) {
 			var _v4 = view_(model_);
-			var title = _v4.bX;
-			var body = _v4.ak;
+			var title = _v4.fS;
+			var body = _v4.c8;
 			return {
-				ak: _List_fromArray(
+				c8: _List_fromArray(
 					[
 						$author$project$Main$navbarView(rootModel),
 						A2(
@@ -11333,12 +15025,12 @@ var $author$project$Main$view = function (rootModel) {
 						A2(
 						$elm$html$Html$map,
 						$author$project$Main$ErrorMsg,
-						$author$project$Common$ErrorPanel$view(rootModel.ar))
+						$author$project$Common$ErrorPanel$view(rootModel.dk))
 					]),
-				bX: 'Gingerbreadman | ' + title
+				fS: 'Gingerbreadman | ' + title
 			};
 		});
-	var _v0 = A2($elm$url$Url$Parser$parse, $author$project$Main$routeParser, rootModel.b0);
+	var _v0 = A2($elm$url$Url$Parser$parse, $author$project$Main$routeParser, rootModel.f1);
 	if (!_v0.$) {
 		switch (_v0.a) {
 			case 0:
@@ -11356,6 +15048,6 @@ var $author$project$Main$view = function (rootModel) {
 	}
 };
 var $author$project$Main$main = $elm$browser$Browser$application(
-	{bB: $author$project$Main$init, bG: $author$project$Main$UrlChanged, bH: $author$project$Main$LinkClicked, bV: $author$project$Main$subscriptions, b_: $author$project$Main$update, b1: $author$project$Main$view});
+	{fb: $author$project$Main$init, fn: $author$project$Main$UrlChanged, fo: $author$project$Main$LinkClicked, fO: $author$project$Main$subscriptions, f$: $author$project$Main$update, f2: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
 	$elm$json$Json$Decode$succeed(0))(0)}});}(this));

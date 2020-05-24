@@ -18,6 +18,10 @@
  */
 
 
+ svg {
+     overflow: visible;
+ }
+
 .maincontainer {
     padding: 0;
     margin: 0;
@@ -32,14 +36,16 @@
 }
 
 
-.people {
+.column {
     height: calc(100vh - 13rem);
-    min-width: 50vw;
+    min-width: 38rem;
+    margin: 0 1.5rem;
 }
 
 .controller {
     flex-grow: 1;
     flex-shrink: 3;
+    padding-right: 3rem;
     width: 100%;
 }
 
@@ -119,15 +125,15 @@ ul.all-places {
     margin: auto 0.2rem;
 }
 
-.people-container {
+.depression-container {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
     overflow-y: scroll;
-    box-shadow: inset 0.5rem 0.5rem 1rem #aeaeae,
-                inset -1rem -1rem 0.7rem #f5f5f5;
+    box-shadow: inset 0.2rem 0.2rem 0.5rem #aeaeae, 
+                inset -0.2rem -0.2rem 0.8rem #f5f5f5;
     border-radius: 2rem;
-    margin-top: 1rem;
+    margin-top: 2rem;
     padding: 1.5rem;
     height: calc(100% - 5.5rem);
 }
@@ -141,7 +147,7 @@ ul.all-places {
     flex-wrap: wrap;
     align-items: flex-start;
     align-content: flex-start;
-    height: 25vh;
+    height: 12vmin;
     overflow-y: scroll;
     justify-content: space-between;
     background-color: #ddd7d7;
@@ -154,19 +160,60 @@ ul.all-places {
 
 /* Map */
 
+.map {
+    width: 100%;
+}
+
 .map-controller-row {
-    min-width: 90vw;
     display: flex;
 }
 
-.map#map {
+#map {
+    margin-top: 2rem !important;
     flex-grow: 3;
     flex-shrink: 1;
     width: 100%;
     margin: 0 2rem 2rem 0;
     padding: 0;
     border-radius: 1.5rem;
-    height: calc(100vh - 13rem);
+    height: calc(100vh - 16rem);
     filter: drop-shadow(0.8rem 0.8rem 1rem #999999)
             drop-shadow(-1rem -1rem 0.7rem #ffffff);
+}
+
+
+/* Graph */
+
+.graph-svg {
+    filter: drop-shadow(0.8rem 0.8rem 1rem #999999)
+            drop-shadow(-1rem -1rem 0.7rem #ffffff);
+    height: 250px;
+    width: 250px;
+}
+
+.graph-svg.sex {
+    width: 50%;
+}
+
+.graph-svg.time {
+    width: 100%;
+    filter: drop-shadow(0.6rem 0.6rem 0.4rem #999999)
+            drop-shadow(-0.6rem -0.6rem 0.4rem #ffffff);
+}
+
+
+.focus-places {
+    width: 100%;
+    word-wrap: break-word;
+}
+
+.focus-places .name-container {
+    margin-top: 0.5rem;
+}
+
+.focus-places .name-container p {
+    display: inline;
+    margin: 0.2rem 0.5rem;
+    margin: 0.2rem 0.5rem;
+    background-color: #eaeaea;
 }
