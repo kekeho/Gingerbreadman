@@ -86,6 +86,17 @@ view : RootModel -> Html Msg
 view rootModel =
     let
         focusPlaces = rootModel.visualizer.graph.focusPlaces
+        people = rootModel.visualizer.people
+
+        filteredPeopleFaces : List Person
+        filteredPeopleFaces =
+            case focusPlaces of
+                [] ->
+                    -- all
+                    people
+                _ ->
+                    List.map (personFacesFilterdByPlaces focusPlaces) people
+                        |> List.filter (\p -> not (List.isEmpty p))
     in
     div [ class "graph column", id "graph" ]
         [ h2 [ class "title" ] [ text "Graph" ]
@@ -98,9 +109,9 @@ view rootModel =
                     div [ class "name-container" ] 
                         (List.map (\p -> Html.p [ onClick (RemoveFocusPlace p) ] [ text (p.name ++ " ×")]) focusPlaces)
                 ]
-            , sexView focusPlaces <| sexPer rootModel.visualizer.people
-            , ageView focusPlaces <| agePer rootModel.visualizer.people
-            , barView focusPlaces <| rootModel
+            , sexView <| sexPer filteredPeopleFaces
+            , ageView <| agePer filteredPeopleFaces
+            , barView filteredPeopleFaces rootModel
             ]
         ]
 
@@ -115,8 +126,8 @@ sexColors =
         ]
 
 
-sexView : List Place -> List Float -> Html msg
-sexView focusPlaces  valList =
+sexView : List Float -> Html msg
+sexView valList =
     let
         ( valList_, labelVisible ) =
             if Maybe.withDefault 0 (List.maximum valList) > 0 then
@@ -149,8 +160,8 @@ ageColors =
         |> Array.fromList
 
 
-ageView : List Place -> List Float -> Html msg
-ageView focusPlaces valList =
+ageView : List Float -> Html msg
+ageView valList =
     let
         ( valList_, labelVisible ) =
             if Maybe.withDefault 0 (List.maximum valList) > 0 then
@@ -221,7 +232,7 @@ labelText x y txt =
 
 nonSort : comparable -> comparable -> Order
 nonSort _ _ =
-    GT
+    LT
 
 
 annular : GraphType -> Array Color -> String -> List Arc -> List Float -> Bool -> Svg msg
@@ -369,13 +380,13 @@ barGraph timezone model =
         ]
 
 
-barView : List Place -> RootModel -> Html Msg
-barView focusPlaces rootModel =
+barView : List Person -> RootModel -> Html Msg
+barView filteredPeople rootModel =
     let
         timezone = rootModel.settings.timezone
     in
     div [ class "graph-svg time" ]
-        [ barGraph rootModel.settings.timezone (hourCount timezone rootModel.visualizer.people) ]
+        [ barGraph rootModel.settings.timezone (hourCount timezone filteredPeople) ]
 
 
 
@@ -489,6 +500,11 @@ hourToPosix timezone hour =
                 
     in
     Time.Extra.partsToPosix timezone {unixzeroParts | hour = hour }
+
+
+personFacesFilterdByPlaces : List Place -> Person -> List Face
+personFacesFilterdByPlaces places person =
+    List.filter (\face -> List.member face.place places ) person
 
 
 rgba255 : Int -> Int -> Int -> Float -> Color
