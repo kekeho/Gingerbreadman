@@ -12,6 +12,7 @@ In advance, you should clone the repository and enter directory by following the
 ```sh
 git clone https://github.com/kekeho/gingerbreadman
 cd gingerbreadman
+git lfs pull
 ```
 
 ## Server
@@ -64,7 +65,7 @@ docker-compose -f docker-compose-worker.yml build  # amd64
 docker-compose -f docker-compose-worker-arm.yml build  # arm (tested on raspberry pi 3 64bit)
 
 # arm with GPU (tested on jetson nano)
-xargs -n 1 cp /usr/lib/aarch64-linux-gnu/libcudnn.so <<< "./service/face_location ./service/face_encoding"
+xargs -n 1 cp /usr/lib/aarch64-linux-gnu/libcudnn.so <<< "./services/face_location ./services/face_encoding"
 docker-compose -f docker-compose-worker-arm-gpu.yml build
 ```
 
