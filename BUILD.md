@@ -80,8 +80,10 @@ NGINX_PORT=8000
 
 ### 3. Launch
 
+service: sex_detection or age_prediction or face_encoding or face_location
+
 ```sh
 docker-compose -f docker-compose-worker.yml up  # amd64
 docker-compose -f docker-compose-worker-arm.yml up  # arm (tested on raspberry pi 3 64bit)
-docker-compose -f docker-compose-worker-arm-gpu.yml up  # arm with GPU (tested on jetson nano)
+docker-compose -f docker-compose-worker-arm-gpu.yml run [service]  # arm with GPU (tested on jetson nano) It is recommended to run only one container at a time.
 ```

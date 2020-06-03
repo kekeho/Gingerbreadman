@@ -13,4 +13,13 @@ services:
       - "./services/face_encoding:/code"
     env_file:
       - worker.env
-
+  
+  service_sex_detection:
+    build: services/sex_detection
+    env_file:
+      - worker.env
+  
+  service_age_prediction:
+    build: services/age_prediction
+    env_file:
+      - worker.env

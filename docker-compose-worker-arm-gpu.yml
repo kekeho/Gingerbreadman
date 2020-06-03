@@ -19,3 +19,19 @@ services:
       - "./services/face_encoding:/code"
     env_file:
       - worker.env
+  
+  service_sex_detection:
+    build:
+      context: "services/sex_detection"
+      dockerfile: "Dockerfile_ARM_GPU"
+    runtime: nvidia
+    env_file:
+      - worker.env
+  
+  service_age_prediction:
+    build: 
+      context: "services/age_prediction"
+      dockerfile: "Dockerfile_ARM_GPU"
+    runtime: nvidia
+    env_file:
+      - worker.env

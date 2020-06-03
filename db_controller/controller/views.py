@@ -107,7 +107,7 @@ def get_unanalyzed_face_location_images(request):
     images = models.Image.objects.filter(
         service_face_location_analyzed=False,
         service_face_location_analyzing_startdate__range=(UNIXZERO, locktime),
-        )[:100]  # 100 images per request
+        )[:50]  # 50 images per request
 
     if list(images) == []:
         return HttpResponseNotFound()
@@ -164,7 +164,7 @@ def get_unanalyzed_face_encoding_faces(request):
     faces = models.Face.objects.filter(
         service_face_encoding_analyzed=False,
         service_face_encoding_analyzing_startdate__range=(UNIXZERO, locktime),
-        )[:100]  # 100 images per request
+        )[:50]  # 50 images per request
 
     if list(faces) == []:
         return HttpResponseNotFound()
@@ -213,7 +213,7 @@ def get_unanalyzed_faces_sex(request):
     faces = models.Face.objects.filter(  # OR
         service_sex_detection_analyzed=False,
         service_sex_detection_analyzing_startdate__range=(UNIXZERO, locktime),
-        )[:500]  # 500 images per request
+        )[:50]  # 50 images per request
 
     if list(faces) == []:
         return HttpResponseNotFound()
@@ -258,7 +258,7 @@ def get_unanalyzed_faces_age(request):
     faces = models.Face.objects.filter(  # OR
         service_age_prediction_analyzed=False,
         service_age_prediction_analyzing_startdate__range=(UNIXZERO, locktime),
-    )[:500]  # 500 images per request
+    )[:50]  # 50 images per request
 
     if list(faces) == []:
         return HttpResponseNotFound()

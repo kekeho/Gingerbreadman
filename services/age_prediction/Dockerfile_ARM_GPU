@@ -1,0 +1,12 @@
+FROM nvcr.io/nvidia/l4t-tensorflow:r32.4.2-tf1.15-py3
+
+RUN apt install -y libhdf5-dev
+
+WORKDIR /code
+
+RUN pip3 install pillow
+
+COPY ./age_prediction.h5 .
+COPY ./age_prediction.py .
+
+CMD [ "python3", "age_prediction.py" ]
