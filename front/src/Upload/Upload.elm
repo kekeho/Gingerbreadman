@@ -25,7 +25,7 @@ import File
 import File.Select
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
+import Html.Events exposing (onClick, onInput)
 import Http
 import List
 import Model exposing (RootModel)
@@ -290,7 +290,7 @@ selectPlacesView model =
     div [ class "col" ]
         [ label [] [ text "Existing Places" ]
         , input [ type_ "text", onChange PlaceSearchInput, placeholder "Search Place", value model.placeSearchInput ] []
-        , select [ class "form-control", Html.Events.onInput PlaceSelected ]
+        , select [ class "form-control", onInput PlaceSelected ]
             (List.map (\p -> option [ value p.name ] [ text p.name ]) model.placeSearchFiltered)
         ]
 
@@ -325,7 +325,7 @@ newPlacesView model =
             [ type_ "text"
             , class "form-control"
             , placeholder "or create new place tag"
-            , onChange NewPlaceName
+            , onInput NewPlaceName
             , value model.newPlace.name
             ]
             []
