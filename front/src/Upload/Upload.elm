@@ -333,7 +333,7 @@ newPlacesView model =
             [ type_ "number"
             , placeholder "latitude"
             , step "0.0000001"
-            , onChange NewPlaceLatitude
+            , onInput NewPlaceLatitude
             , value (String.fromFloat model.newPlace.latitude)
             ]
             []
@@ -342,7 +342,7 @@ newPlacesView model =
             , placeholder "longitude"
             , step "0.0000001"
             , value (String.fromFloat model.newPlace.longitude)
-            , onChange NewPlaceLongitude
+            , onInput NewPlaceLongitude
             ]
             []
         ]
