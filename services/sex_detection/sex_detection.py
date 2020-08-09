@@ -16,7 +16,6 @@
 # along with Gingerbreadman.  If not, see <http://www.gnu.org/licenses/>.
 
 import tensorflow
-from tensorflow.keras.backend import set_session
 from tensorflow import keras
 from PIL import Image
 import requests
@@ -27,14 +26,6 @@ from urllib.parse import urljoin
 import model
 import os
 import time
-
-
-config = tensorflow.ConfigProto()
-config.gpu_options.allow_growth = True
-config.gpu_options.per_process_gpu_memory_fraction=0.4
-config.log_device_placement = True
-session = tensorflow.Session(config=config)
-set_session(session)
 
 
 sexmodel = keras.models.load_model('sex_detection.h5')

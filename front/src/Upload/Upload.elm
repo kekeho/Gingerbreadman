@@ -83,6 +83,9 @@ update msg rootModel =
                     update (ErrorMsg (ErrorPanel.AddError { error = ErrorPanel.OnlyStr, str = "NO IMAGE" })) newRootModel
 
                 Just files ->
+                    let
+                        splittedFiles = splitList 50 files
+                    in
                     case model.selectedPlace of
                         Nothing ->
                             if model.newPlace.name == "" then
@@ -90,36 +93,48 @@ update msg rootModel =
 
                             else
                                 ( newRootModel
-                                , Http.post
-                                    { url = "/api/db/regist_images/"
-                                    , body =
-                                        Http.multipartBody
-                                            (Http.stringPart "place_selected" ""
-                                                :: Http.stringPart "place_new" model.newPlace.name
-                                                :: Http.stringPart "new_latitude" (String.fromFloat model.newPlace.latitude)
-                                                :: Http.stringPart "new_longitude" (String.fromFloat model.newPlace.longitude)
-                                                :: List.map (\f -> Http.filePart "images" f) files
-                                                ++ List.map (\f -> Http.stringPart "images_mtimes" (msecToStr (File.lastModified f))) files
-                                            )
-                                    , expect = Http.expectWhatever Uploaded
-                                    }
+                                , Cmd.batch
+                                    ( List.map
+                                        ( \xs -> 
+                                            Http.post
+                                                { url = "/api/db/regist_images/"
+                                                , body =
+                                                    Http.multipartBody
+                                                        (Http.stringPart "place_selected" ""
+                                                            :: Http.stringPart "place_new" model.newPlace.name
+                                                            :: Http.stringPart "new_latitude" (String.fromFloat model.newPlace.latitude)
+                                                            :: Http.stringPart "new_longitude" (String.fromFloat model.newPlace.longitude)
+                                                            :: List.map (\f -> Http.filePart "images" f) xs
+                                                            ++ List.map (\f -> Http.stringPart "images_mtimes" (msecToStr (File.lastModified f))) files
+                                                        )
+                                                , expect = Http.expectWhatever Uploaded
+                                                }
+                                        )
+                                        splittedFiles
+                                    )
                                 )
 
                         Just selectedPlace ->
                             ( newRootModel
-                            , Http.post
-                                { url = "/api/db/regist_images/"
-                                , body =
-                                    Http.multipartBody
-                                        (Http.stringPart "place_selected" selectedPlace.name
-                                            :: Http.stringPart "place_new" model.newPlace.name
-                                            :: Http.stringPart "new_latitude" (String.fromFloat model.newPlace.latitude)
-                                            :: Http.stringPart "new_longitude" (String.fromFloat model.newPlace.longitude)
-                                            :: List.map (\f -> Http.filePart "images" f) files
-                                            ++ List.map (\f -> Http.stringPart "images_mtimes" (msecToStr (File.lastModified f))) files
-                                        )
-                                , expect = Http.expectWhatever Uploaded
-                                }
+                            , Cmd.batch
+                                ( List.map 
+                                    ( \xs ->
+                                        Http.post
+                                        { url = "/api/db/regist_images/"
+                                        , body =
+                                            Http.multipartBody
+                                                (Http.stringPart "place_selected" selectedPlace.name
+                                                    :: Http.stringPart "place_new" model.newPlace.name
+                                                    :: Http.stringPart "new_latitude" (String.fromFloat model.newPlace.latitude)
+                                                    :: Http.stringPart "new_longitude" (String.fromFloat model.newPlace.longitude)
+                                                    :: List.map (\f -> Http.filePart "images" f) xs
+                                                    ++ List.map (\f -> Http.stringPart "images_mtimes" (msecToStr (File.lastModified f))) files
+                                                )
+                                        , expect = Http.expectWhatever Uploaded
+                                        }
+                                    )
+                                    splittedFiles
+                                )
                             )
 
         Uploaded result ->
@@ -379,3 +394,17 @@ getPlaces =
         , timeout = Nothing
         , tracker = Nothing
         }
+
+
+splitList : Int -> List a -> List (List a)
+splitList len list =
+    if len == 0 then
+        [ [] ]
+    else if len < 0 then
+        []
+    else if List.length list > len then
+        List.take len list :: splitList len (List.drop len list )
+    else
+        [ list ]
+    
+

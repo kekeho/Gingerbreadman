@@ -7394,6 +7394,167 @@ var $elm$http$Http$post = function (r) {
 	return $elm$http$Http$request(
 		{c8: r.c8, eV: r.eV, e2: _List_Nil, fi: 'POST', fR: $elm$core$Maybe$Nothing, fZ: $elm$core$Maybe$Nothing, f1: r.f1});
 };
+var $elm$core$List$drop = F2(
+	function (n, list) {
+		drop:
+		while (true) {
+			if (n <= 0) {
+				return list;
+			} else {
+				if (!list.b) {
+					return list;
+				} else {
+					var x = list.a;
+					var xs = list.b;
+					var $temp$n = n - 1,
+						$temp$list = xs;
+					n = $temp$n;
+					list = $temp$list;
+					continue drop;
+				}
+			}
+		}
+	});
+var $elm$core$List$takeReverse = F3(
+	function (n, list, kept) {
+		takeReverse:
+		while (true) {
+			if (n <= 0) {
+				return kept;
+			} else {
+				if (!list.b) {
+					return kept;
+				} else {
+					var x = list.a;
+					var xs = list.b;
+					var $temp$n = n - 1,
+						$temp$list = xs,
+						$temp$kept = A2($elm$core$List$cons, x, kept);
+					n = $temp$n;
+					list = $temp$list;
+					kept = $temp$kept;
+					continue takeReverse;
+				}
+			}
+		}
+	});
+var $elm$core$List$takeTailRec = F2(
+	function (n, list) {
+		return $elm$core$List$reverse(
+			A3($elm$core$List$takeReverse, n, list, _List_Nil));
+	});
+var $elm$core$List$takeFast = F3(
+	function (ctr, n, list) {
+		if (n <= 0) {
+			return _List_Nil;
+		} else {
+			var _v0 = _Utils_Tuple2(n, list);
+			_v0$1:
+			while (true) {
+				_v0$5:
+				while (true) {
+					if (!_v0.b.b) {
+						return list;
+					} else {
+						if (_v0.b.b.b) {
+							switch (_v0.a) {
+								case 1:
+									break _v0$1;
+								case 2:
+									var _v2 = _v0.b;
+									var x = _v2.a;
+									var _v3 = _v2.b;
+									var y = _v3.a;
+									return _List_fromArray(
+										[x, y]);
+								case 3:
+									if (_v0.b.b.b.b) {
+										var _v4 = _v0.b;
+										var x = _v4.a;
+										var _v5 = _v4.b;
+										var y = _v5.a;
+										var _v6 = _v5.b;
+										var z = _v6.a;
+										return _List_fromArray(
+											[x, y, z]);
+									} else {
+										break _v0$5;
+									}
+								default:
+									if (_v0.b.b.b.b && _v0.b.b.b.b.b) {
+										var _v7 = _v0.b;
+										var x = _v7.a;
+										var _v8 = _v7.b;
+										var y = _v8.a;
+										var _v9 = _v8.b;
+										var z = _v9.a;
+										var _v10 = _v9.b;
+										var w = _v10.a;
+										var tl = _v10.b;
+										return (ctr > 1000) ? A2(
+											$elm$core$List$cons,
+											x,
+											A2(
+												$elm$core$List$cons,
+												y,
+												A2(
+													$elm$core$List$cons,
+													z,
+													A2(
+														$elm$core$List$cons,
+														w,
+														A2($elm$core$List$takeTailRec, n - 4, tl))))) : A2(
+											$elm$core$List$cons,
+											x,
+											A2(
+												$elm$core$List$cons,
+												y,
+												A2(
+													$elm$core$List$cons,
+													z,
+													A2(
+														$elm$core$List$cons,
+														w,
+														A3($elm$core$List$takeFast, ctr + 1, n - 4, tl)))));
+									} else {
+										break _v0$5;
+									}
+							}
+						} else {
+							if (_v0.a === 1) {
+								break _v0$1;
+							} else {
+								break _v0$5;
+							}
+						}
+					}
+				}
+				return list;
+			}
+			var _v1 = _v0.b;
+			var x = _v1.a;
+			return _List_fromArray(
+				[x]);
+		}
+	});
+var $elm$core$List$take = F2(
+	function (n, list) {
+		return A3($elm$core$List$takeFast, 0, n, list);
+	});
+var $author$project$Upload$Upload$splitList = F2(
+	function (len, list) {
+		return (!len) ? _List_fromArray(
+			[_List_Nil]) : ((len < 0) ? _List_Nil : ((_Utils_cmp(
+			$elm$core$List$length(list),
+			len) > 0) ? A2(
+			$elm$core$List$cons,
+			A2($elm$core$List$take, len, list),
+			A2(
+				$author$project$Upload$Upload$splitList,
+				len,
+				A2($elm$core$List$drop, len, list))) : _List_fromArray(
+			[list])));
+	});
 var $elm$http$Http$stringPart = _Http_pair;
 var $elm$core$String$toFloat = _String_toFloat;
 var $elm$core$String$toLower = _String_toLower;
@@ -7446,6 +7607,7 @@ var $author$project$Upload$Upload$update = F2(
 						continue update;
 					} else {
 						var files = _v1.a;
+						var splittedFiles = A2($author$project$Upload$Upload$splitList, 50, files);
 						var _v2 = model.ed;
 						if (_v2.$ === 1) {
 							if (model.dO.dN === '') {
@@ -7459,93 +7621,105 @@ var $author$project$Upload$Upload$update = F2(
 							} else {
 								return _Utils_Tuple2(
 									newRootModel,
-									$elm$http$Http$post(
-										{
-											c8: $elm$http$Http$multipartBody(
-												A2(
-													$elm$core$List$cons,
-													A2($elm$http$Http$stringPart, 'place_selected', ''),
-													A2(
-														$elm$core$List$cons,
-														A2($elm$http$Http$stringPart, 'place_new', model.dO.dN),
-														A2(
-															$elm$core$List$cons,
-															A2(
-																$elm$http$Http$stringPart,
-																'new_latitude',
-																$elm$core$String$fromFloat(model.dO.fe)),
+									$elm$core$Platform$Cmd$batch(
+										A2(
+											$elm$core$List$map,
+											function (xs) {
+												return $elm$http$Http$post(
+													{
+														c8: $elm$http$Http$multipartBody(
 															A2(
 																$elm$core$List$cons,
+																A2($elm$http$Http$stringPart, 'place_selected', ''),
 																A2(
-																	$elm$http$Http$stringPart,
-																	'new_longitude',
-																	$elm$core$String$fromFloat(model.dO.ff)),
-																_Utils_ap(
+																	$elm$core$List$cons,
+																	A2($elm$http$Http$stringPart, 'place_new', model.dO.dN),
 																	A2(
-																		$elm$core$List$map,
-																		function (f) {
-																			return A2($elm$http$Http$filePart, 'images', f);
-																		},
-																		files),
-																	A2(
-																		$elm$core$List$map,
-																		function (f) {
-																			return A2(
+																		$elm$core$List$cons,
+																		A2(
+																			$elm$http$Http$stringPart,
+																			'new_latitude',
+																			$elm$core$String$fromFloat(model.dO.fe)),
+																		A2(
+																			$elm$core$List$cons,
+																			A2(
 																				$elm$http$Http$stringPart,
-																				'images_mtimes',
-																				$author$project$Common$Data$msecToStr(
-																					$elm$file$File$lastModified(f)));
-																		},
-																		files))))))),
-											eV: $elm$http$Http$expectWhatever($author$project$Upload$Upload$Uploaded),
-											f1: '/api/db/regist_images/'
-										}));
+																				'new_longitude',
+																				$elm$core$String$fromFloat(model.dO.ff)),
+																			_Utils_ap(
+																				A2(
+																					$elm$core$List$map,
+																					function (f) {
+																						return A2($elm$http$Http$filePart, 'images', f);
+																					},
+																					xs),
+																				A2(
+																					$elm$core$List$map,
+																					function (f) {
+																						return A2(
+																							$elm$http$Http$stringPart,
+																							'images_mtimes',
+																							$author$project$Common$Data$msecToStr(
+																								$elm$file$File$lastModified(f)));
+																					},
+																					files))))))),
+														eV: $elm$http$Http$expectWhatever($author$project$Upload$Upload$Uploaded),
+														f1: '/api/db/regist_images/'
+													});
+											},
+											splittedFiles)));
 							}
 						} else {
 							var selectedPlace = _v2.a;
 							return _Utils_Tuple2(
 								newRootModel,
-								$elm$http$Http$post(
-									{
-										c8: $elm$http$Http$multipartBody(
-											A2(
-												$elm$core$List$cons,
-												A2($elm$http$Http$stringPart, 'place_selected', selectedPlace.dN),
-												A2(
-													$elm$core$List$cons,
-													A2($elm$http$Http$stringPart, 'place_new', model.dO.dN),
-													A2(
-														$elm$core$List$cons,
-														A2(
-															$elm$http$Http$stringPart,
-															'new_latitude',
-															$elm$core$String$fromFloat(model.dO.fe)),
+								$elm$core$Platform$Cmd$batch(
+									A2(
+										$elm$core$List$map,
+										function (xs) {
+											return $elm$http$Http$post(
+												{
+													c8: $elm$http$Http$multipartBody(
 														A2(
 															$elm$core$List$cons,
+															A2($elm$http$Http$stringPart, 'place_selected', selectedPlace.dN),
 															A2(
-																$elm$http$Http$stringPart,
-																'new_longitude',
-																$elm$core$String$fromFloat(model.dO.ff)),
-															_Utils_ap(
+																$elm$core$List$cons,
+																A2($elm$http$Http$stringPart, 'place_new', model.dO.dN),
 																A2(
-																	$elm$core$List$map,
-																	function (f) {
-																		return A2($elm$http$Http$filePart, 'images', f);
-																	},
-																	files),
-																A2(
-																	$elm$core$List$map,
-																	function (f) {
-																		return A2(
+																	$elm$core$List$cons,
+																	A2(
+																		$elm$http$Http$stringPart,
+																		'new_latitude',
+																		$elm$core$String$fromFloat(model.dO.fe)),
+																	A2(
+																		$elm$core$List$cons,
+																		A2(
 																			$elm$http$Http$stringPart,
-																			'images_mtimes',
-																			$author$project$Common$Data$msecToStr(
-																				$elm$file$File$lastModified(f)));
-																	},
-																	files))))))),
-										eV: $elm$http$Http$expectWhatever($author$project$Upload$Upload$Uploaded),
-										f1: '/api/db/regist_images/'
-									}));
+																			'new_longitude',
+																			$elm$core$String$fromFloat(model.dO.ff)),
+																		_Utils_ap(
+																			A2(
+																				$elm$core$List$map,
+																				function (f) {
+																					return A2($elm$http$Http$filePart, 'images', f);
+																				},
+																				xs),
+																			A2(
+																				$elm$core$List$map,
+																				function (f) {
+																					return A2(
+																						$elm$http$Http$stringPart,
+																						'images_mtimes',
+																						$author$project$Common$Data$msecToStr(
+																							$elm$file$File$lastModified(f)));
+																				},
+																				files))))))),
+													eV: $elm$http$Http$expectWhatever($author$project$Upload$Upload$Uploaded),
+													f1: '/api/db/regist_images/'
+												});
+										},
+										splittedFiles)));
 						}
 					}
 				case 3:
@@ -8018,27 +8192,6 @@ var $elm$core$List$intersperse = F2(
 			return A2($elm$core$List$cons, hd, spersed);
 		}
 	});
-var $elm$core$List$drop = F2(
-	function (n, list) {
-		drop:
-		while (true) {
-			if (n <= 0) {
-				return list;
-			} else {
-				if (!list.b) {
-					return list;
-				} else {
-					var x = list.a;
-					var xs = list.b;
-					var $temp$n = n - 1,
-						$temp$list = xs;
-					n = $temp$n;
-					list = $temp$list;
-					continue drop;
-				}
-			}
-		}
-	});
 var $author$project$Common$Settings$joinStrings = function (stringList) {
 	var _v0 = $elm$core$List$head(stringList);
 	if (_v0.$ === 1) {
@@ -8051,132 +8204,6 @@ var $author$project$Common$Settings$joinStrings = function (stringList) {
 				A2($elm$core$List$drop, 1, stringList)));
 	}
 };
-var $elm$core$List$takeReverse = F3(
-	function (n, list, kept) {
-		takeReverse:
-		while (true) {
-			if (n <= 0) {
-				return kept;
-			} else {
-				if (!list.b) {
-					return kept;
-				} else {
-					var x = list.a;
-					var xs = list.b;
-					var $temp$n = n - 1,
-						$temp$list = xs,
-						$temp$kept = A2($elm$core$List$cons, x, kept);
-					n = $temp$n;
-					list = $temp$list;
-					kept = $temp$kept;
-					continue takeReverse;
-				}
-			}
-		}
-	});
-var $elm$core$List$takeTailRec = F2(
-	function (n, list) {
-		return $elm$core$List$reverse(
-			A3($elm$core$List$takeReverse, n, list, _List_Nil));
-	});
-var $elm$core$List$takeFast = F3(
-	function (ctr, n, list) {
-		if (n <= 0) {
-			return _List_Nil;
-		} else {
-			var _v0 = _Utils_Tuple2(n, list);
-			_v0$1:
-			while (true) {
-				_v0$5:
-				while (true) {
-					if (!_v0.b.b) {
-						return list;
-					} else {
-						if (_v0.b.b.b) {
-							switch (_v0.a) {
-								case 1:
-									break _v0$1;
-								case 2:
-									var _v2 = _v0.b;
-									var x = _v2.a;
-									var _v3 = _v2.b;
-									var y = _v3.a;
-									return _List_fromArray(
-										[x, y]);
-								case 3:
-									if (_v0.b.b.b.b) {
-										var _v4 = _v0.b;
-										var x = _v4.a;
-										var _v5 = _v4.b;
-										var y = _v5.a;
-										var _v6 = _v5.b;
-										var z = _v6.a;
-										return _List_fromArray(
-											[x, y, z]);
-									} else {
-										break _v0$5;
-									}
-								default:
-									if (_v0.b.b.b.b && _v0.b.b.b.b.b) {
-										var _v7 = _v0.b;
-										var x = _v7.a;
-										var _v8 = _v7.b;
-										var y = _v8.a;
-										var _v9 = _v8.b;
-										var z = _v9.a;
-										var _v10 = _v9.b;
-										var w = _v10.a;
-										var tl = _v10.b;
-										return (ctr > 1000) ? A2(
-											$elm$core$List$cons,
-											x,
-											A2(
-												$elm$core$List$cons,
-												y,
-												A2(
-													$elm$core$List$cons,
-													z,
-													A2(
-														$elm$core$List$cons,
-														w,
-														A2($elm$core$List$takeTailRec, n - 4, tl))))) : A2(
-											$elm$core$List$cons,
-											x,
-											A2(
-												$elm$core$List$cons,
-												y,
-												A2(
-													$elm$core$List$cons,
-													z,
-													A2(
-														$elm$core$List$cons,
-														w,
-														A3($elm$core$List$takeFast, ctr + 1, n - 4, tl)))));
-									} else {
-										break _v0$5;
-									}
-							}
-						} else {
-							if (_v0.a === 1) {
-								break _v0$1;
-							} else {
-								break _v0$5;
-							}
-						}
-					}
-				}
-				return list;
-			}
-			var _v1 = _v0.b;
-			var x = _v1.a;
-			return _List_fromArray(
-				[x]);
-		}
-	});
-var $elm$core$List$take = F2(
-	function (n, list) {
-		return A3($elm$core$List$takeFast, 0, n, list);
-	});
 var $author$project$Common$Settings$dropSecsStr = function (time) {
 	return $author$project$Common$Settings$joinStrings(
 		A2(
@@ -10630,6 +10657,19 @@ var $author$project$Upload$Upload$NewPlaceLongitude = function (a) {
 var $author$project$Upload$Upload$NewPlaceName = function (a) {
 	return {$: 6, a: a};
 };
+var $elm$html$Html$Events$alwaysStop = function (x) {
+	return _Utils_Tuple2(x, true);
+};
+var $elm$virtual_dom$VirtualDom$MayStopPropagation = function (a) {
+	return {$: 1, a: a};
+};
+var $elm$html$Html$Events$stopPropagationOn = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$MayStopPropagation(decoder));
+	});
 var $elm$json$Json$Decode$at = F2(
 	function (fields, decoder) {
 		return A3($elm$core$List$foldr, $elm$json$Json$Decode$field, decoder, fields);
@@ -10639,11 +10679,14 @@ var $elm$html$Html$Events$targetValue = A2(
 	_List_fromArray(
 		['target', 'value']),
 	$elm$json$Json$Decode$string);
-var $author$project$Common$Data$onChange = function (handler) {
+var $elm$html$Html$Events$onInput = function (tagger) {
 	return A2(
-		$elm$html$Html$Events$on,
-		'change',
-		A2($elm$json$Json$Decode$map, handler, $elm$html$Html$Events$targetValue));
+		$elm$html$Html$Events$stopPropagationOn,
+		'input',
+		A2(
+			$elm$json$Json$Decode$map,
+			$elm$html$Html$Events$alwaysStop,
+			A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetValue)));
 };
 var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
 var $elm$html$Html$Attributes$step = function (n) {
@@ -10666,7 +10709,7 @@ var $author$project$Upload$Upload$newPlacesView = function (model) {
 						$elm$html$Html$Attributes$type_('text'),
 						$elm$html$Html$Attributes$class('form-control'),
 						$elm$html$Html$Attributes$placeholder('or create new place tag'),
-						$author$project$Common$Data$onChange($author$project$Upload$Upload$NewPlaceName),
+						$elm$html$Html$Events$onInput($author$project$Upload$Upload$NewPlaceName),
 						$elm$html$Html$Attributes$value(model.dO.dN)
 					]),
 				_List_Nil),
@@ -10677,7 +10720,7 @@ var $author$project$Upload$Upload$newPlacesView = function (model) {
 						$elm$html$Html$Attributes$type_('number'),
 						$elm$html$Html$Attributes$placeholder('latitude'),
 						$elm$html$Html$Attributes$step('0.0000001'),
-						$author$project$Common$Data$onChange($author$project$Upload$Upload$NewPlaceLatitude),
+						$elm$html$Html$Events$onInput($author$project$Upload$Upload$NewPlaceLatitude),
 						$elm$html$Html$Attributes$value(
 						$elm$core$String$fromFloat(model.dO.fe))
 					]),
@@ -10691,7 +10734,7 @@ var $author$project$Upload$Upload$newPlacesView = function (model) {
 						$elm$html$Html$Attributes$step('0.0000001'),
 						$elm$html$Html$Attributes$value(
 						$elm$core$String$fromFloat(model.dO.ff)),
-						$author$project$Common$Data$onChange($author$project$Upload$Upload$NewPlaceLongitude)
+						$elm$html$Html$Events$onInput($author$project$Upload$Upload$NewPlaceLongitude)
 					]),
 				_List_Nil)
 			]));
@@ -10703,27 +10746,11 @@ var $author$project$Upload$Upload$PlaceSelected = function (a) {
 	return {$: 5, a: a};
 };
 var $elm$html$Html$label = _VirtualDom_node('label');
-var $elm$html$Html$Events$alwaysStop = function (x) {
-	return _Utils_Tuple2(x, true);
-};
-var $elm$virtual_dom$VirtualDom$MayStopPropagation = function (a) {
-	return {$: 1, a: a};
-};
-var $elm$html$Html$Events$stopPropagationOn = F2(
-	function (event, decoder) {
-		return A2(
-			$elm$virtual_dom$VirtualDom$on,
-			event,
-			$elm$virtual_dom$VirtualDom$MayStopPropagation(decoder));
-	});
-var $elm$html$Html$Events$onInput = function (tagger) {
+var $author$project$Common$Data$onChange = function (handler) {
 	return A2(
-		$elm$html$Html$Events$stopPropagationOn,
-		'input',
-		A2(
-			$elm$json$Json$Decode$map,
-			$elm$html$Html$Events$alwaysStop,
-			A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetValue)));
+		$elm$html$Html$Events$on,
+		'change',
+		A2($elm$json$Json$Decode$map, handler, $elm$html$Html$Events$targetValue));
 };
 var $elm$html$Html$option = _VirtualDom_node('option');
 var $elm$html$Html$select = _VirtualDom_node('select');
